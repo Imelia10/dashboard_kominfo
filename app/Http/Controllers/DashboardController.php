@@ -11,20 +11,13 @@ class DashboardController extends Controller
         return view('pages.home');
     }
 
-    public function economy()
-    {
-        return view('pages.economy');
-    }
+    
 
     public function demographics()
     {
         return view('pages.demographics');
     }
 
-    public function health()
-    {
-        return view('pages.health');
-    }
 
     public function environment()
     {
@@ -36,3 +29,4 @@ class DashboardController extends Controller
         return view('pages.education');
     }
 }
+

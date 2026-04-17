@@ -165,8 +165,14 @@
 /* ── Donut ── */
 .dm-donut-wrap {
     display: flex; align-items: center;
-    justify-content: center; gap: 48px;
+    justify-content: center; gap: 32px;
     padding: 8px 0 4px;
+}
+.dm-donut-wrap canvas {
+    width: 200px !important;
+    height: 200px !important;
+    max-width: 200px;
+    max-height: 200px;
 }
 .dm-donut-legends { display: flex; flex-direction: column; gap: 16px; }
 .dm-donut-item  { display: flex; align-items: center; gap: 12px; }
@@ -356,7 +362,7 @@
         <div class="dm-card-sub">Snapshot of village status in {{ $data['year'] }} · Total: {{ $data['grandTotal'] }} desa</div>
 
         <div class="dm-donut-wrap">
-            <canvas id="donutChart" width="220" height="220"></canvas>
+            <canvas id="donutChart" width="200" height="200"></canvas>
             <div class="dm-donut-legends">
                 @foreach($data['idmProportions'] as $item)
                 <div class="dm-donut-item">
@@ -534,6 +540,8 @@
             }]
         },
         options: {
+            responsive: false,
+            maintainAspectRatio: false,
             cutout: '70%',
             plugins: {
                 legend: { display: false },

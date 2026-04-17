@@ -153,7 +153,7 @@
       </div>
       <div>
         <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:#111827;line-height:1.25">
-          Dastik Dinas Komunikasi dan Informatika
+          Dinas Komunikasi dan Informatika
         </div>
         <div style="font-size:11.5px;color:#6b7280">Provinsi Jawa Timur</div>
       </div>

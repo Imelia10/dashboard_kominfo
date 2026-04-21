@@ -6,6 +6,8 @@
 <title>Dashboard Analisis Data Publik - Provinsi Jawa Timur</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<!-- Leaflet CSS & JS -->
 
 {{-- Tailwind CDN --}}
 <script src="https://cdn.tailwindcss.com"></script>
@@ -231,6 +233,7 @@
   @yield('content')
 </main>
 
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
   function toggleSidebar(){ document.body.classList.toggle('sidebar-open'); }
   function closeSidebar(){  document.body.classList.remove('sidebar-open'); }

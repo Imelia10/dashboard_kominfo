@@ -105,8 +105,29 @@
     padding: 24px;
     margin-bottom: 24px;
 }
+.dm-map-card {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 24px;
+    overflow: hidden;
+}
 .dm-card-title { font-size: 17px; font-weight: 700; color: #1a2535; margin-bottom: 4px; text-align: center; }
 .dm-card-sub   { font-size: 12px; color: #6b7a91; margin-bottom: 18px; text-align: center; }
+
+.dm-regional-floating {
+    position: relative;
+    z-index: 1200;
+    margin-top: 0;
+    padding-top: 12px;
+    background: #f0f4f8;
+    isolation: isolate;
+}
+
+#map {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
 
 /* ── Legend pills ── */
 .dm-legend {
@@ -217,6 +238,8 @@
 @media (max-width: 960px) {
     .dm-kpi-grid      { grid-template-columns: repeat(2, 1fr); }
     .dm-bakorwil-grid { grid-template-columns: repeat(2, 1fr); }
+    .dm-map-card      { margin-bottom: 28px; }
+    .dm-regional-floating { margin-top: 0; padding-top: 8px; }
 }
 @media (max-width: 640px) {
     .dm-kpi-grid      { grid-template-columns: 1fr; }
@@ -357,7 +380,7 @@
     </div>
 
     {{-- ══ IDM PROPORTIONS ══ --}}
-    <div class="dm-card">
+    <div class="dm-card dm-map-card">
         <div class="dm-card-title">Current IDM Proportions</div>
         <div class="dm-card-sub">Snapshot of village status in {{ $data['year'] }} · Total: {{ $data['grandTotal'] }} desa</div>
 
@@ -376,52 +399,56 @@
                 @endforeach
             </div>
         </div>
+
+        <div id="map" style="height: 400px; border-radius: 12px; overflow: hidden; border: 1px solid #dde3ec;"></div>
     </div>
 
     {{-- ══ REGIONAL PERFORMANCE GRID ══ --}}
-    <p class="dm-section-title">Regional Performance Grid</p>
-    <p class="dm-section-sub">Data breakdown by Bakorwil (Regional Coordination Offices) · {{ $data['year'] }}</p>
+    <div class="dm-regional-floating">
+        <p class="dm-section-title">Regional Performance Grid</p>
+        <p class="dm-section-sub">Data breakdown by Bakorwil (Regional Coordination Offices) · {{ $data['year'] }}</p>
 
-    <div class="dm-bakorwil-grid">
-        @foreach($data['bakorwil'] as $bak)
-        <div class="dm-bakorwil-card {{ $bak['topPerformer'] ? 'top' : '' }}">
-            @if($bak['topPerformer'])
-                <div class="dm-top-badge">TOP PERFORMER</div>
-            @endif
-            <div class="dm-bak-name">{{ $bak['name'] }}</div>
+        <div class="dm-bakorwil-grid">
+            @foreach($data['bakorwil'] as $bak)
+            <div class="dm-bakorwil-card {{ $bak['topPerformer'] ? 'top' : '' }}">
+                @if($bak['topPerformer'])
+                    <div class="dm-top-badge">TOP PERFORMER</div>
+                @endif
+                <div class="dm-bak-name">{{ $bak['name'] }}</div>
 
-            <div class="dm-bak-stat">
-                <div class="dm-bak-dot" style="background:#1D9E75;"></div>
-                <span class="dm-bak-label">Mandiri</span>
-                <span class="dm-bak-val">{{ number_format($bak['mandiri']) }}</span>
-            </div>
-            <div class="dm-bak-stat">
-                <div class="dm-bak-dot" style="background:#378ADD;"></div>
-                <span class="dm-bak-label">Maju</span>
-                <span class="dm-bak-val">{{ number_format($bak['maju']) }}</span>
-            </div>
-            <div class="dm-bak-stat">
-                <div class="dm-bak-dot" style="background:#EF9F27;"></div>
-                <span class="dm-bak-label">Berkembang</span>
-                <span class="dm-bak-val">{{ number_format($bak['berkembang']) }}</span>
-            </div>
+                <div class="dm-bak-stat">
+                    <div class="dm-bak-dot" style="background:#1D9E75;"></div>
+                    <span class="dm-bak-label">Mandiri</span>
+                    <span class="dm-bak-val">{{ number_format($bak['mandiri']) }}</span>
+                </div>
+                <div class="dm-bak-stat">
+                    <div class="dm-bak-dot" style="background:#378ADD;"></div>
+                    <span class="dm-bak-label">Maju</span>
+                    <span class="dm-bak-val">{{ number_format($bak['maju']) }}</span>
+                </div>
+                <div class="dm-bak-stat">
+                    <div class="dm-bak-dot" style="background:#EF9F27;"></div>
+                    <span class="dm-bak-label">Berkembang</span>
+                    <span class="dm-bak-val">{{ number_format($bak['berkembang']) }}</span>
+                </div>
 
-            @php
-                $total = $bak['mandiri'] + $bak['maju'] + $bak['berkembang'];
-                $pctM  = $total > 0 ? round($bak['mandiri']    / $total * 100) : 0;
-                $pctMj = $total > 0 ? round($bak['maju']       / $total * 100) : 0;
-                $pctB  = $total > 0 ? round($bak['berkembang'] / $total * 100) : 0;
-            @endphp
-            <div style="margin-top:12px; height:6px; border-radius:4px; overflow:hidden; display:flex;">
-                <div style="width:{{ $pctM }}%;  background:#1D9E75;"></div>
-                <div style="width:{{ $pctMj }}%; background:#378ADD;"></div>
-                <div style="width:{{ $pctB }}%;  background:#EF9F27;"></div>
+                @php
+                    $total = $bak['mandiri'] + $bak['maju'] + $bak['berkembang'];
+                    $pctM  = $total > 0 ? round($bak['mandiri']    / $total * 100) : 0;
+                    $pctMj = $total > 0 ? round($bak['maju']       / $total * 100) : 0;
+                    $pctB  = $total > 0 ? round($bak['berkembang'] / $total * 100) : 0;
+                @endphp
+                <div style="margin-top:12px; height:6px; border-radius:4px; overflow:hidden; display:flex;">
+                    <div style="width:{{ $pctM }}%;  background:#1D9E75;"></div>
+                    <div style="width:{{ $pctMj }}%; background:#378ADD;"></div>
+                    <div style="width:{{ $pctB }}%;  background:#EF9F27;"></div>
+                </div>
+                <div style="font-size:10px; color:#6b7a91; margin-top:5px; text-align:right;">
+                    Total: {{ number_format($total) }} desa
+                </div>
             </div>
-            <div style="font-size:10px; color:#6b7a91; margin-top:5px; text-align:right;">
-                Total: {{ number_format($total) }} desa
-            </div>
+            @endforeach
         </div>
-        @endforeach
     </div>
 
 </div>{{-- /dm-page --}}
@@ -578,6 +605,288 @@
         }]
     });
 
+})();
+</script>
+
+<script>
+// ===== PETA CHOROPLETH + HOVER DATA DB =====
+(function() {
+    const mapElement = document.getElementById('map');
+    if (!mapElement || typeof L === 'undefined') {
+        return;
+    }
+
+    const map = L.map('map', {
+        dragging: false,
+        touchZoom: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        zoomSnap: 0.25,
+        zoomDelta: 0.25,
+        zoomControl: true,
+        attributionControl: true
+    }).setView([-7.5, 112.5], 8);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        maxZoom: 19
+    }).addTo(map);
+
+    const year = @json($data['year']);
+    let geojsonLayer = null;
+    let statistikData = new Map();
+    const JATIM_LOCK_BOUNDS = L.latLngBounds(
+        L.latLng(-8.95, 111.00),
+        L.latLng(-5.45, 116.45)
+    );
+    const JATIM_CENTER = L.latLng(-7.45, 113.35);
+    const JATIM_LOCK_ZOOM = 8.25;
+
+    const loadingInfo = document.createElement('div');
+    loadingInfo.style.position = 'absolute';
+    loadingInfo.style.top = '12px';
+    loadingInfo.style.left = '50%';
+    loadingInfo.style.transform = 'translateX(-50%)';
+    loadingInfo.style.zIndex = '500';
+    loadingInfo.style.padding = '8px 12px';
+    loadingInfo.style.borderRadius = '8px';
+    loadingInfo.style.fontSize = '12px';
+    loadingInfo.style.fontWeight = '600';
+    loadingInfo.style.background = 'rgba(255,255,255,0.92)';
+    loadingInfo.style.border = '1px solid #dde3ec';
+    loadingInfo.style.color = '#1a2535';
+    loadingInfo.textContent = 'Memuat peta Jawa Timur...';
+    mapElement.style.position = 'relative';
+    mapElement.appendChild(loadingInfo);
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function normalizeKode(value) {
+        return String(value ?? '').trim().padStart(4, '0');
+    }
+
+    function toNumber(value) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function getFeatureKode(feature) {
+        const properties = feature?.properties ?? {};
+        return normalizeKode(properties.CC_2 || properties.kode_kabupaten_kota || properties.kode || properties.KODE || '');
+    }
+
+    function getFeatureName(feature) {
+        const properties = feature?.properties ?? {};
+        return properties.NAME_2 || properties.nama_kabupaten_kota || properties.name || 'Unknown';
+    }
+
+    function getStatistik(feature) {
+        return statistikData.get(getFeatureKode(feature));
+    }
+
+    function getTotal(row) {
+        return toNumber(row.sangat_tertinggal)
+            + toNumber(row.tertinggal)
+            + toNumber(row.berkembang)
+            + toNumber(row.maju)
+            + toNumber(row.mandiri);
+    }
+
+    function getMandiriPercent(row) {
+        const total = getTotal(row);
+        return total > 0 ? Math.round((toNumber(row.mandiri) / total) * 100) : 0;
+    }
+
+    function getColor(pct) {
+        return pct >= 80 ? '#1D9E75' :
+               pct >= 60 ? '#378ADD' :
+               pct >= 40 ? '#EF9F27' :
+               pct >= 20 ? '#888780' :
+                           '#A32D2D';
+    }
+
+    function style(feature) {
+        const row = getStatistik(feature);
+        const pct = row ? getMandiriPercent(row) : 0;
+
+        return {
+            fillColor: getColor(pct),
+            weight: 1.3,
+            opacity: 1,
+            color: '#64748b',
+            dashArray: '3',
+            fillOpacity: row ? 0.78 : 0.3
+        };
+    }
+
+    function buildPopupContent(feature) {
+        const row = getStatistik(feature);
+        const nama = escapeHtml(getFeatureName(feature));
+        const kode = escapeHtml(getFeatureKode(feature));
+
+        if (!row) {
+            return `
+                <div style="min-width:220px">
+                    <div style="font-size:14px;font-weight:700;color:#1a2535;margin-bottom:4px">${nama}</div>
+                    <div style="font-size:11px;color:#6b7a91;margin-bottom:10px">Kode ${kode}</div>
+                    <div style="font-size:12px;color:#6b7a91">Data tidak tersedia</div>
+                </div>
+            `;
+        }
+
+        const total = getTotal(row);
+        const mandiriPct = getMandiriPercent(row);
+
+        return `
+            <div style="min-width:240px">
+                <div style="font-size:14px;font-weight:700;color:#1a2535;margin-bottom:4px">${nama}</div>
+                <div style="font-size:11px;color:#6b7a91;margin-bottom:10px">Kode ${kode} · Tahun ${year}</div>
+                <div style="display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:12px;color:#1a2535">
+                    <span>Sangat Tertinggal</span><strong>${toNumber(row.sangat_tertinggal)}</strong>
+                    <span>Tertinggal</span><strong>${toNumber(row.tertinggal)}</strong>
+                    <span>Berkembang</span><strong>${toNumber(row.berkembang)}</strong>
+                    <span>Maju</span><strong>${toNumber(row.maju)}</strong>
+                    <span>Mandiri</span><strong style="color:#1D9E75">${toNumber(row.mandiri)}</strong>
+                    <span>Total</span><strong>${total}</strong>
+                </div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e5e9f0;font-size:12px;color:#0F6E56;font-weight:700">
+                    Mandiri: ${mandiriPct}%
+                </div>
+            </div>
+        `;
+    }
+
+    function highlightFeature(e) {
+        const layer = e.target;
+        layer.setStyle({
+            weight: 3,
+            color: '#1a2535',
+            dashArray: '',
+            fillOpacity: 0.92
+        });
+
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+
+        layer.openPopup();
+    }
+
+    function resetHighlight(e) {
+        if (geojsonLayer) {
+            geojsonLayer.resetStyle(e.target);
+        }
+        e.target.closePopup();
+    }
+
+    function onEachFeature(feature, layer) {
+        layer.bindPopup(buildPopupContent(feature), {
+            closeButton: false,
+            autoPan: false,
+            offset: L.point(0, -6),
+            className: 'dm-map-popup'
+        });
+
+        layer.bindTooltip(getFeatureName(feature), {
+            sticky: true,
+            direction: 'top',
+            opacity: 0.95
+        });
+
+        layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            click: highlightFeature
+        });
+    }
+
+    function addLegend() {
+        const legend = L.control({ position: 'bottomright' });
+
+        legend.onAdd = function() {
+            const div = L.DomUtil.create('div', 'dm-map-legend');
+            div.style.background = 'rgba(255,255,255,0.95)';
+            div.style.padding = '10px 12px';
+            div.style.border = '1px solid #dde3ec';
+            div.style.borderRadius = '12px';
+            div.style.boxShadow = '0 10px 24px rgba(16, 24, 40, 0.08)';
+            div.innerHTML = `
+                <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7a91;margin-bottom:8px">Legenda</div>
+                <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:#1a2535">
+                    <div><span style="display:inline-block;width:12px;height:12px;background:#1D9E75;border-radius:3px;margin-right:8px;vertical-align:middle"></span>80% - 100%</div>
+                    <div><span style="display:inline-block;width:12px;height:12px;background:#378ADD;border-radius:3px;margin-right:8px;vertical-align:middle"></span>60% - 79%</div>
+                    <div><span style="display:inline-block;width:12px;height:12px;background:#EF9F27;border-radius:3px;margin-right:8px;vertical-align:middle"></span>40% - 59%</div>
+                    <div><span style="display:inline-block;width:12px;height:12px;background:#888780;border-radius:3px;margin-right:8px;vertical-align:middle"></span>20% - 39%</div>
+                    <div><span style="display:inline-block;width:12px;height:12px;background:#A32D2D;border-radius:3px;margin-right:8px;vertical-align:middle"></span>0% - 19%</div>
+                </div>
+            `;
+
+            return div;
+        };
+
+        legend.addTo(map);
+    }
+
+    async function loadMap(tahun) {
+        const [geojsonResponse, statistikResponse] = await Promise.all([
+            fetch('/api/geojson'),
+            fetch(`/api/statistik?tahun=${tahun}`)
+        ]);
+
+        if (!geojsonResponse.ok) {
+            throw new Error('Gagal memuat GeoJSON peta');
+        }
+
+        if (!statistikResponse.ok) {
+            throw new Error('Gagal memuat statistik peta');
+        }
+
+        const geojson = await geojsonResponse.json();
+        const statistik = await statistikResponse.json();
+
+        statistikData = new Map(
+            statistik.map(row => [normalizeKode(row.kode_kabupaten_kota), row])
+        );
+
+        if (geojsonLayer) {
+            map.removeLayer(geojsonLayer);
+        }
+
+        geojsonLayer = L.geoJSON(geojson, {
+            style: style,
+            onEachFeature: onEachFeature
+        }).addTo(map);
+
+        // Lock tampilan ke Jatim dengan center+zoom statis agar tidak melebar ke Pulau Jawa.
+        map.setMaxBounds(JATIM_LOCK_BOUNDS);
+        map.options.maxBoundsViscosity = 1.0;
+        map.setView(JATIM_CENTER, JATIM_LOCK_ZOOM, { animate: false });
+        map.setMinZoom(JATIM_LOCK_ZOOM);
+
+        // Hard-lock panning so users cannot shift map viewport.
+        map.dragging.disable();
+
+        loadingInfo.remove();
+    }
+
+    addLegend();
+
+    loadMap(year).catch(error => {
+        console.error(error);
+        loadingInfo.style.background = 'rgba(255, 245, 245, 0.97)';
+        loadingInfo.style.border = '1px solid #fecaca';
+        loadingInfo.style.color = '#b91c1c';
+        loadingInfo.textContent = 'Gagal memuat peta. Cek endpoint /api/geojson dan /api/statistik.';
+    });
 })();
 </script>
 @endpush

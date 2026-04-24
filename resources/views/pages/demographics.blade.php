@@ -4,19 +4,30 @@
 
 @push('styles')
 <style>
-
-/* ── Fix scroll khusus demographics ── */
-.app-main {
-    overflow-y: auto !important;
+:root {
+    --clr-primary: #1D9E75;
+    --clr-secondary: #378ADD;
+    --clr-warning: #EF9F27;
+    --clr-muted: #888780;
+    --clr-danger: #A32D2D;
+    --clr-text: #1a2535;
+    --clr-text-light: #6b7a91;
+    --clr-text-lighter: #0F6E56;
+    --clr-bg: #f0f4f8;
+    --clr-bg-alt: #f0faf5;
+    --clr-border: #dde3ec;
+    --clr-border-alt: #9FE1CB;
+    --radius: 14px;
+    --gap: 16px;
 }
-/* ... sisa style yang sudah ada tetap sama ... */
 
+.app-main { overflow-y: auto !important; }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 .dm-wrap {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #f0f4f8;
-    color: #1a2535;
+    background: var(--clr-bg);
+    color: var(--clr-text);
     min-height: 100vh;
     padding-bottom: 3rem;
 }
@@ -28,225 +39,150 @@
     padding: 28px 32px 0;
 }
 
-/* ── Section label ── */
 .dm-section-label {
     font-size: 11px; font-weight: 700; letter-spacing: .1em;
-    color: #1D9E75; text-transform: uppercase;
-    border-left: 3px solid #1D9E75;
+    color: var(--clr-primary); text-transform: uppercase;
+    border-left: 3px solid var(--clr-primary);
     padding-left: 8px; margin-bottom: 6px;
     display: inline-block;
 }
 
-/* ── Page title ── */
-.dm-page-title {
-    font-size: 26px; font-weight: 700;
-    color: #1a2535; margin-bottom: 4px; line-height: 1.2;
-}
-.dm-page-title span { color: #1D9E75; }
-.dm-page-subtitle   { font-size: 13px; color: #6b7a91; margin-bottom: 24px; }
+.dm-page-title { font-size: 26px; font-weight: 700; color: var(--clr-text); margin-bottom: 4px; line-height: 1.2; }
+.dm-page-title span { color: var(--clr-primary); }
+.dm-page-subtitle { font-size: 13px; color: var(--clr-text-light); margin-bottom: 24px; }
 
-/* ── Year dropdown ── */
-.dm-year-select {
-    font-size: 13px; font-weight: 600; color: #1a2535;
-    background: #fff;
-    border: 1px solid #dde3ec;
+.dm-year-select { font-size: 13px; font-weight: 600; color: var(--clr-text); background: #fff; border: 1px solid var(--clr-border); border-radius: 8px; padding: 6px 16px; cursor: pointer; }
+
+.dm-kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr) 1.5fr; gap: var(--gap); margin-bottom: 24px; clear: both; }
+.dm-kpi-card { background: #fff; border-radius: var(--radius); padding: 22px; border: 1px solid var(--clr-border); }
+.dm-kpi-ico { font-size: 22px; margin-bottom: 10px; }
+.dm-kpi-label { font-size: 11px; color: var(--clr-text-light); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 6px; }
+.dm-kpi-val { font-size: 34px; font-weight: 700; color: var(--clr-text); line-height: 1; }
+.dm-kpi-val.green { color: var(--clr-primary); }
+.dm-kpi-sub { font-size: 12px; margin-top: 8px; color: var(--clr-primary); }
+.dm-kpi-sub.muted { color: var(--clr-text-light); }
+
+.dm-exec-card { background: var(--clr-bg-alt); border: 1px solid var(--clr-border-alt); border-radius: var(--radius); padding: 20px 22px; }
+.dm-exec-head { font-size: 11px; font-weight: 700; letter-spacing: .09em; color: var(--clr-text-lighter); text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.dm-exec-head::before { content: '★'; font-size: 13px; color: var(--clr-primary); }
+.dm-exec-body { font-size: 13px; color: var(--clr-text); line-height: 1.65; }
+.dm-exec-body strong { color: var(--clr-primary); }
+
+.dm-card { background: #fff; border-radius: var(--radius); border: 1px solid var(--clr-border); padding: 24px; margin-bottom: 24px; }
+.dm-map-card { position: relative; z-index: 1; margin-bottom: 24px; overflow: visible; }
+.dm-card-title { font-size: 17px; font-weight: 700; color: var(--clr-text); margin-bottom: 4px; text-align: center; }
+.dm-card-sub { font-size: 12px; color: var(--clr-text-light); margin-bottom: 18px; text-align: center; }
+
+.dm-regional-floating { position: relative; z-index: 1200; margin-top: 0; padding-top: 12px; background: var(--clr-bg); isolation: isolate; }
+#map { position: relative; z-index: 100; overflow: hidden; }
+.dm-map-canvas {
+    height: 400px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--clr-border);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+.dm-map-popup .leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    border: 1px solid var(--clr-border);
+    box-shadow: 0 14px 30px rgba(16, 24, 40, 0.14);
+}
+.dm-map-popup .leaflet-popup-content {
+    margin: 10px 12px;
+}
+.dm-map-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--clr-border);
+    color: var(--clr-text);
+    font-weight: 600;
     border-radius: 8px;
-    padding: 6px 16px;
-    cursor: pointer;
+    padding: 4px 8px;
+    box-shadow: 0 8px 18px rgba(16, 24, 40, 0.12);
 }
+.dm-map-tooltip::before {
+    border-top-color: var(--clr-border);
+}
+.dm-map-legend {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 12px;
+    border: 1px solid var(--clr-border);
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(16, 24, 40, 0.08);
+}
+.dm-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:6px; }
+.dm-header form { padding-top:4px; }
 
-/* ── KPI grid ── */
-.dm-kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr) 1.5fr;
-    gap: 16px;
-    margin-bottom: 24px;
-    clear: both;
-}
-.dm-kpi-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 22px;
-    border: 1px solid #dde3ec;
-}
-.dm-kpi-ico   { font-size: 22px; margin-bottom: 10px; }
-.dm-kpi-label {
-    font-size: 11px; color: #6b7a91;
-    text-transform: uppercase; letter-spacing: .07em;
-    margin-bottom: 6px;
-}
-.dm-kpi-val   { font-size: 34px; font-weight: 700; color: #1a2535; line-height: 1; }
-.dm-kpi-val.green { color: #1D9E75; }
-.dm-kpi-sub   { font-size: 12px; margin-top: 8px; color: #1D9E75; }
-.dm-kpi-sub.muted { color: #6b7a91; }
+.dm-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; justify-content: center; }
+.dm-pill { font-size: 12px; border-radius: 20px; padding: 4px 14px; border: 1px solid; font-weight: 500; cursor: pointer; transition: opacity .2s; }
+.dm-pill.pill-darkred { color: #4A1B0C; border-color: var(--clr-danger); background: #FAECE7; }
+.dm-pill.pill-gray { color: #2C2C2A; border-color: var(--clr-muted); background: #F1EFE8; }
+.dm-pill.pill-orange { color: #412402; border-color: var(--clr-warning); background: #FAEEDA; }
+.dm-pill.pill-blue { color: #042C53; border-color: var(--clr-secondary); background: #E6F1FB; }
+.dm-pill.pill-green { color: #04342C; border-color: var(--clr-primary); background: #E1F5EE; }
+.dm-pill.inactive { opacity: .35; }
 
-/* ── Executive summary card ── */
-.dm-exec-card {
-    background: #f0faf5;
-    border: 1px solid #9FE1CB;
-    border-radius: 14px;
-    padding: 20px 22px;
-}
-.dm-exec-head {
-    font-size: 11px; font-weight: 700; letter-spacing: .09em;
-    color: #0F6E56; text-transform: uppercase;
-    margin-bottom: 10px;
-    display: flex; align-items: center; gap: 6px;
-}
-.dm-exec-head::before { content: '★'; font-size: 13px; color: #1D9E75; }
-.dm-exec-body { font-size: 13px; color: #1a2535; line-height: 1.65; }
-.dm-exec-body strong { color: #1D9E75; }
+.dm-section-title { font-size: 18px; font-weight: 700; color: var(--clr-text); margin-bottom: 4px; }
+.dm-section-sub { font-size: 12px; color: var(--clr-text-light); margin-bottom: 14px; }
 
-/* ── Generic card ── */
-.dm-card {
-    background: #fff;
-    border-radius: 14px;
-    border: 1px solid #dde3ec;
-    padding: 24px;
-    margin-bottom: 24px;
-}
-.dm-map-card {
-    position: relative;
-    z-index: 1;
-    margin-bottom: 24px;
-    overflow: hidden;
-}
-.dm-card-title { font-size: 17px; font-weight: 700; color: #1a2535; margin-bottom: 4px; text-align: center; }
-.dm-card-sub   { font-size: 12px; color: #6b7a91; margin-bottom: 18px; text-align: center; }
+.dm-rank-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); margin-bottom: 24px; }
+.dm-rank-card { background: #fff; border-radius: var(--radius); border: 1px solid var(--clr-border); padding: 22px; }
+.dm-rank-head { font-size: 14px; font-weight: 700; color: var(--clr-text); display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+.ico-up { color: var(--clr-primary); font-size: 18px; }
+.ico-warn { color: var(--clr-warning); font-size: 16px; }
 
-.dm-regional-floating {
-    position: relative;
-    z-index: 1200;
-    margin-top: 0;
-    padding-top: 12px;
-    background: #f0f4f8;
-    isolation: isolate;
-}
-
-#map {
-    position: relative;
-    z-index: 1;
-    overflow: hidden;
-}
-
-/* ── Legend pills ── */
-.dm-legend {
-    display: flex; gap: 10px; flex-wrap: wrap;
-    margin-bottom: 18px; justify-content: center;
-}
-.dm-pill {
-    font-size: 12px; border-radius: 20px;
-    padding: 4px 14px; border: 1px solid;
-    font-weight: 500; cursor: pointer;
-    transition: opacity .2s;
-}
-.dm-pill.pill-darkred { color: #4A1B0C; border-color: #A32D2D; background: #FAECE7; }
-.dm-pill.pill-gray    { color: #2C2C2A; border-color: #888780; background: #F1EFE8; }
-.dm-pill.pill-orange  { color: #412402; border-color: #EF9F27; background: #FAEEDA; }
-.dm-pill.pill-blue    { color: #042C53; border-color: #378ADD; background: #E6F1FB; }
-.dm-pill.pill-green   { color: #04342C; border-color: #1D9E75; background: #E1F5EE; }
-.dm-pill.inactive     { opacity: .35; }
-
-/* ── Section headings ── */
-.dm-section-title { font-size: 18px; font-weight: 700; color: #1a2535; margin-bottom: 4px; }
-.dm-section-sub   { font-size: 12px; color: #6b7a91; margin-bottom: 14px; }
-
-/* ── Rankings ── */
-.dm-rank-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-.dm-rank-card {
-    background: #fff; border-radius: 14px;
-    border: 1px solid #dde3ec; padding: 22px;
-}
-.dm-rank-head {
-    font-size: 14px; font-weight: 700; color: #1a2535;
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 18px;
-}
-.ico-up   { color: #1D9E75; font-size: 18px; }
-.ico-warn { color: #EF9F27; font-size: 16px; }
-
-.dm-rank-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f4f8;
-    font-size: 13px;
-}
+.dm-rank-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--clr-bg); font-size: 13px; }
 .dm-rank-row:last-child { border-bottom: none; }
-.rank-no   { width: 22px; color: #6b7a91; font-weight: 600; flex-shrink: 0; }
-.rank-name { color: #1a2535; flex: 1; }
-.rank-bar  {
-    width: 80px; height: 6px; background: #f0f4f8;
-    border-radius: 4px; margin: 0 12px; overflow: hidden; flex-shrink: 0;
-}
+.rank-no { width: 22px; color: var(--clr-text-light); font-weight: 600; flex-shrink: 0; }
+.rank-name { color: var(--clr-text); flex: 1; }
+.rank-bar { width: 80px; height: 6px; background: var(--clr-bg); border-radius: 4px; margin: 0 12px; overflow: hidden; flex-shrink: 0; }
 .rank-bar-fill { height: 100%; border-radius: 4px; }
-.rank-num  { font-weight: 700; min-width: 56px; text-align: right; }
-.rank-num.green { color: #1D9E75; }
-.rank-num.red   { color: #E24B4A; }
+.rank-num { font-weight: 700; min-width: 56px; text-align: right; }
+.rank-num.green { color: var(--clr-primary); }
+.rank-num.red { color: #E24B4A; }
 
-/* ── Donut ── */
-.dm-donut-wrap {
-    display: flex; align-items: center;
-    justify-content: center; gap: 32px;
-    padding: 8px 0 4px;
-}
-.dm-donut-wrap canvas {
-    width: 200px !important;
-    height: 200px !important;
-    max-width: 200px;
-    max-height: 200px;
-}
+.dm-donut-map-wrap { display: flex; gap: 24px; align-items: flex-start; }
+.dm-donut-side { flex: 0 0 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.dm-map-side { flex: 1 1 0; min-width: 0; overflow: visible; }
+.dm-donut-wrap { display: flex; align-items: center; justify-content: center; gap: 32px; padding: 8px 0 4px; }
+.dm-donut-wrap canvas { width: 200px !important; height: 200px !important; max-width: 200px; max-height: 200px; }
 .dm-donut-legends { display: flex; flex-direction: column; gap: 16px; }
-.dm-donut-item  { display: flex; align-items: center; gap: 12px; }
-.dm-donut-dot   { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-.dm-donut-label { font-size: 14px; color: #1a2535; line-height: 1.2; }
-.dm-donut-pct   { font-size: 17px; font-weight: 700; color: #1a2535; }
-.dm-donut-count { font-size: 11px; color: #6b7a91; }
+.dm-donut-item { display: flex; align-items: center; gap: 12px; }
+.dm-donut-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.dm-donut-label { font-size: 14px; color: var(--clr-text); line-height: 1.2; }
+.dm-donut-pct { font-size: 17px; font-weight: 700; color: var(--clr-text); }
+.dm-donut-count { font-size: 11px; color: var(--clr-text-light); }
 
-/* ── Regional grid ── */
-.dm-bakorwil-grid {
-    display: grid; grid-template-columns: repeat(5, 1fr);
-    gap: 14px; margin-bottom: 32px;
-}
-.dm-bakorwil-card {
-    background: #fff;
-    border-radius: 14px;
-    border: 1px solid #dde3ec;
-    padding: 20px 16px 16px;
-    position: relative;
-}
-.dm-bakorwil-card.top { border: 2px solid #1D9E75; }
-.dm-top-badge {
-    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-    background: #1D9E75; color: #fff;
-    font-size: 9px; font-weight: 700; letter-spacing: .08em;
-    border-radius: 20px; padding: 3px 10px;
-    white-space: nowrap; text-transform: uppercase;
-}
-.dm-bak-name {
-    font-size: 12px; font-weight: 700; color: #1a2535;
-    margin-bottom: 14px; line-height: 1.4; text-align: center;
-}
-.dm-bak-stat {
-    display: flex; align-items: center;
-    gap: 8px; margin-bottom: 8px; font-size: 12px;
-}
-.dm-bak-dot   { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dm-bak-label { color: #6b7a91; flex: 1; }
-.dm-bak-val   { font-weight: 700; color: #1a2535; }
-
-/* ── Responsive ── */
 @media (max-width: 960px) {
-    .dm-kpi-grid      { grid-template-columns: repeat(2, 1fr); }
+    .dm-donut-map-wrap { flex-direction: column; }
+    .dm-donut-side { flex: none; width: 100%; }
+}
+
+.dm-bakorwil-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 32px; }
+.dm-bakorwil-card { background: #fff; border-radius: var(--radius); border: 1px solid var(--clr-border); padding: 20px 16px 16px; position: relative; }
+.dm-bakorwil-card.top { border: 2px solid var(--clr-primary); }
+.dm-top-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--clr-primary); color: #fff; font-size: 9px; font-weight: 700; letter-spacing: .08em; border-radius: 20px; padding: 3px 10px; white-space: nowrap; text-transform: uppercase; }
+.dm-bak-name { font-size: 12px; font-weight: 700; color: var(--clr-text); margin-bottom: 14px; line-height: 1.4; text-align: center; }
+.dm-bak-stat { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+.dm-bak-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dm-bak-label { color: var(--clr-text-light); flex: 1; }
+.dm-bak-val { font-weight: 700; color: var(--clr-text); }
+.bak-bar { height: 6px; border-radius: 4px; display: flex; margin-top: 12px; }
+.bak-bar-m { background: var(--clr-primary); }
+.bak-bar-mj { background: var(--clr-secondary); }
+.bak-bar-b { background: var(--clr-warning); }
+
+@media (max-width: 960px) {
+    .dm-kpi-grid { grid-template-columns: repeat(2, 1fr); }
     .dm-bakorwil-grid { grid-template-columns: repeat(2, 1fr); }
-    .dm-map-card      { margin-bottom: 28px; }
+    .dm-map-card { margin-bottom: 28px; }
     .dm-regional-floating { margin-top: 0; padding-top: 8px; }
 }
 @media (max-width: 640px) {
-    .dm-kpi-grid      { grid-template-columns: 1fr; }
-    .dm-rank-grid     { grid-template-columns: 1fr; }
+    .dm-kpi-grid { grid-template-columns: 1fr; }
+    .dm-rank-grid { grid-template-columns: 1fr; }
     .dm-bakorwil-grid { grid-template-columns: 1fr; }
-    .dm-page          { padding: 16px 12px 0; }
-    .dm-donut-wrap    { flex-direction: column; gap: 24px; }
+    .dm-page { padding: 16px 12px 0; }
+    .dm-donut-wrap { flex-direction: column; gap: 24px; }
 }
 </style>
 @endpush
@@ -255,19 +191,16 @@
 <div class="dm-wrap">
 <div class="dm-page">
 
-    {{-- ══ HEADER ══ --}}
-    <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:6px;">
+    <div class="dm-header">
         <div>
             <div class="dm-section-label">DASHBOARD</div>
             <h1 class="dm-page-title">Analisis Akselerasi <span>Desa Mandiri</span> Jawa Timur</h1>
             <p class="dm-page-subtitle">Analisis Rencana vs Realisasi Kabupaten/Kota</p>
         </div>
-        <form method="GET" action="{{ route('demographics') }}" style="padding-top:4px;">
+        <form method="GET" action="{{ route('demographics') }}">
             <select name="year" class="dm-year-select" onchange="this.form.submit()">
                 @foreach([2022, 2023, 2024, 2025] as $yr)
-                    <option value="{{ $yr }}" {{ $data['year'] == $yr ? 'selected' : '' }}>
-                        {{ $yr }} ▾
-                    </option>
+                    <option value="{{ $yr }}" @selected($data['year'] == $yr)>{{ $yr }} ▾</option>
                 @endforeach
             </select>
         </form>
@@ -384,23 +317,34 @@
         <div class="dm-card-title">Current IDM Proportions</div>
         <div class="dm-card-sub">Snapshot of village status in {{ $data['year'] }} · Total: {{ $data['grandTotal'] }} desa</div>
 
-        <div class="dm-donut-wrap">
-            <canvas id="donutChart" width="200" height="200"></canvas>
-            <div class="dm-donut-legends">
-                @foreach($data['idmProportions'] as $item)
-                <div class="dm-donut-item">
-                    <div class="dm-donut-dot" style="background:{{ $item['color'] }};"></div>
-                    <div>
-                        <div class="dm-donut-label">{{ $item['label'] }}</div>
-                        <div class="dm-donut-pct">{{ $item['percent'] }}%</div>
-                        <div class="dm-donut-count">{{ number_format($item['count']) }} desa</div>
+        {{-- Layout: donut kiri, map kanan --}}
+        <div class="dm-donut-map-wrap">
+
+            {{-- Kiri: Donut chart + legend --}}
+            <div class="dm-donut-side">
+                <div class="dm-donut-wrap">
+                    <canvas id="donutChart" width="200" height="200"></canvas>
+                    <div class="dm-donut-legends">
+                        @foreach($data['idmProportions'] as $item)
+                        <div class="dm-donut-item">
+                            <div class="dm-donut-dot" style="background:{{ $item['color'] }};"></div>
+                            <div>
+                                <div class="dm-donut-label">{{ $item['label'] }}</div>
+                                <div class="dm-donut-pct">{{ $item['percent'] }}%</div>
+                                <div class="dm-donut-count">{{ number_format($item['count']) }} desa</div>
+                            </div>
+                        </div>
+                        @endforeach
                     </div>
                 </div>
-                @endforeach
             </div>
-        </div>
 
-        <div id="map" style="height: 400px; border-radius: 12px; overflow: hidden; border: 1px solid #dde3ec;"></div>
+            {{-- Kanan: Peta choropleth --}}
+            <div class="dm-map-side">
+                <div id="map" class="dm-map-canvas"></div>
+            </div>
+
+        </div>
     </div>
 
     {{-- ══ REGIONAL PERFORMANCE GRID ══ --}}
@@ -438,10 +382,10 @@
                     $pctMj = $total > 0 ? round($bak['maju']       / $total * 100) : 0;
                     $pctB  = $total > 0 ? round($bak['berkembang'] / $total * 100) : 0;
                 @endphp
-                <div style="margin-top:12px; height:6px; border-radius:4px; overflow:hidden; display:flex;">
-                    <div style="width:{{ $pctM }}%;  background:#1D9E75;"></div>
-                    <div style="width:{{ $pctMj }}%; background:#378ADD;"></div>
-                    <div style="width:{{ $pctB }}%;  background:#EF9F27;"></div>
+                <div class="bak-bar">
+                    <div class="bak-bar-m" style="width:{{ $pctM }}%"></div>
+                    <div class="bak-bar-mj" style="width:{{ $pctMj }}%"></div>
+                    <div class="bak-bar-b" style="width:{{ $pctB }}%"></div>
                 </div>
                 <div style="font-size:10px; color:#6b7a91; margin-top:5px; text-align:right;">
                     Total: {{ number_format($total) }} desa
@@ -550,9 +494,8 @@
     };
 
     /* ── Donut Chart ── */
-    const donutRaw   = @json($data['idmProportions']);
-    const donutCtx   = document.getElementById('donutChart').getContext('2d');
-    const mandiriPct = {{ $data['mandiriPercent'] }};
+    const donutRaw = @json($data['idmProportions']), mandiriPct = {{ $data['mandiriPercent'] }};
+    const donutCtx = document.getElementById('donutChart').getContext('2d');
 
     new Chart(donutCtx, {
         type: 'doughnut',
@@ -617,12 +560,12 @@
     }
 
     const map = L.map('map', {
-        dragging: false,
-        touchZoom: false,
+        dragging: true,
+        touchZoom: true,
         scrollWheelZoom: false,
         doubleClickZoom: false,
         boxZoom: false,
-        keyboard: false,
+        keyboard: true,
         zoomSnap: 0.25,
         zoomDelta: 0.25,
         zoomControl: true,
@@ -636,6 +579,7 @@
 
     const year = @json($data['year']);
     let geojsonLayer = null;
+    let selectedLayer = null;
     let statistikData = new Map();
     const JATIM_LOCK_BOUNDS = L.latLngBounds(
         L.latLng(-8.95, 111.00),
@@ -670,24 +614,15 @@
             .replace(/'/g, '&#039;');
     }
 
-    function normalizeKode(value) {
-        return String(value ?? '').trim().padStart(4, '0');
-    }
-
-    function toNumber(value) {
-        const parsed = Number(value);
-        return Number.isFinite(parsed) ? parsed : 0;
-    }
+    const normalizeKode = v => String(v ?? '').trim().padStart(4, '0');
+    const toNumber = v => { const p = Number(v); return Number.isFinite(p) ? p : 0; };
 
     function getFeatureKode(feature) {
         const properties = feature?.properties ?? {};
         return normalizeKode(properties.CC_2 || properties.kode_kabupaten_kota || properties.kode || properties.KODE || '');
     }
 
-    function getFeatureName(feature) {
-        const properties = feature?.properties ?? {};
-        return properties.NAME_2 || properties.nama_kabupaten_kota || properties.name || 'Unknown';
-    }
+    function getFeatureName(f) { const p = f?.properties ?? {}; return p.NAME_2 || p.nama_kabupaten_kota || p.name || 'Unknown'; }
 
     function getStatistik(feature) {
         return statistikData.get(getFeatureKode(feature));
@@ -765,33 +700,78 @@
         `;
     }
 
-    function highlightFeature(e) {
-        const layer = e.target;
+    function highlightFeature(layer, keepSelected = false) {
         layer.setStyle({
             weight: 3,
             color: '#1a2535',
             dashArray: '',
-            fillOpacity: 0.92
+            fillOpacity: keepSelected ? 0.94 : 0.9
         });
 
         if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
             layer.bringToFront();
         }
+    }
 
+    function resetFeatureStyle(layer) {
+        if (geojsonLayer) {
+            geojsonLayer.resetStyle(layer);
+        }
+    }
+
+    function clearSelection() {
+        if (!selectedLayer) {
+            return;
+        }
+        resetFeatureStyle(selectedLayer);
+        selectedLayer.closePopup();
+        selectedLayer = null;
+    }
+
+    function onMouseOver(e) {
+        const layer = e.target;
+        if (selectedLayer === layer) {
+            return;
+        }
+        highlightFeature(layer);
         layer.openPopup();
     }
 
-    function resetHighlight(e) {
-        if (geojsonLayer) {
-            geojsonLayer.resetStyle(e.target);
+    function onMouseOut(e) {
+        const layer = e.target;
+        if (selectedLayer === layer) {
+            return;
         }
-        e.target.closePopup();
+        resetFeatureStyle(layer);
+        layer.closePopup();
+    }
+
+    function onFeatureClick(e) {
+        const layer = e.target;
+
+        if (selectedLayer === layer) {
+            clearSelection();
+            return;
+        }
+
+        clearSelection();
+        selectedLayer = layer;
+        highlightFeature(layer, true);
+        layer.openPopup();
+
+        const targetBounds = layer.getBounds();
+        if (targetBounds.isValid()) {
+            map.fitBounds(targetBounds.pad(0.18), {
+                maxZoom: JATIM_LOCK_ZOOM + 0.7,
+                animate: true
+            });
+        }
     }
 
     function onEachFeature(feature, layer) {
         layer.bindPopup(buildPopupContent(feature), {
             closeButton: false,
-            autoPan: false,
+            autoPan: true,
             offset: L.point(0, -6),
             className: 'dm-map-popup'
         });
@@ -799,13 +779,14 @@
         layer.bindTooltip(getFeatureName(feature), {
             sticky: true,
             direction: 'top',
-            opacity: 0.95
+            opacity: 0.95,
+            className: 'dm-map-tooltip'
         });
 
         layer.on({
-            mouseover: highlightFeature,
-            mouseout: resetHighlight,
-            click: highlightFeature
+            mouseover: onMouseOver,
+            mouseout: onMouseOut,
+            click: onFeatureClick
         });
     }
 
@@ -814,11 +795,6 @@
 
         legend.onAdd = function() {
             const div = L.DomUtil.create('div', 'dm-map-legend');
-            div.style.background = 'rgba(255,255,255,0.95)';
-            div.style.padding = '10px 12px';
-            div.style.border = '1px solid #dde3ec';
-            div.style.borderRadius = '12px';
-            div.style.boxShadow = '0 10px 24px rgba(16, 24, 40, 0.08)';
             div.innerHTML = `
                 <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7a91;margin-bottom:8px">Legenda</div>
                 <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:#1a2535">
@@ -866,14 +842,26 @@
             onEachFeature: onEachFeature
         }).addTo(map);
 
-        // Lock tampilan ke Jatim dengan center+zoom statis agar tidak melebar ke Pulau Jawa.
+        // Fit ke geometri aktual agar framing peta konsisten dengan data terbaru.
+        const geoBounds = geojsonLayer.getBounds();
+        if (geoBounds.isValid()) {
+            map.fitBounds(geoBounds.pad(0.05), {
+                maxZoom: JATIM_LOCK_ZOOM,
+                animate: false
+            });
+        }
+
         map.setMaxBounds(JATIM_LOCK_BOUNDS);
         map.options.maxBoundsViscosity = 1.0;
-        map.setView(JATIM_CENTER, JATIM_LOCK_ZOOM, { animate: false });
         map.setMinZoom(JATIM_LOCK_ZOOM);
+        map.setMaxZoom(JATIM_LOCK_ZOOM + 1.2);
 
-        // Hard-lock panning so users cannot shift map viewport.
-        map.dragging.disable();
+        map.on('click', event => {
+            if (!event.originalEvent.target.closest('.leaflet-interactive')) {
+                clearSelection();
+                map.setView(JATIM_CENTER, JATIM_LOCK_ZOOM, { animate: true });
+            }
+        });
 
         loadingInfo.remove();
     }

@@ -26,7 +26,7 @@
   /* Hard reset */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Prevent double scrollbar — html/body no scroll, inner divs handle scroll */
+  /* html/body fill viewport, no scroll here */
   html, body {
     height: 100%;
     overflow: hidden;
@@ -82,7 +82,6 @@
     background: #fff;
     border-right: 1px solid #e4e8f0;
     padding: 18px 0 24px;
-    /* hidden by default — slide in/out */
     transform: translateX(calc(-1 * var(--sidebar-w)));
     transition: transform .35s var(--ease), box-shadow .35s var(--ease);
     z-index: 90;
@@ -119,19 +118,16 @@
   .nav-item.active { background: #E3F2FD; color: #1565C0; font-weight: 600; }
   .nav-icon { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; fill: none; }
 
-  /* ─── MAIN CONTENT ─────────────────────────────
-     KEY FIX: full viewport width, no max-width.
-     Content starts right below header, fills 100% width.
-  ─────────────────────────────────────────────── */
+  /* ─── MAIN CONTENT ─── */
   .app-main {
     position: fixed;
     top: var(--header-h);
     left: 0;
     right: 0;
     bottom: 0;
-    overflow: hidden;     /* inner blade handles scroll */
+    overflow-y: auto;   /* ← FIX: was "hidden", now scrollable */
+    overflow-x: hidden;
   }
-  /* When sidebar open, push main content */
   body.sidebar-open .app-main {
     left: var(--sidebar-w);
     transition: left .35s var(--ease);

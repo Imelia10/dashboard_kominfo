@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BansosController;
 use App\Http\Controllers\PerikananController;
+use App\Http\Controllers\EnvironmentController;
+
 
 Route::get('/',            [DashboardController::class, 'home'])->name('home');
 
@@ -15,6 +17,6 @@ Route::get('/',            [DashboardController::class, 'home'])->name('home');
 Route::get('/economy',     [BansosController::class, 'economy'])->name('economy');
 
 Route::get('/demographics',[DashboardController::class, 'demographics'])->name('demographics');
-Route::get('/environment', [DashboardController::class, 'environment'])->name('environment');
+Route::get('/environment', [EnvironmentController::class, 'index'])->name('environment');
 Route::get('/education',   [DashboardController::class, 'education'])->name('education');
 Route::get('/perikanan',   [PerikananController::class, 'index'])->name('perikanan');

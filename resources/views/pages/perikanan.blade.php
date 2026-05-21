@@ -84,14 +84,13 @@
       {{-- KPI Nelayan --}}
       <div class="bg-white border border-line rounded-2xl p-6 relative overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all kpi-stripe-teal">
         <div class="flex justify-between items-start mb-4">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-teal-lt">🎣</div>
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-teal-lt">👨‍👨</div>
           <span class="text-[9.5px] font-bold tracking-[.5px] px-2.5 py-1 rounded-full bg-teal-lt text-teal">PERAIRAN UMUM</span>
         </div>
         <div class="text-[11px] font-semibold tracking-[.4px] text-ink-4 mb-2">TOTAL NELAYAN</div>
         <div class="text-[38px] font-extrabold text-ink leading-none mb-1 tracking-[-1.5px]">{{ number_format($totalNelayan,0,',','.') }}</div>
-        <div class="text-xs text-ink-3">orang · perairan umum saja<br><span class="text-[10.5px] text-ink-4 italic">tidak termasuk nelayan laut</span></div>
-        @if($gNelayan!==null)
-          <div class="inline-flex items-center gap-1 text-[10.5px] font-bold px-2.5 py-1 rounded-full mt-3.5 {{ $gNelayan>0?'bg-[#E3FAF3] text-teal':($gNelayan<0?'bg-coral-lt text-coral':'bg-bg text-ink-4') }}">
+        @if($gNelayan!==null) 
+          <div class="inline-flex items-center gap-1 text-[10.5px] font-bold px-2.5 py-1 rounded-full mt-8 {{ $gNelayan>0?'bg-[#E3FAF3] text-teal':($gNelayan<0?'bg-coral-lt text-coral':'bg-bg text-ink-4') }}">
             {{ $gNelayan>0?'↑':($gNelayan<0?'↓':'→') }} {{ abs($gNelayan) }}% dari {{ $tahunAktif-1 }}
           </div>
         @endif
@@ -100,7 +99,7 @@
       {{-- KPI Produksi --}}
       <div class="bg-white border border-line rounded-2xl p-6 relative overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all kpi-stripe-amber">
         <div class="flex justify-between items-start mb-4">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-amber-lt">🐟</div>
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-amber-lt">🎣</div>
           <span class="text-[9.5px] font-bold tracking-[.5px] px-2.5 py-1 rounded-full bg-amber-lt text-amber">{{ strtoupper($satuan) }}</span>
         </div>
         <div class="text-[11px] font-semibold tracking-[.4px] text-ink-4 mb-2">TOTAL PRODUKSI</div>
@@ -205,7 +204,7 @@
     <div class="bg-white border border-line rounded-2xl p-6 shadow-sm mb-4">
       <div class="mb-4">
         <div class="text-sm font-bold text-ink mb-1">Tren Jumlah Nelayan Perairan Umum — Lintas Tahun</div>
-        <div class="text-xs text-ink-3 leading-relaxed">Perubahan populasi nelayan perairan umum per tahun (<em>tidak termasuk nelayan laut</em>).
+        <div class="text-xs text-ink-3 leading-relaxed">Perubahan populasi nelayan perairan umum per tahun.
           Baca grafik ini bersama grafik Tren Produksi di bawah — jika nelayan turun namun produksi naik, artinya efisiensi meningkat.</div>
         <span class="inline-block mt-2 font-mono text-[9.5px] font-semibold tracking-[.4px] px-2.5 py-0.5 rounded bg-teal-lt text-teal">ORANG / TAHUN</span>
       </div>
@@ -290,7 +289,7 @@
 
       {{-- Insight 1 --}}
       <div class="bg-white border border-line rounded-2xl px-7 pt-7 pb-6 shadow-sm flex flex-col ins-top-teal">
-        <div class="text-[10.5px] font-bold tracking-[.7px] text-teal mb-3">TEMUAN 01 · KESEIMBANGAN INPUT–OUTPUT</div>
+        <div class="text-[10.5px] font-bold tracking-[.7px] text-teal mb-3">SUMMARY 01 · KESEIMBANGAN INPUT–OUTPUT</div>
         <div class="text-[15.5px] font-extrabold text-ink mb-3 leading-snug">Pertumbuhan nelayan dan produksi tidak selalu seiring — dan di situlah analisis dimulai</div>
         <div class="text-[13px] text-ink-3 leading-[1.9] flex-1">
           Tahun {{ $tahunAktif }}, tercatat <strong class="text-ink-2 font-bold">{{ number_format($totalNelayan,0,',','.') }} nelayan perairan umum</strong>
@@ -326,7 +325,7 @@
 
       {{-- Insight 2 --}}
       <div class="bg-white border border-line rounded-2xl px-7 pt-7 pb-6 shadow-sm flex flex-col ins-top-amber">
-        <div class="text-[10.5px] font-bold tracking-[.7px] text-amber mb-3">TEMUAN 02 · EFISIENSI &amp; KOMODITAS UNGGULAN</div>
+        <div class="text-[10.5px] font-bold tracking-[.7px] text-amber mb-3">SUMMARY 02 · EFISIENSI &amp; KOMODITAS UNGGULAN</div>
         <div class="text-[15.5px] font-extrabold text-ink mb-3 leading-snug">Produktivitas mengungkap efisiensi sejati — komposisi menentukan prioritas intervensi</div>
         <div class="text-[13px] text-ink-3 leading-[1.9] flex-1">
           Dari rasio produksi terhadap nelayan perairan umum, diperoleh produktivitas
@@ -354,7 +353,7 @@
 
       {{-- Insight 3 --}}
       <div class="bg-white border border-line rounded-2xl px-7 pt-7 pb-6 shadow-sm flex flex-col ins-top-cobalt">
-        <div class="text-[10.5px] font-bold tracking-[.7px] text-cobalt mb-3">TEMUAN 03 · DISPARITAS &amp; REKOMENDASI WILAYAH</div>
+        <div class="text-[10.5px] font-bold tracking-[.7px] text-cobalt mb-3">SUMMARY 03 · DISPARITAS &amp; REKOMENDASI WILAYAH</div>
         <div class="text-[15.5px] font-extrabold text-ink mb-3 leading-snug">Volume tinggi dan efisiensi tinggi jarang berada di wilayah yang sama — dan itu bermakna</div>
         <div class="text-[13px] text-ink-3 leading-[1.9] flex-1">
           Analisis wilayah mengungkap dua profil yang membutuhkan pendekatan kebijakan berbeda.

@@ -7,9 +7,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<!-- Leaflet CSS & JS -->
 
-{{-- Tailwind CDN --}}
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -25,10 +23,8 @@
 </script>
 
 <style>
-  /* Hard reset */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* html/body fill viewport, no scroll here */
   html, body {
     height: 100%;
     overflow: hidden;
@@ -39,7 +35,7 @@
 
   :root {
     --header-h: 64px;
-    --sidebar-w: 220px;
+    --sidebar-w: 230px;
     --ease: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -105,6 +101,17 @@
   }
   body.sidebar-open .sidebar-overlay { opacity: 1; pointer-events: auto; }
 
+  /* Nav section label */
+  .nav-section {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: #9CA3AF;
+    padding: 10px 16px 4px;
+    margin-top: 4px;
+  }
+
   /* Nav items */
   .nav-item {
     display: flex; align-items: center; gap: 11px;
@@ -120,6 +127,23 @@
   .nav-item.active { background: #E3F2FD; color: #1565C0; font-weight: 600; }
   .nav-icon { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; fill: none; }
 
+  /* Active indicator dot */
+  .nav-item.active::after {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #1565C0;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* Divider */
+  .nav-divider {
+    height: 1px;
+    background: #E4E8F0;
+    margin: 8px 16px;
+  }
+
   /* ─── MAIN CONTENT ─── */
   .app-main {
     position: fixed;
@@ -127,7 +151,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    overflow-y: auto;   /* ← FIX: was "hidden", now scrollable */
+    overflow-y: auto;
     overflow-x: hidden;
   }
   body.sidebar-open .app-main {
@@ -163,6 +187,9 @@
 {{-- ════ SIDEBAR ════ --}}
 <aside class="app-sidebar">
 
+  {{-- Utama --}}
+  <div class="nav-section">Utama</div>
+
   <a href="{{ route('home') }}"
     class="nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="2">
@@ -172,6 +199,11 @@
     Home
   </a>
 
+  <div class="nav-divider"></div>
+
+  {{-- Sosial & Ekonomi --}}
+  <div class="nav-section">Sosial & Ekonomi</div>
+
   <a href="{{ route('economy') }}"
     class="nav-item {{ request()->routeIs('economy') ? 'active' : '' }}">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="2">
@@ -179,6 +211,19 @@
       <polyline points="17 6 23 6 23 12"/>
     </svg>
     Bansos
+  </a>
+
+  {{-- ★ MENU BARU: Kemiskinan & Ketenagakerjaan ★ --}}
+  <a href="{{ route('kemiskinan') }}"
+    class="nav-item {{ request()->routeIs('kemiskinan') ? 'active' : '' }}">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+      <line x1="12" y1="14" x2="12" y2="18"/>
+      <line x1="10" y1="16" x2="14" y2="16"/>
+    </svg>
+    Kemiskinan & Naker
   </a>
 
   <a href="{{ route('demographics') }}"
@@ -192,6 +237,11 @@
     Demographics
   </a>
 
+  <div class="nav-divider"></div>
+
+  {{-- Sektoral --}}
+  <div class="nav-section">Sektoral</div>
+
   <a href="{{ route('perikanan') }}"
     class="nav-item {{ request()->routeIs('perikanan') ? 'active' : '' }}">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -202,6 +252,16 @@
     </svg>
     Produksi Perikanan
   </a>
+
+  <a href="{{ route('agri') }}"
+   class="nav-item {{ request()->routeIs('agri') ? 'active' : '' }}">
+  <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="1.8"
+       stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2C6 8 4 13 12 22c8-9 6-14 0-20z"/>
+    <path d="M12 22V8"/>
+  </svg>
+  Agri & Pangan
+</a>
 
   <a href="{{ route('environment') }}"
     class="nav-item {{ request()->routeIs('environment') ? 'active' : '' }}">

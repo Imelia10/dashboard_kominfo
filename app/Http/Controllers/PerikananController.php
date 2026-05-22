@@ -11,8 +11,10 @@ class PerikananController extends Controller
     {
         /* ── Daftar tahun tersedia ── */
         $daftarTahun = DB::table('produklaut')->select('tahun')
-            ->union(DB::table('nelayan')->select('tahun'))
-            ->orderBy('tahun', 'desc')->pluck('tahun')->unique()->values();
+    ->union(DB::table('nelayan')->select('tahun'))
+    ->orderBy('tahun', 'desc')->pluck('tahun')->unique()
+    ->filter(fn($t) => $t >= 2000)  
+    ->values();
 
         $tahunAktif   = $request->input('tahun', $daftarTahun->first() ?? date('Y'));
         $tahunSebelum = $tahunAktif - 1;
@@ -80,9 +82,12 @@ class PerikananController extends Controller
             ->selectRaw('tahun, SUM(perairan_umum) AS total_nelayan')   // PERAIRAN UMUM SAJA
             ->groupBy('tahun')->orderBy('tahun')->get();
 
-        $trenProduksi = DB::table('produklaut')
-            ->selectRaw('tahun, SUM(ikan+binatang_lunak+binatang_berkulit_keras+binatang_air_lainnya) AS total_produksi')
-            ->groupBy('tahun')->orderBy('tahun')->get();
+       $trenProduksi = DB::table('produklaut')
+    ->selectRaw('tahun, SUM(ikan+binatang_lunak+binatang_berkulit_keras+binatang_air_lainnya) AS total_produksi')
+    ->groupBy('tahun')
+    ->havingRaw('total_produksi > 0')   // ← buang tahun tanpa data
+    ->where('tahun', '>=', 2000)        // ← buang tahun 0
+    ->orderBy('tahun')->get();
 
         /* ── Tren gabungan untuk dual-axis & produktivitas ── */
         $trenGabungan = DB::table('produklaut as p')

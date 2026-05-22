@@ -11,9 +11,13 @@ use App\Http\Controllers\DesaController;
 use App\Http\Controllers\PerikananController;
 use App\Http\Controllers\EnvironmentController;
 use App\Http\Controllers\MapController;
+use App\Http\Controllers\KemiskinanController;
+use App\Http\Controllers\AgriController;
 
 
-    Route::get('/',            [DashboardController::class, 'home'])->name('home');
+Route::get('/',            [DashboardController::class, 'home'])->name('home');
+
+// Economy sekarang ditangani BansosController
     Route::get('/economy',     [BansosController::class, 'economy'])->name('economy');
     Route::get('/demographics',[DashboardController::class, 'demographics'])->name('demographics');
     Route::get('/environment', [EnvironmentController::class, 'index'])->name('environment');
@@ -22,3 +26,6 @@ use App\Http\Controllers\MapController;
     Route::get('/perikanan',   [PerikananController::class, 'index'])->name('perikanan');
     Route::get('/api/geojson', [MapController::class, 'geojson']);
     Route::get('/api/statistik', [MapController::class, 'statistik']);
+    Route::get('/kemiskinan', [KemiskinanController::class, 'index'])->name('kemiskinan');
+    Route::get('/agri', [AgriController::class, 'index'])->name('agri');
+

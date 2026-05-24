@@ -213,7 +213,6 @@
     Bansos
   </a>
 
-  {{-- ★ MENU BARU: Kemiskinan & Ketenagakerjaan ★ --}}
   <a href="{{ route('kemiskinan') }}"
     class="nav-item {{ request()->routeIs('kemiskinan') ? 'active' : '' }}">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -226,6 +225,16 @@
     Kemiskinan & Naker
   </a>
 
+  <a href="{{ route('bencana') }}"
+    class="nav-item {{ request()->routeIs('bencana') ? 'active' : '' }}">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+      <line x1="12" y1="9" x2="12" y2="13"/>
+      <line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+    Bencana Alam
+  </a>
+
   <a href="{{ route('demographics') }}"
     class="nav-item {{ request()->routeIs('demographics') ? 'active' : '' }}">
     <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="2">
@@ -235,6 +244,18 @@
       <path d="M16 3.13a4 4 0 010 7.75"/>
     </svg>
     Demographics
+  </a>
+
+  {{-- ★ BARU: Kepadatan Penduduk ★ --}}
+  <a href="{{ route('kepadatan') }}"
+    class="nav-item {{ request()->routeIs('kepadatan') ? 'active' : '' }}">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    Kepadatan Penduduk
   </a>
 
   <div class="nav-divider"></div>
@@ -254,14 +275,13 @@
   </a>
 
   <a href="{{ route('agri') }}"
-   class="nav-item {{ request()->routeIs('agri') ? 'active' : '' }}">
-  <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="1.8"
-       stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 2C6 8 4 13 12 22c8-9 6-14 0-20z"/>
-    <path d="M12 22V8"/>
-  </svg>
-  Agri & Pangan
-</a>
+    class="nav-item {{ request()->routeIs('agri') ? 'active' : '' }}">
+    <svg class="nav-icon" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2C6 8 4 13 12 22c8-9 6-14 0-20z"/>
+      <path d="M12 22V8"/>
+    </svg>
+    Agri & Pangan
+  </a>
 
   <a href="{{ route('environment') }}"
     class="nav-item {{ request()->routeIs('environment') ? 'active' : '' }}">

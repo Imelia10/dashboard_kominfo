@@ -329,14 +329,15 @@
     <div class="card">
       <div class="card-hd">
         Top 3 Kabupaten/Kota Terparah
-        <small>Severity = (Rmh Rusak + Korban) / Kejadian × 100%</small>
+        <small>Peringkat diurutkan berdasarkan rata-rata jumlah kerusakan & korban per 1 kali kejadian bencana.</small>
       </div>
       <div class="top3-list">
         @forelse($top3Parah as $idx => $kab)
           @php
             $rankColors = ['#b6171e','#d97706','#059669'];
             $rc = $rankColors[$idx] ?? '#9aa0ab';
-            $sevPct = min(100, round($kab['severity'] * 10));
+            // Rasio dampak asli per kejadian
+            $impactRatio = round($kab['severity_raw']);
           @endphp
           <div class="top3-item">
             <div class="top3-rank r{{ $idx+1 }}">#{{ $idx+1 }}</div>
@@ -349,8 +350,8 @@
               </div>
             </div>
             <div class="top3-sev" style="color:{{ $rc }}">
-              {{ $sevPct }}%
-              <span class="sev-unit">Severity</span>
+              ~{{ number_format($impactRatio) }}
+              <span class="sev-unit">Dampak / Kejadian</span>
             </div>
           </div>
         @empty

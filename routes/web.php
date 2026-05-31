@@ -37,6 +37,7 @@ Route::get('/bencana',   [BencanaController::class, 'index'])->name('bencana'); 
 Route::prefix('api')->group(function () {
     Route::get('/geojson',   [MapController::class, 'geojson']);
     Route::get('/statistik', [MapController::class, 'statistik']);
+    Route::get('/bencana/map',   [MapController::class, 'bencanaGeojson']);
 });
 
 

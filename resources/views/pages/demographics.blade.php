@@ -33,9 +33,9 @@
 }
 
 /* ── Page container ── */
-.dm-page { 
+.dm-page {
     width: 100%;
-    max-width: 100%;   /* bebas full */
+    max-width: 100%;
     padding: 28px 32px 0;
 }
 
@@ -87,9 +87,7 @@
     border: 1px solid var(--clr-border);
     box-shadow: 0 14px 30px rgba(16, 24, 40, 0.14);
 }
-.dm-map-popup .leaflet-popup-content {
-    margin: 10px 12px;
-}
+.dm-map-popup .leaflet-popup-content { margin: 10px 12px; }
 .dm-map-tooltip {
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid var(--clr-border);
@@ -99,9 +97,7 @@
     padding: 4px 8px;
     box-shadow: 0 8px 18px rgba(16, 24, 40, 0.12);
 }
-.dm-map-tooltip::before {
-    border-top-color: var(--clr-border);
-}
+.dm-map-tooltip::before { border-top-color: var(--clr-border); }
 .dm-map-legend {
     background: rgba(255, 255, 255, 0.95);
     padding: 10px 12px;
@@ -115,31 +111,108 @@
 .dm-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; justify-content: center; }
 .dm-pill { font-size: 12px; border-radius: 20px; padding: 4px 14px; border: 1px solid; font-weight: 500; cursor: pointer; transition: opacity .2s; }
 .dm-pill.pill-darkred { color: #4A1B0C; border-color: var(--clr-danger); background: #FAECE7; }
-.dm-pill.pill-gray { color: #2C2C2A; border-color: var(--clr-muted); background: #F1EFE8; }
-.dm-pill.pill-orange { color: #412402; border-color: var(--clr-warning); background: #FAEEDA; }
-.dm-pill.pill-blue { color: #042C53; border-color: var(--clr-secondary); background: #E6F1FB; }
-.dm-pill.pill-green { color: #04342C; border-color: var(--clr-primary); background: #E1F5EE; }
+.dm-pill.pill-gray    { color: #2C2C2A; border-color: var(--clr-muted);   background: #F1EFE8; }
+.dm-pill.pill-orange  { color: #412402; border-color: var(--clr-warning); background: #FAEEDA; }
+.dm-pill.pill-blue    { color: #042C53; border-color: var(--clr-secondary);background: #E6F1FB; }
+.dm-pill.pill-green   { color: #04342C; border-color: var(--clr-primary); background: #E1F5EE; }
 .dm-pill.inactive { opacity: .35; }
 
 .dm-section-title { font-size: 18px; font-weight: 700; color: var(--clr-text); margin-bottom: 4px; }
 .dm-section-sub { font-size: 12px; color: var(--clr-text-light); margin-bottom: 14px; }
 
+/* ── Rankings ── */
 .dm-rank-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); margin-bottom: 24px; }
 .dm-rank-card { background: #fff; border-radius: var(--radius); border: 1px solid var(--clr-border); padding: 22px; }
 .dm-rank-head { font-size: 14px; font-weight: 700; color: var(--clr-text); display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
-.ico-up { color: var(--clr-primary); font-size: 18px; }
+.ico-up   { color: var(--clr-primary); font-size: 18px; }
 .ico-warn { color: var(--clr-warning); font-size: 16px; }
 
-.dm-rank-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--clr-bg); font-size: 13px; }
+.dm-rank-row {
+    display: grid;
+    grid-template-columns: 22px 1fr 100px 64px;
+    align-items: center;
+    gap: 0 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--clr-bg);
+    font-size: 13px;
+}
 .dm-rank-row:last-child { border-bottom: none; }
-.rank-no { width: 22px; color: var(--clr-text-light); font-weight: 600; flex-shrink: 0; }
-.rank-name { color: var(--clr-text); flex: 1; }
-.rank-bar { width: 80px; height: 6px; background: var(--clr-bg); border-radius: 4px; margin: 0 12px; overflow: hidden; flex-shrink: 0; }
-.rank-bar-fill { height: 100%; border-radius: 4px; }
-.rank-num { font-weight: 700; min-width: 56px; text-align: right; }
-.rank-num.green { color: var(--clr-primary); }
-.rank-num.red { color: #E24B4A; }
 
+.rank-no  { color: var(--clr-text-light); font-weight: 600; }
+.rank-name {
+    color: var(--clr-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+.rank-bar {
+    width: 100px;
+    height: 6px;
+    background: var(--clr-bg);
+    border-radius: 4px;
+    margin: 0;
+    overflow: hidden;
+}
+.rank-bar-fill { height: 100%; border-radius: 4px; }
+.rank-num {
+    font-weight: 700;
+    text-align: right;
+    white-space: nowrap;
+}
+.rank-num.green { color: var(--clr-primary); }
+.rank-num.red   { color: #E24B4A; }
+
+/* ── Naik-status pills ── */
+.rank-naik-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    grid-column: 2 / -1;   /* mulai dari kolom nama, span sampai akhir */
+    padding-top: 4px;
+    padding-left: 0;
+}
+
+/* Pill hijau — top kabupaten */
+.rank-naik-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    background: #E1F5EE;
+    color: #0F6E56;
+    border: 1px solid #9FE1CB;
+    border-radius: 20px;
+    padding: 2px 8px;
+    white-space: nowrap;
+    cursor: default;
+}
+.rank-naik-pill .naik-from-to {
+    font-weight: 400;
+    color: #6b7a91;
+    font-size: 9.5px;
+}
+.naik-arrow { font-size: 11px; }
+
+/* Pill merah — bottom kabupaten */
+.rank-naik-pill.red-pill {
+    background: #FDECEA;
+    color: #A32D2D;
+    border-color: #F5A9A9;
+}
+.rank-naik-pill.red-pill .naik-from-to {
+    color: #c0392b;
+}
+.rank-naik-pill.down-pill {
+    background: #FDECEA;
+    color: #A32D2D;
+    border-color: #F5A9A9;
+}
+.rank-naik-pill.down-pill .naik-from-to {
+    color: #c0392b;
+}
+/* ── Donut + Map ── */
 .dm-donut-map-wrap { display: flex; gap: 24px; align-items: flex-start; }
 .dm-donut-side { flex: 0 0 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .dm-map-side { flex: 1 1 0; min-width: 0; overflow: visible; }
@@ -152,11 +225,7 @@
 .dm-donut-pct { font-size: 17px; font-weight: 700; color: var(--clr-text); }
 .dm-donut-count { font-size: 11px; color: var(--clr-text-light); }
 
-@media (max-width: 960px) {
-    .dm-donut-map-wrap { flex-direction: column; }
-    .dm-donut-side { flex: none; width: 100%; }
-}
-
+/* ── Bakorwil ── */
 .dm-bakorwil-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 32px; }
 .dm-bakorwil-card { background: #fff; border-radius: var(--radius); border: 1px solid var(--clr-border); padding: 20px 16px 16px; position: relative; }
 .dm-bakorwil-card.top { border: 2px solid var(--clr-primary); }
@@ -167,13 +236,16 @@
 .dm-bak-label { color: var(--clr-text-light); flex: 1; }
 .dm-bak-val { font-weight: 700; color: var(--clr-text); }
 .bak-bar { height: 6px; border-radius: 4px; display: flex; margin-top: 12px; }
-.bak-bar-m { background: var(--clr-primary); }
+.bak-bar-m  { background: var(--clr-primary); }
 .bak-bar-mj { background: var(--clr-secondary); }
-.bak-bar-b { background: var(--clr-warning); }
+.bak-bar-b  { background: var(--clr-warning); }
 
+/* ── Responsive ── */
 @media (max-width: 960px) {
     .dm-kpi-grid { grid-template-columns: repeat(2, 1fr); }
     .dm-bakorwil-grid { grid-template-columns: repeat(2, 1fr); }
+    .dm-donut-map-wrap { flex-direction: column; }
+    .dm-donut-side { flex: none; width: 100%; }
     .dm-map-card { margin-bottom: 28px; }
     .dm-regional-floating { margin-top: 0; padding-top: 8px; }
 }
@@ -272,6 +344,7 @@
 
     <div class="dm-rank-grid">
 
+        {{-- KIRI: Top 5 --}}
         <div class="dm-rank-card">
             <div class="dm-rank-head">
                 <span class="ico-up">↑</span> Top 5 Kabupaten (Highest Growth)
@@ -287,15 +360,27 @@
                                 background:#1D9E75;"></div>
                 </div>
                 <span class="rank-num green">{{ $kab['growth_label'] }}</span>
+                @if(!empty($kab['naik_detail']))
+                <div class="rank-naik-wrap">
+                    @foreach($kab['naik_detail'] as $nd)
+                    <span class="rank-naik-pill {{ $nd['arah'] === 'turun' ? 'down-pill' : '' }}">
+                        {{ $nd['arah'] === 'naik' ? '+' : '-' }}{{ $nd['jumlah'] }}
+                        <span class="naik-arrow">{{ $nd['arah'] === 'naik' ? '↑' : '↓' }}</span>
+                        <span class="naik-from-to">{{ $nd['label'] }}</span>
+                    </span>
+                    @endforeach
+                </div>
+                @endif
             </div>
             @endforeach
         </div>
 
+        {{-- KANAN: Bottom 5 --}}
         <div class="dm-rank-card">
             <div class="dm-rank-head">
                 <span class="ico-warn">⚠</span> Bottom 5 Kabupaten (Need Attention)
             </div>
-            @php $maxBot = $data['bottomKabupaten']->max('growth') ?: 1; @endphp
+            @php $maxBot = $data['bottomKabupaten']->max(fn($k) => abs($k['growth'])) ?: 1; @endphp
             @foreach($data['bottomKabupaten'] as $i => $kab)
             <div class="dm-rank-row">
                 <span class="rank-no">{{ $i + 1 }}.</span>
@@ -306,6 +391,17 @@
                                 background:#E24B4A;"></div>
                 </div>
                 <span class="rank-num red">{{ $kab['growth_label'] }}</span>
+                @if(!empty($kab['naik_detail']))
+                <div class="rank-naik-wrap">
+                    @foreach($kab['naik_detail'] as $nd)
+                    <span class="rank-naik-pill {{ $nd['arah'] === 'turun' ? 'down-pill' : '' }}">
+                        {{ $nd['arah'] === 'naik' ? '+' : '-' }}{{ $nd['jumlah'] }}
+                        <span class="naik-arrow">{{ $nd['arah'] === 'naik' ? '↑' : '↓' }}</span>
+                        <span class="naik-from-to">{{ $nd['label'] }}</span>
+                    </span>
+                    @endforeach
+                </div>
+                @endif
             </div>
             @endforeach
         </div>
@@ -317,7 +413,6 @@
         <div class="dm-card-title">Current IDM Proportions</div>
         <div class="dm-card-sub">Snapshot of village status in {{ $data['year'] }} · Total: {{ $data['grandTotal'] }} desa</div>
 
-        {{-- Layout: donut kiri, map kanan --}}
         <div class="dm-donut-map-wrap">
 
             {{-- Kiri: Donut chart + legend --}}
@@ -383,9 +478,9 @@
                     $pctB  = $total > 0 ? round($bak['berkembang'] / $total * 100) : 0;
                 @endphp
                 <div class="bak-bar">
-                    <div class="bak-bar-m" style="width:{{ $pctM }}%"></div>
+                    <div class="bak-bar-m"  style="width:{{ $pctM }}%"></div>
                     <div class="bak-bar-mj" style="width:{{ $pctMj }}%"></div>
-                    <div class="bak-bar-b" style="width:{{ $pctB }}%"></div>
+                    <div class="bak-bar-b"  style="width:{{ $pctB }}%"></div>
                 </div>
                 <div style="font-size:10px; color:#6b7a91; margin-top:5px; text-align:right;">
                     Total: {{ number_format($total) }} desa
@@ -552,12 +647,10 @@
 </script>
 
 <script>
-// ===== PETA CHOROPLETH + HOVER DATA DB =====
+// ===== PETA CHOROPLETH =====
 (function() {
     const mapElement = document.getElementById('map');
-    if (!mapElement || typeof L === 'undefined') {
-        return;
-    }
+    if (!mapElement || typeof L === 'undefined') return;
 
     const map = L.map('map', {
         dragging: true,
@@ -589,51 +682,35 @@
     const JATIM_LOCK_ZOOM = 8.25;
 
     const loadingInfo = document.createElement('div');
-    loadingInfo.style.position = 'absolute';
-    loadingInfo.style.top = '12px';
-    loadingInfo.style.left = '50%';
-    loadingInfo.style.transform = 'translateX(-50%)';
-    loadingInfo.style.zIndex = '500';
-    loadingInfo.style.padding = '8px 12px';
-    loadingInfo.style.borderRadius = '8px';
-    loadingInfo.style.fontSize = '12px';
-    loadingInfo.style.fontWeight = '600';
-    loadingInfo.style.background = 'rgba(255,255,255,0.92)';
-    loadingInfo.style.border = '1px solid #dde3ec';
-    loadingInfo.style.color = '#1a2535';
+    loadingInfo.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:500;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;background:rgba(255,255,255,0.92);border:1px solid #dde3ec;color:#1a2535;';
     loadingInfo.textContent = 'Memuat peta Jawa Timur...';
     mapElement.style.position = 'relative';
     mapElement.appendChild(loadingInfo);
 
     function escapeHtml(value) {
         return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 
     const normalizeKode = v => String(v ?? '').trim().padStart(4, '0');
     const toNumber = v => { const p = Number(v); return Number.isFinite(p) ? p : 0; };
 
     function getFeatureKode(feature) {
-        const properties = feature?.properties ?? {};
-        return normalizeKode(properties.CC_2 || properties.kode_kabupaten_kota || properties.kode || properties.KODE || '');
+        const p = feature?.properties ?? {};
+        return normalizeKode(p.CC_2 || p.kode_kabupaten_kota || p.kode || p.KODE || '');
     }
 
-    function getFeatureName(f) { const p = f?.properties ?? {}; return p.NAME_2 || p.nama_kabupaten_kota || p.name || 'Unknown'; }
-
-    function getStatistik(feature) {
-        return statistikData.get(getFeatureKode(feature));
+    function getFeatureName(f) {
+        const p = f?.properties ?? {};
+        return p.NAME_2 || p.nama_kabupaten_kota || p.name || 'Unknown';
     }
+
+    function getStatistik(feature) { return statistikData.get(getFeatureKode(feature)); }
 
     function getTotal(row) {
-        return toNumber(row.sangat_tertinggal)
-            + toNumber(row.tertinggal)
-            + toNumber(row.berkembang)
-            + toNumber(row.maju)
-            + toNumber(row.mandiri);
+        return toNumber(row.sangat_tertinggal) + toNumber(row.tertinggal)
+             + toNumber(row.berkembang) + toNumber(row.maju) + toNumber(row.mandiri);
     }
 
     function getMandiriPercent(row) {
@@ -645,84 +722,62 @@
         return pct >= 80 ? '#1D9E75' :
                pct >= 60 ? '#378ADD' :
                pct >= 40 ? '#EF9F27' :
-               pct >= 20 ? '#888780' :
-                           '#A32D2D';
+               pct >= 20 ? '#888780' : '#A32D2D';
     }
 
     function style(feature) {
         const row = getStatistik(feature);
         const pct = row ? getMandiriPercent(row) : 0;
-
         return {
             fillColor: getColor(pct),
-            weight: 1.3,
-            opacity: 1,
-            color: '#64748b',
-            dashArray: '3',
+            weight: 1.3, opacity: 1,
+            color: '#64748b', dashArray: '3',
             fillOpacity: row ? 0.78 : 0.3
         };
     }
 
     function buildPopupContent(feature) {
-        const row = getStatistik(feature);
+        const row  = getStatistik(feature);
         const nama = escapeHtml(getFeatureName(feature));
         const kode = escapeHtml(getFeatureKode(feature));
 
         if (!row) {
-            return `
-                <div style="min-width:220px">
-                    <div style="font-size:14px;font-weight:700;color:#1a2535;margin-bottom:4px">${nama}</div>
-                    <div style="font-size:11px;color:#6b7a91;margin-bottom:10px">Kode ${kode}</div>
-                    <div style="font-size:12px;color:#6b7a91">Data tidak tersedia</div>
-                </div>
-            `;
+            return `<div style="min-width:220px">
+                <div style="font-size:14px;font-weight:700;color:#1a2535;margin-bottom:4px">${nama}</div>
+                <div style="font-size:11px;color:#6b7a91;margin-bottom:10px">Kode ${kode}</div>
+                <div style="font-size:12px;color:#6b7a91">Data tidak tersedia</div>
+            </div>`;
         }
 
         const total = getTotal(row);
         const mandiriPct = getMandiriPercent(row);
 
-        return `
-            <div style="min-width:240px">
-                <div style="font-size:14px;font-weight:700;color:#1a2535;margin-bottom:4px">${nama}</div>
-                <div style="font-size:11px;color:#6b7a91;margin-bottom:10px">Kode ${kode} · Tahun ${year}</div>
-                <div style="display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:12px;color:#1a2535">
-                    <span>Sangat Tertinggal</span><strong>${toNumber(row.sangat_tertinggal)}</strong>
-                    <span>Tertinggal</span><strong>${toNumber(row.tertinggal)}</strong>
-                    <span>Berkembang</span><strong>${toNumber(row.berkembang)}</strong>
-                    <span>Maju</span><strong>${toNumber(row.maju)}</strong>
-                    <span>Mandiri</span><strong style="color:#1D9E75">${toNumber(row.mandiri)}</strong>
-                    <span>Total</span><strong>${total}</strong>
-                </div>
-                <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e5e9f0;font-size:12px;color:#0F6E56;font-weight:700">
-                    Mandiri: ${mandiriPct}%
-                </div>
+        return `<div style="min-width:240px">
+            <div style="font-size:14px;font-weight:700;color:#1a2535;margin-bottom:4px">${nama}</div>
+            <div style="font-size:11px;color:#6b7a91;margin-bottom:10px">Kode ${kode} · Tahun ${year}</div>
+            <div style="display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:12px;color:#1a2535">
+                <span>Sangat Tertinggal</span><strong>${toNumber(row.sangat_tertinggal)}</strong>
+                <span>Tertinggal</span><strong>${toNumber(row.tertinggal)}</strong>
+                <span>Berkembang</span><strong>${toNumber(row.berkembang)}</strong>
+                <span>Maju</span><strong>${toNumber(row.maju)}</strong>
+                <span>Mandiri</span><strong style="color:#1D9E75">${toNumber(row.mandiri)}</strong>
+                <span>Total</span><strong>${total}</strong>
             </div>
-        `;
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e5e9f0;font-size:12px;color:#0F6E56;font-weight:700">
+                Mandiri: ${mandiriPct}%
+            </div>
+        </div>`;
     }
 
     function highlightFeature(layer, keepSelected = false) {
-        layer.setStyle({
-            weight: 3,
-            color: '#1a2535',
-            dashArray: '',
-            fillOpacity: keepSelected ? 0.94 : 0.9
-        });
-
-        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-        }
+        layer.setStyle({ weight: 3, color: '#1a2535', dashArray: '', fillOpacity: keepSelected ? 0.94 : 0.9 });
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) layer.bringToFront();
     }
 
-    function resetFeatureStyle(layer) {
-        if (geojsonLayer) {
-            geojsonLayer.resetStyle(layer);
-        }
-    }
+    function resetFeatureStyle(layer) { if (geojsonLayer) geojsonLayer.resetStyle(layer); }
 
     function clearSelection() {
-        if (!selectedLayer) {
-            return;
-        }
+        if (!selectedLayer) return;
         resetFeatureStyle(selectedLayer);
         selectedLayer.closePopup();
         selectedLayer = null;
@@ -730,69 +785,44 @@
 
     function onMouseOver(e) {
         const layer = e.target;
-        if (selectedLayer === layer) {
-            return;
-        }
+        if (selectedLayer === layer) return;
         highlightFeature(layer);
         layer.openPopup();
     }
 
     function onMouseOut(e) {
         const layer = e.target;
-        if (selectedLayer === layer) {
-            return;
-        }
+        if (selectedLayer === layer) return;
         resetFeatureStyle(layer);
         layer.closePopup();
     }
 
     function onFeatureClick(e) {
         const layer = e.target;
-
-        if (selectedLayer === layer) {
-            clearSelection();
-            return;
-        }
-
+        if (selectedLayer === layer) { clearSelection(); return; }
         clearSelection();
         selectedLayer = layer;
         highlightFeature(layer, true);
         layer.openPopup();
-
         const targetBounds = layer.getBounds();
         if (targetBounds.isValid()) {
-            map.fitBounds(targetBounds.pad(0.18), {
-                maxZoom: JATIM_LOCK_ZOOM + 0.7,
-                animate: true
-            });
+            map.fitBounds(targetBounds.pad(0.18), { maxZoom: JATIM_LOCK_ZOOM + 0.7, animate: true });
         }
     }
 
     function onEachFeature(feature, layer) {
         layer.bindPopup(buildPopupContent(feature), {
-            closeButton: false,
-            autoPan: true,
-            offset: L.point(0, -6),
-            className: 'dm-map-popup'
+            closeButton: false, autoPan: true,
+            offset: L.point(0, -6), className: 'dm-map-popup'
         });
-
         layer.bindTooltip(getFeatureName(feature), {
-            sticky: true,
-            direction: 'top',
-            opacity: 0.95,
-            className: 'dm-map-tooltip'
+            sticky: true, direction: 'top', opacity: 0.95, className: 'dm-map-tooltip'
         });
-
-        layer.on({
-            mouseover: onMouseOver,
-            mouseout: onMouseOut,
-            click: onFeatureClick
-        });
+        layer.on({ mouseover: onMouseOver, mouseout: onMouseOut, click: onFeatureClick });
     }
 
     function addLegend() {
         const legend = L.control({ position: 'bottomright' });
-
         legend.onAdd = function() {
             const div = L.DomUtil.create('div', 'dm-map-legend');
             div.innerHTML = `
@@ -803,12 +833,9 @@
                     <div><span style="display:inline-block;width:12px;height:12px;background:#EF9F27;border-radius:3px;margin-right:8px;vertical-align:middle"></span>40% - 59%</div>
                     <div><span style="display:inline-block;width:12px;height:12px;background:#888780;border-radius:3px;margin-right:8px;vertical-align:middle"></span>20% - 39%</div>
                     <div><span style="display:inline-block;width:12px;height:12px;background:#A32D2D;border-radius:3px;margin-right:8px;vertical-align:middle"></span>0% - 19%</div>
-                </div>
-            `;
-
+                </div>`;
             return div;
         };
-
         legend.addTo(map);
     }
 
@@ -818,37 +845,23 @@
             fetch(`/api/statistik?tahun=${tahun}`)
         ]);
 
-        if (!geojsonResponse.ok) {
-            throw new Error('Gagal memuat GeoJSON peta');
-        }
+        if (!geojsonResponse.ok) throw new Error('Gagal memuat GeoJSON peta');
+        if (!statistikResponse.ok) throw new Error('Gagal memuat statistik peta');
 
-        if (!statistikResponse.ok) {
-            throw new Error('Gagal memuat statistik peta');
-        }
-
-        const geojson = await geojsonResponse.json();
+        const geojson   = await geojsonResponse.json();
         const statistik = await statistikResponse.json();
 
         statistikData = new Map(
             statistik.map(row => [normalizeKode(row.kode_kabupaten_kota), row])
         );
 
-        if (geojsonLayer) {
-            map.removeLayer(geojsonLayer);
-        }
+        if (geojsonLayer) map.removeLayer(geojsonLayer);
 
-        geojsonLayer = L.geoJSON(geojson, {
-            style: style,
-            onEachFeature: onEachFeature
-        }).addTo(map);
+        geojsonLayer = L.geoJSON(geojson, { style, onEachFeature }).addTo(map);
 
-        // Fit ke geometri aktual agar framing peta konsisten dengan data terbaru.
         const geoBounds = geojsonLayer.getBounds();
         if (geoBounds.isValid()) {
-            map.fitBounds(geoBounds.pad(0.05), {
-                maxZoom: JATIM_LOCK_ZOOM,
-                animate: false
-            });
+            map.fitBounds(geoBounds.pad(0.05), { maxZoom: JATIM_LOCK_ZOOM, animate: false });
         }
 
         map.setMaxBounds(JATIM_LOCK_BOUNDS);
@@ -870,10 +883,10 @@
 
     loadMap(year).catch(error => {
         console.error(error);
-        loadingInfo.style.background = 'rgba(255, 245, 245, 0.97)';
-        loadingInfo.style.border = '1px solid #fecaca';
-        loadingInfo.style.color = '#b91c1c';
-        loadingInfo.textContent = 'Gagal memuat peta. Cek endpoint /api/geojson dan /api/statistik.';
+        loadingInfo.style.background = 'rgba(255,245,245,0.97)';
+        loadingInfo.style.border     = '1px solid #fecaca';
+        loadingInfo.style.color      = '#b91c1c';
+        loadingInfo.textContent      = 'Gagal memuat peta. Cek endpoint /api/geojson dan /api/statistik.';
     });
 })();
 </script>

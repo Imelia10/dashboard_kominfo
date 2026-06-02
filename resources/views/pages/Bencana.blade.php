@@ -49,11 +49,29 @@
 .map-row { display:grid; grid-template-columns:1fr 260px; gap:16px; margin-bottom:20px; }
 @media(max-width:960px){ .map-row{ grid-template-columns:1fr; } }
 
-.card { background:#fff; border:1px solid var(--border-lo); border-radius:var(--radius); padding:18px 20px; }
+.card { background:#fff; border:1px solid var(--border-lo); border-radius:var(--radius); padding:18px 20px; position:relative; }
 .card-hd { font-size:13.5px; font-weight:700; color:var(--text-1); margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
 .card-hd small { font-size:11px; color:var(--text-4); font-weight:500; }
 
-#map { height:380px; border-radius:4px; border:1px solid var(--border-lo); }
+#map { height:380px; border-radius:4px; border:1px solid var(--border-lo); position:relative; }
+
+/* Leaflet tooltip kustom */
+.bencana-tooltip .leaflet-tooltip {
+  background: #fff;
+  border: 1px solid var(--border-lo);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  padding: 10px 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  pointer-events: none;
+}
+.leaflet-tooltip.bencana-tooltip {
+  background: #fff;
+  border: 1px solid #c1c7d1;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  padding: 10px 13px;
+}
 
 /* ── Filter Side ── */
 .filter-side { display:flex; flex-direction:column; gap:14px; }
@@ -244,11 +262,11 @@
 
         <div class="layer-section">
           <h5>Visual Layer</h5>
-          <div class="layer-row"><span>Intensity (Events)</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-          <div class="layer-row"><span>Severity (Damage)</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+          <div class="layer-row"><span>Intensity (Events)</span><div id="togIntensity" class="toggle on"></div></div>
+          <div class="layer-row"><span>Severity (Damage)</span><div id="togSeverity" class="toggle"></div></div>
         </div>
         <div class="legend-section">
-          <h5>Legend Intensity</h5>
+          <h5 id="legendTitle">Legend Intensity</h5>
           <div class="legend-bar"></div>
           <div class="legend-labels"><span>Low</span><span>High</span></div>
         </div>
@@ -329,14 +347,15 @@
     <div class="card">
       <div class="card-hd">
         Top 3 Kabupaten/Kota Terparah
-        <small>Severity = (Rmh Rusak + Korban) / Kejadian × 100%</small>
+        <small>Peringkat diurutkan berdasarkan rata-rata jumlah kerusakan & korban per 1 kali kejadian bencana.</small>
       </div>
       <div class="top3-list">
         @forelse($top3Parah as $idx => $kab)
           @php
             $rankColors = ['#b6171e','#d97706','#059669'];
             $rc = $rankColors[$idx] ?? '#9aa0ab';
-            $sevPct = min(100, round($kab['severity'] * 10));
+            // Rasio dampak asli per kejadian
+            $impactRatio = round($kab['severity_raw']);
           @endphp
           <div class="top3-item">
             <div class="top3-rank r{{ $idx+1 }}">#{{ $idx+1 }}</div>
@@ -349,8 +368,8 @@
               </div>
             </div>
             <div class="top3-sev" style="color:{{ $rc }}">
-              {{ $sevPct }}%
-              <span class="sev-unit">Severity</span>
+              ~{{ number_format($impactRatio) }}
+              <span class="sev-unit">Dampak / Kejadian</span>
             </div>
           </div>
         @empty
@@ -615,27 +634,168 @@ function renderPage(){
 function resetTblFilter(){ document.getElementById('tblSort').value='kejadian'; document.getElementById('perPage').value='10'; renderTable(); }
 renderTable();
 
-// ── 6. LEAFLET MAP (semua tahun, tidak difilter) ──────────────
+// ── 6. LEAFLET MAP — Intensity & Severity layer ───────────────
 (function(){
   if(typeof L==='undefined') return;
-  const map=L.map('map').setView([-7.5,112.5],8);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:13}).addTo(map);
-  fetch('/api/geojson')
-    .then(r=>r.json())
-    .then(geo=>{
-      const vals=geo.features.map(f=>f.properties.total_kejadian||0);
-      const maxV=Math.max(1,...vals);
-      const getColor=v=>{const t=v/maxV;return t>.75?'#003963':t>.5?'#005088':t>.25?'#3b82f6':t>0?'#bfdbfe':'#f1f5f9';};
-      L.geoJSON(geo,{
-        style:f=>({fillColor:getColor(f.properties.total_kejadian||0),fillOpacity:.75,color:'#fff',weight:1}),
-        onEachFeature:(f,layer)=>{
-          const p=f.properties;
-          layer.bindTooltip(`<b>${p.NAMOBJ||p.nama||'—'}</b><br>Kejadian: ${p.total_kejadian||0}<br>Korban: ${p.total_korban||0}<br>Rmh Rusak: ${p.rmh_rusak||0}`,{sticky:true});
-        }
-      }).addTo(map);
+
+  // Loading overlay — dibuat SEBELUM L.map() agar tidak corrupt DOM Leaflet
+  // Letakkan di parent .card, bukan di #map (innerHTML += pada #map akan hancurkan Leaflet)
+  const mapContainer = document.getElementById('map');
+  const mapParent    = mapContainer.parentElement;
+  const loadingEl    = document.createElement('div');
+  loadingEl.id = 'mapLoading';
+  loadingEl.style.cssText = 'position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:1000;background:rgba(255,255,255,.92);padding:8px 18px;border-radius:20px;font-size:12px;color:#005088;font-weight:600;pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.1)';
+  loadingEl.textContent   = 'Memuat data peta…';
+  mapParent.style.position = 'relative';
+  mapParent.appendChild(loadingEl);
+
+  const map = L.map('map').setView([-7.5, 112.5], 8);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap', maxZoom:13
+  }).addTo(map);
+
+  // ── State ────────────────────────────────────────────────────
+  let geoLayer   = null;
+  let geoData    = null;   // cache GeoJSON hasil fetch
+  let activeMode = 'intensity'; // 'intensity' | 'severity'
+
+  // Toggle state refs
+  const togIntensity = document.getElementById('togIntensity');
+  const togSeverity  = document.getElementById('togSeverity');
+
+  // ── Warna gradient biru (sesuai legend sidebar) ──────────────
+  function intensityColor(v, maxV){
+    if(!v || v === 0) return '#f1f5f9';
+    const t = Math.min(v / maxV, 1);
+    if(t > 0.80) return '#003963';
+    if(t > 0.60) return '#005088';
+    if(t > 0.40) return '#2b6cb0';
+    if(t > 0.20) return '#63b3ed';
+    return '#bee3f8';
+  }
+
+  function severityColor(v){
+    // v = 0–10 (normalized)
+    if(!v || v === 0) return '#f1f5f9';
+    if(v > 8) return '#003963';
+    if(v > 6) return '#005088';
+    if(v > 4) return '#2b6cb0';
+    if(v > 2) return '#63b3ed';
+    return '#bee3f8';
+  }
+
+  // ── Render layer ─────────────────────────────────────────────
+  function renderLayer(geo){
+    if(geoLayer) map.removeLayer(geoLayer);
+
+    const vals = geo.features.map(f =>
+      activeMode === 'intensity'
+        ? (f.properties.total_kejadian || 0)
+        : (f.properties.severity || 0)
+    );
+    const maxV = Math.max(1, ...vals);
+
+    geoLayer = L.geoJSON(geo, {
+      style: function(feature){
+        const p = feature.properties;
+        const v = activeMode === 'intensity'
+          ? (p.total_kejadian || 0)
+          : (p.severity || 0);
+        const fill = activeMode === 'intensity'
+          ? intensityColor(v, maxV)
+          : severityColor(v);
+        return {
+          fillColor:   fill,
+          fillOpacity: 0.80,
+          color:       '#ffffff',
+          weight:      1.2
+        };
+      },
+      onEachFeature: function(feature, layer){
+        const p = feature.properties;
+        const nama = p.nama || p.NAME_2 || '—';
+
+        layer.bindTooltip(
+          `<div style="font-family:'Plus Jakarta Sans',sans-serif;min-width:160px">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px;color:#003963">${nama}</div>
+            <div style="font-size:12px;color:#414750;line-height:1.8">
+              📊 Kejadian: <strong>${(p.total_kejadian||0).toLocaleString('id-ID')}</strong><br>
+              👥 Korban: <strong>${(p.total_korban||0).toLocaleString('id-ID')}</strong><br>
+              🏠 Rmh Rusak: <strong>${(p.total_rmh_rusak||0).toLocaleString('id-ID')}</strong><br>
+              ⚠️ Severity: <strong>${(p.severity||0).toFixed(1)} / 10</strong>
+            </div>
+          </div>`,
+          {sticky:true, className:'bencana-tooltip', direction:'top'}
+        );
+
+        layer.on('mouseover', function(){
+          this.setStyle({ weight:2.5, fillOpacity:0.95 });
+        });
+        layer.on('mouseout', function(){
+          geoLayer.resetStyle(this);
+        });
+      }
+    }).addTo(map);
+  }
+
+  // ── Update legend labels ──────────────────────────────────────
+  function updateLegend(){
+    const el = document.getElementById('legendTitle');
+    if(el) el.textContent = activeMode === 'intensity' ? 'Legend Intensity' : 'Legend Severity';
+  }
+
+  // ── Toggle handler ────────────────────────────────────────────
+  function setMode(mode){
+    activeMode = mode;
+
+    if(mode === 'intensity'){
+      togIntensity.classList.add('on');
+      togSeverity.classList.remove('on');
+    } else {
+      togSeverity.classList.add('on');
+      togIntensity.classList.remove('on');
+    }
+    updateLegend();
+    if(geoData) renderLayer(geoData);
+  }
+
+  if(togIntensity){
+    togIntensity.addEventListener('click', function(e){
+      e.stopPropagation();
+      setMode('intensity');
+    });
+  }
+  if(togSeverity){
+    togSeverity.addEventListener('click', function(e){
+      e.stopPropagation();
+      setMode('severity');
+    });
+  }
+
+  // ── Fetch API + render ────────────────────────────────────────
+  fetch('/api/bencana/map')
+    .then(r => {
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
     })
-    .catch(()=>{
-      document.getElementById('map').innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#9aa0ab;font-size:13px;flex-direction:column;gap:6px"><span>Map Visualization Placeholder</span><small>Letakkan GeoJSON di storage/app/geojson/jatim.geojson</small></div>';
+    .then(geo => {
+      geoData = geo;
+      const loader = document.getElementById('mapLoading');
+      if(loader) loader.remove();
+      renderLayer(geo);
+    })
+    .catch(err => {
+      const loader = document.getElementById('mapLoading');
+      if(loader) loader.remove();
+      console.error('Map error:', err);
+      // Error notice — pakai appendChild, BUKAN innerHTML +=
+      if(!document.getElementById('map-err')){
+        const errEl = document.createElement('div');
+        errEl.id = 'map-err';
+        errEl.style.cssText = 'position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:1000;background:rgba(255,255,255,.95);padding:8px 16px;border-radius:20px;font-size:12px;color:#b6171e;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.1)';
+        errEl.textContent = '⚠ Gagal memuat data — cek endpoint /api/bencana/map';
+        mapParent.appendChild(errEl);
+      }
     });
 })();
 </script>

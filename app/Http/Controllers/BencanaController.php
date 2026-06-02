@@ -195,11 +195,18 @@ class BencanaController extends Controller
         $minRaw = $withRaw->min('sev_raw');
 
         return $withRaw->map(function ($r) use ($maxRaw, $minRaw) {
+
+            // Normalisasi untuk ranking/internal logic
             $norm = ($maxRaw - $minRaw) > 0
                 ? ($r['sev_raw'] - $minRaw) / ($maxRaw - $minRaw)
                 : 0;
+
+            // Tetap dipakai untuk sorting Top 3
             $r['severity'] = round($norm * 10, 2);
-            unset($r['sev_raw']);
+
+            // Tambahan nilai asli dampak per kejadian
+            $r['severity_raw'] = round($r['sev_raw'], 1);
+
             return $r;
         });
     }

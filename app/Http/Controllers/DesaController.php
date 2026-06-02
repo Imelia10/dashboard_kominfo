@@ -58,21 +58,55 @@ class DesaController extends Controller
             ->get()
             ->filter(fn($r) => ($r->mandiri + $r->maju + $r->berkembang) > 0);
 
-        // ── 5. Growth per kabupaten ───────────────────────────────
+        // ── 5. Growth + naik status per kabupaten ────────────────
+        // Ambil semua kolom tahun sebelumnya (bukan hanya mandiri)
         $prevYearData = $this->db()
             ->where('tahun', $selectedYear - 1)
             ->where('kode_kabupaten_kota', '!=', '0000')
-            ->select('nama_kabupaten_kota', 'mandiri as mandiri_prev')
+            ->select(
+                'nama_kabupaten_kota',
+                'mandiri',
+                'maju',
+                'berkembang',
+                'tertinggal',
+                'sangat_tertinggal'
+            )
             ->get()
             ->keyBy('nama_kabupaten_kota');
 
         $kabWithGrowth = $allKab->map(function ($row) use ($prevYearData) {
             $prev        = $prevYearData->get($row->nama_kabupaten_kota);
-            $prevMandiri = $prev ? $prev->mandiri_prev : 0;
+            $prevMandiri = $prev ? $prev->mandiri : 0;
 
             $growth = $prevMandiri > 0
                 ? round((($row->mandiri - $prevMandiri) / $prevMandiri) * 100, 1)
                 : ($row->mandiri > 0 ? 100 : 0);
+
+            // ── Hitung desa naik status ───────────────────────────
+            // Menggunakan selisih positif antar kolom sebagai estimasi
+            // perpindahan status (karena data adalah aggregate per kab)
+        $naikDetail = [];
+
+            if ($prev) {
+                $deltas = [
+                    'sangat_tertinggal' => ($row->sangat_tertinggal ?? 0) - ($prev->sangat_tertinggal ?? 0),
+                    'tertinggal'        => ($row->tertinggal        ?? 0) - ($prev->tertinggal        ?? 0),
+                    'berkembang'        => ($row->berkembang        ?? 0) - ($prev->berkembang        ?? 0),
+                    'maju'              => ($row->maju              ?? 0) - ($prev->maju              ?? 0),
+                    'mandiri'           => ($row->mandiri           ?? 0) - ($prev->mandiri           ?? 0),
+                ];
+
+                $levels = ['sangat_tertinggal' => 'Sangat Tertinggal', 'tertinggal' => 'Tertinggal',
+                        'berkembang' => 'Berkembang', 'maju' => 'Maju', 'mandiri' => 'Mandiri'];
+
+                foreach ($levels as $col => $label) {
+                    if ($deltas[$col] > 0) {
+                        $naikDetail[] = ['jumlah' => $deltas[$col], 'label' => $label, 'arah' => 'naik'];
+                    } elseif ($deltas[$col] < 0) {
+                        $naikDetail[] = ['jumlah' => abs($deltas[$col]), 'label' => $label, 'arah' => 'turun'];
+                    }
+                }
+            }
 
             return [
                 'name'         => $row->nama_kabupaten_kota,
@@ -82,6 +116,7 @@ class DesaController extends Controller
                 'berkembang'   => $row->berkembang,
                 'growth'       => $growth,
                 'growth_label' => ($growth >= 0 ? '+' : '') . $growth . '%',
+                'naik_detail'  => $naikDetail,
             ];
         })->values();
 
@@ -100,11 +135,11 @@ class DesaController extends Controller
         $idmProportions = [];
         if ($grandTotal > 0) {
             $palette = [
-                ['label' => 'Mandiri',          'val' => $totMandiri,      'color' => '#1D9E75'],
-                ['label' => 'Maju',             'val' => $totMaju,         'color' => '#378ADD'],
-                ['label' => 'Berkembang',       'val' => $totBerkembang,   'color' => '#EF9F27'],
-                ['label' => 'Tertinggal',       'val' => $totTertinggal,   'color' => '#E24B4A'],
-                ['label' => 'Sangat Tertinggal','val' => $totSgTertinggal, 'color' => '#A32D2D'],
+                ['label' => 'Mandiri',           'val' => $totMandiri,      'color' => '#1D9E75'],
+                ['label' => 'Maju',              'val' => $totMaju,         'color' => '#378ADD'],
+                ['label' => 'Berkembang',        'val' => $totBerkembang,   'color' => '#EF9F27'],
+                ['label' => 'Tertinggal',        'val' => $totTertinggal,   'color' => '#E24B4A'],
+                ['label' => 'Sangat Tertinggal', 'val' => $totSgTertinggal, 'color' => '#A32D2D'],
             ];
             foreach ($palette as $p) {
                 if ($p['val'] > 0) {
@@ -136,12 +171,12 @@ class DesaController extends Controller
             ->get();
 
         $trendData = [
-            'years'            => $trendRaw->pluck('tahun')->toArray(),
-            'mandiri'          => $trendRaw->pluck('mandiri')->map(fn($v) => (int)$v)->toArray(),
-            'maju'             => $trendRaw->pluck('maju')->map(fn($v) => (int)$v)->toArray(),
-            'berkembang'       => $trendRaw->pluck('berkembang')->map(fn($v) => (int)$v)->toArray(),
-            'tertinggal'       => $trendRaw->pluck('tertinggal')->map(fn($v) => (int)$v)->toArray(),
-            'sangat_tertinggal'=> $trendRaw->pluck('sangat_tertinggal')->map(fn($v) => (int)$v)->toArray(),
+            'years'             => $trendRaw->pluck('tahun')->toArray(),
+            'mandiri'           => $trendRaw->pluck('mandiri')->map(fn($v) => (int)$v)->toArray(),
+            'maju'              => $trendRaw->pluck('maju')->map(fn($v) => (int)$v)->toArray(),
+            'berkembang'        => $trendRaw->pluck('berkembang')->map(fn($v) => (int)$v)->toArray(),
+            'tertinggal'        => $trendRaw->pluck('tertinggal')->map(fn($v) => (int)$v)->toArray(),
+            'sangat_tertinggal' => $trendRaw->pluck('sangat_tertinggal')->map(fn($v) => (int)$v)->toArray(),
         ];
 
         // ── 8. Bakorwil ───────────────────────────────────────────
@@ -172,11 +207,11 @@ class DesaController extends Controller
                 }
             }
             $bakorwil[] = [
-                'name'        => $bName,
-                'mandiri'     => $mandiri,
-                'maju'        => $maju,
-                'berkembang'  => $berkembang,
-                'topPerformer'=> false,
+                'name'         => $bName,
+                'mandiri'      => $mandiri,
+                'maju'         => $maju,
+                'berkembang'   => $berkembang,
+                'topPerformer' => false,
             ];
         }
 
@@ -197,19 +232,19 @@ class DesaController extends Controller
 
         // ── Kemas data ────────────────────────────────────────────
         $data = [
-            'year'           => $selectedYear,
-            'availableYears' => $availableYears,
+            'year'            => $selectedYear,
+            'availableYears'  => $availableYears,
             'totalDesaMandiri'=> number_format($totalMandiri),
-            'growthRate'     => $growthLabel,
-            'growthRaw'      => $growthRate,
-            'zeroTertinggal' => $zeroTertinggal,
-            'topKabupaten'   => $topKabupaten,
-            'bottomKabupaten'=> $bottomKabupaten,
-            'idmProportions' => $idmProportions,
-            'trendData'      => $trendData,
-            'bakorwil'       => $bakorwil,
-            'grandTotal'     => number_format($grandTotal),
-            'mandiriPercent' => $grandTotal > 0
+            'growthRate'      => $growthLabel,
+            'growthRaw'       => $growthRate,
+            'zeroTertinggal'  => $zeroTertinggal,
+            'topKabupaten'    => $topKabupaten,
+            'bottomKabupaten' => $bottomKabupaten,
+            'idmProportions'  => $idmProportions,
+            'trendData'       => $trendData,
+            'bakorwil'        => $bakorwil,
+            'grandTotal'      => number_format($grandTotal),
+            'mandiriPercent'  => $grandTotal > 0
                 ? round($totMandiri / $grandTotal * 100)
                 : 0,
         ];

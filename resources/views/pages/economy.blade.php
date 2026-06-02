@@ -34,6 +34,16 @@
 .ringkasan-label-ang  { background:rgba(146,64,14,.08); color:#92400e; }
 .ringkasan-divider { flex:1; height:1px; background:#e2e8f0; margin-left:8px; }
 
+/* icon wrapper supaya SVG inherit warna dan tidak ter-clip */
+.rl-icon {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:20px; height:20px; flex-shrink:0; overflow:visible;
+}
+.rl-icon svg {
+  display:block; overflow:visible;
+  width:16px; height:16px;
+}
+
 /* ─── KPI ROW ────────────────────────────────────────────────── */
 .kpi-row { display:flex; gap:14px; margin-bottom:24px; flex-wrap:wrap; }
 .kpi-group {
@@ -51,7 +61,7 @@
   min-width:140px;
 }
 .kpi2-icon-row { display:flex; align-items:center; gap:8px; }
-.kpi2-icon { width:18px; height:14px; border-radius:3px; flex-shrink:0; }
+.kpi2-icon-row svg { flex-shrink:0; }
 .kpi2-label { font-size:9.5px; font-weight:800; letter-spacing:.7px; text-transform:uppercase; color:#64748b; line-height:1.3; }
 .kpi2-value { font-family:'Plus Jakarta Sans',sans-serif; font-size:24px; font-weight:900; color:#0f172a; line-height:1.1; }
 .kpi2-sub   { font-size:11px; font-weight:700; }
@@ -63,16 +73,10 @@
 
 /* KPM card borders */
 .kpi-card2.kpm { border-color:rgba(14,116,144,.25); }
-.kpi2-icon.kpm { background:#0284c7; }
 /* Anggaran card borders */
 .kpi-card2.ang { border-color:rgba(146,64,14,.25); }
-.kpi2-icon.ang { background:#92400e; }
 
 /* ─── SECTION HEADER ROW ─────────────────────────────────────── */
-.sec-header-row { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
-.sec-header-icon { width:14px; height:14px; border-radius:3px; }
-.sec-header-icon.blue  { background:#0284c7; }
-.sec-header-icon.brown { background:#92400e; }
 .sec-title2 { font-family:'Plus Jakarta Sans',sans-serif; font-size:15px; font-weight:700; color:#0f172a; }
 
 /* ─── PERBANDINGAN CHART ─────────────────────────────────────── */
@@ -84,16 +88,25 @@
   padding:24px 28px 28px; box-shadow:0 1px 3px rgba(0,0,0,.05);
 }
 .perb-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:14.5px; font-weight:700; color:#0f172a; margin-bottom:20px; }
+.perb-subtitle { font-size:11.5px; color:#94a3b8; font-weight:500; margin-bottom:20px; }
 
 .perb-item { margin-bottom:18px; }
 .perb-item:last-child { margin-bottom:0; }
-.perb-item-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.perb-item-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
 .perb-name   { font-size:13px; font-weight:600; color:#0f172a; }
-.perb-values { font-size:12px; color:#64748b; font-weight:400; }
-.perb-bar-track { height:8px; background:#f1f5f9; border-radius:6px; overflow:hidden; }
-.perb-bar-fill  { height:100%; border-radius:6px; transition:width .7s ease; }
+.perb-values { font-size:11.5px; color:#64748b; font-weight:400; }
+.perb-pct-badge { font-size:12px; font-weight:800; }
+.perb-pct-badge.blue  { color:#0284c7; }
+.perb-pct-badge.brown { color:#92400e; }
+
+/* Double bar: rencana (bg) + realisasi (fill) */
+.perb-bar-outer { position:relative; height:10px; background:#e0f2fe; border-radius:6px; overflow:hidden; }
+.perb-bar-outer.ang { background:#fef3c7; }
+.perb-bar-fill  { height:100%; border-radius:6px; transition:width .7s ease; position:relative; }
 .perb-bar-fill.blue  { background:#0284c7; }
-.perb-bar-fill.brown { background:#92400e; }
+.perb-bar-fill.brown { background:#b45309; }
+.perb-bar-meta { display:flex; justify-content:space-between; margin-top:3px; }
+.perb-bar-meta span { font-size:10px; color:#94a3b8; font-weight:500; }
 
 /* ─── DATA DETAIL TABLE ──────────────────────────────────────── */
 .tbl-card {
@@ -117,9 +130,6 @@
 
 .rows-sel { display:flex; align-items:center; gap:5px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:9px; padding:6px 10px; font-size:12px; font-weight:600; color:#64748b; }
 .rows-sel select { border:none; outline:none; background:transparent; font-size:12px; font-weight:700; color:#0284c7; cursor:pointer; font-family:inherit; }
-
-.btn-csv { display:inline-flex; align-items:center; gap:5px; background:#0284c7; color:#fff; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; transition:background .2s; }
-.btn-csv:hover { background:#0369a1; }
 
 /* Table */
 .tbl-wrap { overflow-x:auto; }
@@ -191,9 +201,12 @@
   </div>
   <form method="GET" action="{{ route('economy') }}">
     <div class="year-sel">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
-        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-        <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      {{-- Icon Kalender --}}
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
       </svg>
       <span class="year-sel-label">Tahun</span>
       <select name="tahun" onchange="this.form.submit()">
@@ -201,7 +214,10 @@
           <option value="{{ $yr }}" {{ $yr==$selectedYear?'selected':'' }}>{{ $yr }}</option>
         @endforeach
       </select>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      {{-- Icon Chevron --}}
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
     </div>
   </form>
 </div>
@@ -213,34 +229,59 @@
   <div class="kpi-group">
     <div style="display:flex;align-items:center;gap:8px">
       <div class="ringkasan-label ringkasan-label-kpm">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        <span class="rl-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0e7490" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </span>
         Ringkasan KPM
       </div>
       <div class="ringkasan-divider"></div>
     </div>
     <div class="kpi-group-cards">
+
+      {{-- Card: Total Rencana KPM --}}
       <div class="kpi-card2 kpm">
         <div class="kpi2-icon-row">
-          <div class="kpi2-icon kpm"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
           <div class="kpi2-label">TOTAL RENCANA<br>KPM</div>
         </div>
         <div class="kpi2-value">{{ number_format($totalRencanaKpm) }}</div>
         <div class="kpi2-sub blue">Jiwa Terdata</div>
       </div>
+
+      {{-- Card: Total Realisasi KPM --}}
       <div class="kpi-card2 kpm">
         <div class="kpi2-icon-row">
-          <div class="kpi2-icon kpm" style="height:16px"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
           <div class="kpi2-label">TOTAL REALISASI<br>KPM</div>
         </div>
         <div class="kpi2-value">{{ number_format($totalRealisasiKpm) }}</div>
         @php $gapKpmProv = $totalRencanaKpm - $totalRealisasiKpm; @endphp
         <div class="kpi2-sub {{ $gapKpmProv>0?'red':'blue' }}">
-          Gap : {{ $gapKpmProv>0 ? '-'.number_format($gapKpmProv) : '+'.number_format(abs($gapKpmProv)) }}
+          Gap : {{ number_format(abs($gapKpmProv)) }}
         </div>
       </div>
+
+      {{-- Card: % Realisasi KPM --}}
       <div class="kpi-card2 kpm">
         <div class="kpi2-icon-row">
-          <div class="kpi2-icon kpm" style="width:14px;height:14px"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <line x1="19" y1="5" x2="5" y2="19"/>
+            <circle cx="6.5" cy="6.5" r="2.5"/>
+            <circle cx="17.5" cy="17.5" r="2.5"/>
+          </svg>
           <div class="kpi2-label">% REALISASI KPM</div>
         </div>
         <div class="kpi2-value">{{ $pctKpm }}%</div>
@@ -248,6 +289,7 @@
           <div class="kpi2-progress-track" style="width:{{ min($pctKpm,100) }}%;background:#0284c7"></div>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -255,34 +297,53 @@
   <div class="kpi-group">
     <div style="display:flex;align-items:center;gap:8px">
       <div class="ringkasan-label ringkasan-label-ang">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        <span class="rl-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="5" width="20" height="14" rx="2" ry="2"/>
+            <line x1="2" y1="10" x2="22" y2="10"/>
+          </svg>
+        </span>
         Ringkasan Anggaran
       </div>
       <div class="ringkasan-divider"></div>
     </div>
     <div class="kpi-group-cards">
+
+      {{-- Card: Total Rencana Anggaran --}}
       <div class="kpi-card2 ang">
         <div class="kpi2-icon-row">
-          <div class="kpi2-icon ang" style="height:12px"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="5" width="20" height="14" rx="2" ry="2"/>
+            <line x1="2" y1="10" x2="22" y2="10"/>
+          </svg>
           <div class="kpi2-label">TOTAL RENCANA<br>ANGGARAN</div>
         </div>
         <div class="kpi2-value">{{ number_format($totalRencanaAng/1e12,2) }}T</div>
         <div class="kpi2-sub brown">Rupiah</div>
       </div>
+
+      {{-- Card: Total Realisasi Anggaran --}}
       <div class="kpi-card2 ang">
         <div class="kpi2-icon-row">
-          <div class="kpi2-icon ang" style="width:16px;height:12px"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
           <div class="kpi2-label">TOTAL REALISASI<br>ANGGARAN</div>
         </div>
         <div class="kpi2-value">{{ number_format($totalRealisasiAng/1e12,2) }}T</div>
         @php $gapAngProv = $totalRencanaAng - $totalRealisasiAng; @endphp
         <div class="kpi2-sub {{ $gapAngProv>0?'red':'brown' }}">
-          Gap : {{ $gapAngProv>0 ? '-'.number_format($gapAngProv/1e12,2).'T' : '+'.number_format(abs($gapAngProv)/1e12,2).'T' }}
+          Gap : {{ number_format(abs($gapAngProv)/1e12,2) }}T
         </div>
       </div>
+
+      {{-- Card: % Serapan Anggaran --}}
       <div class="kpi-card2 ang">
         <div class="kpi2-icon-row">
-          <div class="kpi2-icon ang" style="width:16px;height:10px"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
           <div class="kpi2-label">% SERAPAN<br>ANGGARAN</div>
         </div>
         <div class="kpi2-value">{{ $pctAng }}%</div>
@@ -290,34 +351,52 @@
           <div class="kpi2-progress-track" style="width:{{ min($pctAng,100) }}%;background:#92400e"></div>
         </div>
       </div>
+
     </div>
   </div>
 
 </div>{{-- /kpi-row --}}
 
-{{-- ── PERBANDINGAN CHARTS ─────────────────────────────────────── --}}
+{{-- ── PERBANDINGAN CHARTS (Top 5 by % Realisasi) ─────────────── --}}
 @php
-  $maxRencanaKpm = collect($chartData)->max('rencana_kpm') ?: 1;
-  $maxRencanaAng = collect($chartData)->max('rencana_ang') ?: 1;
-  $top8 = array_slice($chartData, 0, 8);
+  // Top 5 KPM by pct_kpm
+  $top5Kpm = collect($kabAnalytics)
+    ->sortByDesc('pct_kpm')
+    ->take(5)
+    ->values()
+    ->all();
+
+  // Top 5 Anggaran by pct_ang
+  $top5Ang2 = collect($kabAnalytics)
+    ->sortByDesc('pct_ang')
+    ->take(5)
+    ->values()
+    ->all();
 @endphp
 
 <div class="perbandingan-row">
   {{-- KPM Chart --}}
   <div class="perb-card">
-    <div class="perb-title">Perbandingan Rencana vs Realisasi KPM</div>
-    @foreach($top8 as $item)
+    <div class="perb-title">Top 5 Tertinggi berdasarkan % Realisasi KPM</div>
+    @foreach($top5Kpm as $rank => $item)
       @php
-        $pctReal  = $item['rencana_kpm'] > 0 ? round(($item['realisasi_kpm']/$item['rencana_kpm'])*100,1) : 0;
+        $pctReal = $item['pct_kpm'];
         $barWidth = min($pctReal, 100);
       @endphp
       <div class="perb-item">
         <div class="perb-item-header">
-          <span class="perb-name">{{ $item['nama'] }}</span>
-          <span class="perb-values">{{ number_format($item['realisasi_kpm']) }} / {{ number_format($item['rencana_kpm']) }}</span>
+          <span class="perb-name">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#e0f2fe;border-radius:50%;font-size:10px;font-weight:800;color:#0284c7;margin-right:6px;">{{ $rank+1 }}</span>
+            {{ $item['nama'] }}
+          </span>
+          <span class="perb-pct-badge blue">{{ $pctReal }}%</span>
         </div>
-        <div class="perb-bar-track">
+        <div class="perb-bar-outer">
           <div class="perb-bar-fill blue" style="width:{{ $barWidth }}%"></div>
+        </div>
+        <div class="perb-bar-meta">
+          <span>Realisasi: {{ number_format($item['realisasi_kpm']) }} KPM</span>
+          <span>Rencana: {{ number_format($item['rencana_kpm']) }} KPM</span>
         </div>
       </div>
     @endforeach
@@ -325,19 +404,26 @@
 
   {{-- Anggaran Chart --}}
   <div class="perb-card">
-    <div class="perb-title">Perbandingan Rencana vs Realisasi Anggaran</div>
-    @foreach($top8 as $item)
+    <div class="perb-title">Top 5 Tertinggi berdasarkan % Serapan Anggaran</div>
+    @foreach($top5Ang2 as $rank => $item)
       @php
-        $pctRealA = $item['rencana_ang'] > 0 ? round(($item['realisasi_ang']/$item['rencana_ang'])*100,1) : 0;
+        $pctRealA = $item['pct_ang'];
         $barWidthA = min($pctRealA, 100);
       @endphp
       <div class="perb-item">
         <div class="perb-item-header">
-          <span class="perb-name">{{ $item['nama'] }}</span>
-          <span class="perb-values">Rp {{ number_format($item['realisasi_ang']/1e9,1) }}M / {{ number_format($item['rencana_ang']/1e9,1) }}M</span>
+          <span class="perb-name">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#fef3c7;border-radius:50%;font-size:10px;font-weight:800;color:#92400e;margin-right:6px;">{{ $rank+1 }}</span>
+            {{ $item['nama'] }}
+          </span>
+          <span class="perb-pct-badge brown">{{ $pctRealA }}%</span>
         </div>
-        <div class="perb-bar-track">
+        <div class="perb-bar-outer ang">
           <div class="perb-bar-fill brown" style="width:{{ $barWidthA }}%"></div>
+        </div>
+        <div class="perb-bar-meta">
+          <span>Realisasi: Rp {{ number_format($item['realisasi_ang']/1e9,1) }}M</span>
+          <span>Rencana: Rp {{ number_format($item['rencana_ang']/1e9,1) }}M</span>
         </div>
       </div>
     @endforeach
@@ -350,13 +436,20 @@
   {{-- Header --}}
   <div class="tbl-header">
     <div style="display:flex;align-items:center;gap:8px">
-      <div class="sec-header-icon blue"></div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <line x1="3" y1="9" x2="21" y2="9"/>
+        <line x1="3" y1="15" x2="21" y2="15"/>
+        <line x1="9" y1="3" x2="9" y2="21"/>
+      </svg>
       <span class="sec-title2">Data Detail Per Wilayah</span>
     </div>
     <div class="tbl-toolbar">
       <div class="tbl-search">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        {{-- Icon Search --}}
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <input type="text" id="tblSearch" placeholder="Cari kabupaten/kota...">
       </div>
@@ -370,13 +463,6 @@
         </select>
         baris
       </div>
-      <button class="btn-csv" id="tblExport">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        Export CSV
-      </button>
     </div>
   </div>
 
@@ -386,7 +472,7 @@
       <thead>
         <tr>
           <th style="width:36px;text-align:center">#</th>
-          <th data-col="nama">KABUPATEN/KOTA <span class="si">▲</span></th>
+          <th data-col="nama" class="sorted">KABUPATEN/KOTA <span class="si">▲</span></th>
           <th data-col="rencana_kpm">RENCANA<br>KPM <span class="si">▲</span></th>
           <th data-col="realisasi_kpm">REALISASI<br>KPM <span class="si">▲</span></th>
           <th data-col="gap_kpm">GAP<br>KPM <span class="si">▲</span></th>
@@ -404,10 +490,10 @@
             $gapAng2 = $item['rencana_ang'] - $item['realisasi_ang'];
             $pctBar  = min($item['pct_kpm'], 100);
 
-            if ($item['pct_ang'] >= 95)     { $bsCls = 'bs-high';  }
-            elseif ($item['pct_ang'] >= 88) { $bsCls = 'bs-good';  }
-            elseif ($item['pct_ang'] >= 80) { $bsCls = 'bs-warn';  }
-            else                            { $bsCls = 'bs-low';   }
+            if ($item['pct_ang'] >= 95)     { $bsCls = 'bs-high'; }
+            elseif ($item['pct_ang'] >= 88) { $bsCls = 'bs-good'; }
+            elseif ($item['pct_ang'] >= 80) { $bsCls = 'bs-warn'; }
+            else                            { $bsCls = 'bs-low';  }
           @endphp
           <tr class="dtl-row"
               data-nama="{{ strtolower($item['nama']) }}"
@@ -466,12 +552,12 @@
   const tbody   = document.getElementById('dtlBody');
   const search  = document.getElementById('tblSearch');
   const rowsSel = document.getElementById('tblRows');
-  const expBtn  = document.getElementById('tblExport');
   const emptyEl = document.getElementById('tblEmpty');
   const infoEl  = document.getElementById('tblInfo');
   const pgEl    = document.getElementById('tblPg');
 
-  let page = 1, sortCol = 'rencana_kpm', sortAsc = false, q = '', perPage = 6;
+  // Default: urut abjad A-Z
+  let page = 1, sortCol = 'nama', sortAsc = true, q = '', perPage = 6;
 
   const getVal = (r, c) => c === 'nama' ? (r.dataset[c]||'') : (parseFloat(r.dataset[c])||0);
 
@@ -500,7 +586,7 @@
     });
 
     infoEl.innerHTML = total===0 ? 'Tidak ada hasil'
-      : `Menampilkan <b>${s+1}–${e}</b> dari <b>${total}</b> Kabupaten/Kota di Jawa Timur`;
+      : `Menampilkan <b>${s+1}&ndash;${e}</b> dari <b>${total}</b> Kabupaten/Kota di Jawa Timur`;
 
     pgEl.innerHTML = '';
     const mk = (lbl, p, dis, act) => {
@@ -510,7 +596,7 @@
       b.onclick = ()=>{ page=p; render(); };
       return b;
     };
-    pgEl.appendChild(mk('‹', page-1, page<=1, false));
+    pgEl.appendChild(mk('&#8249;', page-1, page<=1, false));
     const rng = [];
     for(let p=1;p<=pages;p++){
       if(p===1||p===pages||Math.abs(p-page)<=1) rng.push(p);
@@ -520,16 +606,18 @@
       if(p==='…'){const b=document.createElement('button');b.className='pg-btn';b.disabled=true;b.textContent='…';pgEl.appendChild(b);}
       else pgEl.appendChild(mk(p,p,false,p===page));
     });
-    pgEl.appendChild(mk('›', page+1, page>=pages, false));
+    pgEl.appendChild(mk('&#8250;', page+1, page>=pages, false));
   }
 
+  // Klik header untuk sort — set active class
   document.querySelectorAll('#dtlTable thead th[data-col]').forEach(th=>{
     th.onclick = ()=>{
       const c = th.dataset.col;
-      if(sortCol===c) sortAsc=!sortAsc; else { sortCol=c; sortAsc=c==='nama'; }
+      if(sortCol===c) sortAsc=!sortAsc; else { sortCol=c; sortAsc= c==='nama'; }
       page=1;
       document.querySelectorAll('#dtlTable thead th').forEach(t=>t.classList.remove('sorted','sorted-desc'));
-      th.classList.add('sorted'); if(!sortAsc) th.classList.add('sorted-desc');
+      th.classList.add('sorted');
+      if(!sortAsc) th.classList.add('sorted-desc');
       render();
     };
   });
@@ -537,26 +625,15 @@
   search.oninput = ()=>{ q=search.value.toLowerCase().trim(); page=1; render(); };
   rowsSel.onchange = ()=>{ perPage=parseInt(rowsSel.value); page=1; render(); };
 
-  expBtn.onclick = ()=>{
-    const hdr = ['No','Kabupaten/Kota','Rencana KPM','Realisasi KPM','Gap KPM','% Real KPM','Rencana Anggaran','Gap Anggaran','Realisasi Anggaran','% Serapan'];
-    const rows = getSorted(getFiltered()).map((r,i)=>{
-      const d = r.dataset;
-      return [i+1, r.querySelector('.td-nama-val').textContent.trim(),
-        d.rencana_kpm, d.realisasi_kpm, d.gap_kpm, d.pct_kpm+'%',
-        d.rencana_ang, d.gap_ang, d.realisasi_ang, d.pct_ang+'%'].join(',');
-    });
-    const blob = new Blob([[hdr.join(','),...rows].join('\n')],{type:'text/csv;charset=utf-8;'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'bansos_jatim_{{ $selectedYear }}.csv';
-    a.click();
-  };
-
-  // animate progress bars
+  // Animate progress bars on load
   document.querySelectorAll('.td-pct-fill,.kpi2-progress-track,.perb-bar-fill').forEach(el=>{
     const w=el.style.width; el.style.width='0';
     setTimeout(()=>{ el.style.width=w; }, 80);
   });
+
+  // Set initial sorted indicator on "KABUPATEN/KOTA" column
+  const namaHeader = document.querySelector('#dtlTable thead th[data-col="nama"]');
+  if(namaHeader){ namaHeader.classList.add('sorted'); }
 
   render();
 })();

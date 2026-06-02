@@ -34,12 +34,12 @@
 .benc-date   { font-size:12px; color:var(--text-4); }
 
 /* ── KPI 4 cols ── */
-.kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
-.kpi-card { background:#fff; border:1px solid var(--border-lo); border-radius:var(--radius); padding:18px 20px 16px; position:relative; overflow:hidden; }
+.kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.kpi-card { background:#fff; border:1px solid var(--border-lo); border-radius:var(--radius); padding:24px 26px 22px; position:relative; overflow:hidden; }
 .kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--kpi-accent,var(--navy-mid)); }
-.kpi-label { font-size:10px; font-weight:700; color:var(--text-4); text-transform:uppercase; letter-spacing:.06em; }
-.kpi-val   { font-size:32px; font-weight:800; color:var(--text-1); line-height:1.1; margin:5px 0 3px; letter-spacing:-.03em; }
-.kpi-desc  { font-size:11.5px; color:var(--text-3); margin-top:2px; line-height:1.4; }
+.kpi-label { font-size:12px; font-weight:700; color:var(--text-4); text-transform:uppercase; letter-spacing:.06em; }
+.kpi-val   { font-size:40px; font-weight:800; color:var(--text-1); line-height:1.1; margin:8px 0 5px; letter-spacing:-.03em; }
+.kpi-desc  { font-size:13.5px; color:var(--text-3); margin-top:4px; line-height:1.4; }
 .kpi-badge { display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:700; padding:2px 7px; border-radius:99px; }
 .kpi-badge.up   { background:var(--red-pale);   color:var(--red); }
 .kpi-badge.down { background:var(--green-pale);  color:var(--green-text); }
@@ -93,7 +93,7 @@
 .toggle.on { background:var(--navy-mid); }
 .toggle::after { content:''; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left .2s; box-shadow:0 1px 3px rgba(0,0,0,.2); }
 .toggle.on::after { left:18px; }
-.legend-bar { height:10px; border-radius:4px; background:linear-gradient(90deg,var(--navy-pale),var(--navy-mid)); }
+.legend-bar { height:10px; border-radius:4px; background:linear-gradient(90deg, #D4A017, #E67E22, #C0392B, #8B0000, #5c0011); }
 .legend-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--text-4); margin-top:3px; }
 
 /* ── Section title ── */
@@ -167,9 +167,6 @@
 .pg-btn.active { background:var(--navy-mid); border-color:var(--navy-mid); color:#fff; }
 .pg-btn:disabled { opacity:.4; cursor:default; }
 
-.unfiltered-divider { display:flex; align-items:center; gap:12px; margin:32px 0 0; font-size:11px; font-weight:700; color:var(--text-4); text-transform:uppercase; letter-spacing:.07em; }
-.unfiltered-divider::before, .unfiltered-divider::after { content:''; flex:1; height:1px; background:var(--border-lo); }
-
 @media(max-width:720px){ .kpi-row{ grid-template-columns:repeat(2,1fr); } }
 </style>
 @endpush
@@ -186,29 +183,30 @@
     <div class="benc-date">Last updated: {{ now()->format('M Y') }}</div>
   </div>
 
-  {{-- ─── KPI 4 cards (semua tahun, tidak difilter) ─── --}}
+  {{-- ─── KPI 4 cards — ikut filter TAHUN (kabupaten tidak mempengaruhi) ─── --}}
+  @php $kpiLabel = $tahunDipilih ? 'Tahun '.$tahunDipilih : 'Semua Tahun'; @endphp
   <div class="kpi-row">
     <div class="kpi-card" style="--kpi-accent:#005088">
-      <div class="kpi-label">Total Kejadian (Semua Tahun)</div>
-      <div class="kpi-val">{{ number_format($kpi->total_kejadian) }}</div>
+      <div class="kpi-label" id="kpiLabelKejadian">Total Kejadian ({{ $kpiLabel }})</div>
+      <div class="kpi-val" id="kpiKejadian">{{ number_format($kpi->total_kejadian) }}</div>
       <div class="kpi-desc">Seluruh jenis bencana yang tercatat di Jawa Timur</div>
     </div>
     <div class="kpi-card" style="--kpi-accent:#b6171e">
-      <div class="kpi-label">Total Kerusakan Rumah</div>
-      <div class="kpi-val">{{ number_format($kpi->total_rmh_rusak) }}</div>
+      <div class="kpi-label" id="kpiLabelRumah">Total Kerusakan Rumah</div>
+      <div class="kpi-val" id="kpiRumah">{{ number_format($kpi->total_rmh_rusak) }}</div>
       <div class="kpi-desc">Unit rumah rusak (berat + sedang + ringan)</div>
     </div>
     <div class="kpi-card" style="--kpi-accent:#d97706">
-      <div class="kpi-label">Total Korban Jiwa</div>
-      <div class="kpi-val">{{ number_format($kpi->total_korban) }}</div>
-      <div class="kpi-desc">Meninggal/hilang + luka-luka seluruh bencana</div>
+      <div class="kpi-label" id="kpiLabelKorban">Total Korban</div>
+      <div class="kpi-val" id="kpiKorban">{{ number_format($kpi->total_korban) }}</div>
+      <div class="kpi-desc">Meninggal/hilang + luka-luka seluruh + terdampak/mengungsi</div>
     </div>
     <div class="kpi-card" style="--kpi-accent:#6366f1">
       <div class="kpi-label">Daerah Korban Terbanyak</div>
-      <div class="kpi-val" style="font-size:20px;margin-top:8px;line-height:1.2">
+      <div class="kpi-val" id="kpiTopNama" style="font-size:26px;margin-top:8px;line-height:1.2">
         {{ $korbanTerbanyak ? Str::limit(str_replace('Kabupaten ','',$korbanTerbanyak['nama']), 20) : '—' }}
       </div>
-      <div class="kpi-desc">
+      <div class="kpi-desc" id="kpiTopDesc">
         {{ $korbanTerbanyak ? number_format($korbanTerbanyak['total_korban']).' korban jiwa tercatat' : 'Data tidak tersedia' }}
       </div>
     </div>
@@ -218,7 +216,7 @@
   <div class="map-row">
     <div class="card" style="padding:16px">
       <div class="card-hd">
-        Peta Sebaran Bencana <small>Semua Tahun</small>
+        Peta Sebaran Bencana <small id="mapTahunLabel">Semua Tahun</small>
       </div>
       <div id="map"></div>
     </div>
@@ -231,12 +229,13 @@
         </div>
 
         <div class="fp-note">
-          Filter berlaku untuk <strong>Tren Bencana</strong> dan <strong>Analisis Keparahan</strong>. KPI &amp; Peta selalu menampilkan data keseluruhan.
+          Filter <strong>Tahun</strong> berlaku untuk <strong>seluruh dashboard</strong> (KPI, Peta, Tren, Analisis, Profil Risiko &amp; Prioritas).<br>
+          Filter <strong>Kabupaten/Kota</strong> hanya berlaku untuk <strong>Tren Bencana</strong> &amp; <strong>Analisis Keparahan</strong>.
         </div>
 
         <div class="fg">
           <label>Tahun</label>
-          <select name="tahun" onchange="this.form.submit()">
+          <select name="tahun" id="selTahun">
             <option value="">Semua Tahun</option>
             @foreach($tahunList as $t)
               <option value="{{ $t }}" @selected($t == $tahunDipilih)>{{ $t }}</option>
@@ -379,15 +378,14 @@
     </div>
   </div>
 
-  {{-- ══════════════════════════════════════════════════
-       DATA KESELURUHAN (tidak terpengaruh filter)
-  ══════════════════════════════════════════════════ --}}
-  <div class="unfiltered-divider">Data Keseluruhan · Tidak Terpengaruh Filter</div>
-
   {{-- Profil Risiko --}}
   <div class="section-title">
     Karakteristik &amp; Profil Risiko Wilayah
-    <span class="scope-pill neutral">Semua tahun &amp; wilayah</span>
+    @if($tahunDipilih)
+      <span class="scope-pill">{{ $tahunDipilih }}</span>
+    @else
+      <span class="scope-pill neutral">Semua Tahun</span>
+    @endif
   </div>
   <div class="card" style="margin-bottom:20px">
     <div class="card-hd">
@@ -400,7 +398,11 @@
   {{-- Tabel Detail --}}
   <div class="section-title">
     Skala Prioritas Penanganan &amp; Alokasi
-    <span class="scope-pill neutral">Semua tahun &amp; wilayah</span>
+    @if($tahunDipilih)
+      <span class="scope-pill">{{ $tahunDipilih }}</span>
+    @else
+      <span class="scope-pill neutral">Semua Tahun</span>
+    @endif
   </div>
   <div class="card">
     <div class="tbl-controls">
@@ -457,9 +459,9 @@
 const DATA_TREND        = @json($trend);
 const DATA_KOMPOSISI_T  = @json($komposisiTahun);   // pie (filtered)
 const DATA_SCATTER      = @json($scatter);           // filtered
-const DATA_KOMPOSISI_ALL= @json($komposisiAll);      // stacked bar legend
-const DATA_TOP5         = @json($top5);              // unfiltered
-const DATA_DETAIL       = @json($detail);            // unfiltered
+const DATA_KOMPOSISI_ALL= @json($komposisiAll);      // stacked bar legend (filter tahun)
+const DATA_TOP5         = @json($top5);              // top 5 kab (filter tahun)
+const DATA_DETAIL       = @json($detail);            // semua kab (filter tahun)
 
 // ── 1. TREND GROUPED BAR (kejadian + korban per tahun) ───────
 (function(){
@@ -557,7 +559,7 @@ const DATA_DETAIL       = @json($detail);            // unfiltered
   }
 })();
 
-// ── 4. STACKED BAR (unfiltered) ───────────────────────────────
+// ── 4. STACKED BAR (filter tahun) ────────────────────────────
 (function(){
   const wrap=document.getElementById('stackedBars');
   const legend=document.getElementById('barLegend');
@@ -581,7 +583,7 @@ const DATA_DETAIL       = @json($detail);            // unfiltered
   });
 })();
 
-// ── 5. TABLE (unfiltered, tanpa kolom Status) ─────────────────
+// ── 5. TABLE (filter tahun, tanpa kolom Status) ───────────────
 let currentPage=1;
 function getFiltered(){
   const sortMap={kejadian:'total_kejadian',korban:'total_korban',rumah:'total_rmh_rusak',severity:'severity_pct'};
@@ -649,10 +651,27 @@ renderTable();
   mapParent.style.position = 'relative';
   mapParent.appendChild(loadingEl);
 
-  const map = L.map('map').setView([-7.5, 112.5], 8);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'© OpenStreetMap', maxZoom:13
+  const map = L.map('map', { scrollWheelZoom: false }).setView([-7.5, 112.5], 8);
+
+  // CartoCDN: background abu-abu bersih
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 18, opacity: 0.85
   }).addTo(map);
+  // Label tipis di layer terpisah
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd', maxZoom: 18, opacity: 0.7, pane: 'shadowPane'
+  }).addTo(map);
+
+  // ── Inverse mask: abu-abu mengikuti bentuk asli Jatim ───────────
+  // Fetch mask GeoJSON (world - jatim_union) lalu render sebagai overlay
+  fetch('/data/jatim_mask.geojson')
+    .then(r => r.json())
+    .then(maskGeo => {
+      L.geoJSON(maskGeo, {
+        style: { fillColor:'#9aa8b2', fillOpacity:0.55, color:'transparent', weight:0 },
+        interactive: false
+      }).addTo(map);
+    });
 
   // ── State ────────────────────────────────────────────────────
   let geoLayer   = null;
@@ -663,25 +682,24 @@ renderTable();
   const togIntensity = document.getElementById('togIntensity');
   const togSeverity  = document.getElementById('togSeverity');
 
-  // ── Warna gradient biru (sesuai legend sidebar) ──────────────
+  // ── Skala warna: Amber → Oranye Tua → Merah → Merah Tua / Gelap ──
   function intensityColor(v, maxV){
-    if(!v || v === 0) return '#f1f5f9';
+    if(!v || v === 0) return '#e8e8e8';
     const t = Math.min(v / maxV, 1);
-    if(t > 0.80) return '#003963';
-    if(t > 0.60) return '#005088';
-    if(t > 0.40) return '#2b6cb0';
-    if(t > 0.20) return '#63b3ed';
-    return '#bee3f8';
+    if(t > 0.80) return '#5c0011';   // Sangat Kritis — merah hitam
+    if(t > 0.60) return '#8B0000';   // Kritis — merah tua gelap
+    if(t > 0.40) return '#C0392B';   // Waspada — merah sedang
+    if(t > 0.20) return '#E67E22';   // Siaga — oranye tua
+    return '#D4A017';                // Peringatan dini — amber/kuning tua
   }
 
   function severityColor(v){
-    // v = 0–10 (normalized)
-    if(!v || v === 0) return '#f1f5f9';
-    if(v > 8) return '#003963';
-    if(v > 6) return '#005088';
-    if(v > 4) return '#2b6cb0';
-    if(v > 2) return '#63b3ed';
-    return '#bee3f8';
+    if(!v || v === 0) return '#e8e8e8';
+    if(v > 8) return '#5c0011';      // Sangat Kritis — merah hitam
+    if(v > 6) return '#8B0000';      // Kritis — merah tua gelap
+    if(v > 4) return '#C0392B';      // Waspada — merah sedang
+    if(v > 2) return '#E67E22';      // Siaga — oranye tua
+    return '#D4A017';                // Peringatan dini — amber/kuning tua
   }
 
   // ── Render layer ─────────────────────────────────────────────
@@ -772,31 +790,51 @@ renderTable();
     });
   }
 
-  // ── Fetch API + render ────────────────────────────────────────
-  fetch('/api/bencana/map')
-    .then(r => {
-      if(!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(geo => {
-      geoData = geo;
-      const loader = document.getElementById('mapLoading');
-      if(loader) loader.remove();
-      renderLayer(geo);
-    })
-    .catch(err => {
-      const loader = document.getElementById('mapLoading');
-      if(loader) loader.remove();
-      console.error('Map error:', err);
-      // Error notice — pakai appendChild, BUKAN innerHTML +=
-      if(!document.getElementById('map-err')){
-        const errEl = document.createElement('div');
-        errEl.id = 'map-err';
-        errEl.style.cssText = 'position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:1000;background:rgba(255,255,255,.95);padding:8px 16px;border-radius:20px;font-size:12px;color:#b6171e;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.1)';
-        errEl.textContent = '⚠ Gagal memuat data — cek endpoint /api/bencana/map';
-        mapParent.appendChild(errEl);
-      }
+  // ── Helper: format angka Indonesia ──────────────────────────
+  // ── Fetch peta dengan parameter tahun ────────────────────────
+  function loadMap(tahun) {
+    const url = tahun ? `/api/bencana/map?tahun=${tahun}` : '/api/bencana/map';
+    const label = tahun ? `Tahun ${tahun}` : 'Semua Tahun';
+    const labelEl = document.getElementById('mapTahunLabel');
+    if(labelEl) labelEl.textContent = label;
+
+    fetch(url)
+      .then(r => {
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(geo => {
+        geoData = geo;
+        const loader = document.getElementById('mapLoading');
+        if(loader) loader.remove();
+        renderLayer(geo);
+      })
+      .catch(err => {
+        const loader = document.getElementById('mapLoading');
+        if(loader) loader.remove();
+        console.error('Map error:', err);
+        if(!document.getElementById('map-err')){
+          const errEl = document.createElement('div');
+          errEl.id = 'map-err';
+          errEl.style.cssText = 'position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:1000;background:rgba(255,255,255,.95);padding:8px 16px;border-radius:20px;font-size:12px;color:#b6171e;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.1)';
+          errEl.textContent = '⚠ Gagal memuat data — cek endpoint /api/bencana/map';
+          mapParent.appendChild(errEl);
+        }
+      });
+  }
+
+  // ── Listener: select tahun — cukup submit form, semua di-render server-side ──
+  // KPI, Peta, Tren, Analisis, Profil Risiko, Skala Prioritas semuanya ikut filter tahun
+  const selTahun = document.getElementById('selTahun');
+  if(selTahun) {
+    selTahun.addEventListener('change', function() {
+      document.getElementById('filterForm').submit();
     });
+  }
+
+  // ── Initial load peta (pakai tahun dari server) ───────────────
+  const initTahun = '{{ $tahunDipilih ?? "" }}' || null;
+  loadMap(initTahun);
 })();
 </script>
 @endpush

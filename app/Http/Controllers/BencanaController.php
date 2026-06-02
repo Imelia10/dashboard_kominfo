@@ -33,24 +33,10 @@ class BencanaController extends Controller
         $kabDipilih   = $request->input('kabupaten', null);
 
         $tahunList = DB::table(self::T_JML)->distinct()->orderByDesc('tahun')->pluck('tahun');
-        if (!$tahunDipilih) $tahunDipilih = $tahunList->first();
+        // TIDAK auto-default ke tahun terbaru — null = semua tahun
         $kabList = DB::table(self::T_JML)->distinct()->orderBy('nama_kabupaten_kota')->pluck('nama_kabupaten_kota');
 
-        // ══════════════════════════════════════════════════════════
-        // DATA SEMUA TAHUN — untuk KPI global & Map (tidak difilter tahun)
-        // ══════════════════════════════════════════════════════════
-        $rawJmlAll    = DB::table(self::T_JML)->get()->keyBy('nama_kabupaten_kota');
-        $rawKorbanAll = DB::table(self::T_KORBAN)->get()->keyBy('nama_kabupaten_kota');
-        $rawRumahAll  = DB::table(self::T_RUMAH)->get()->keyBy('nama_kabupaten_kota');
-
-        $perKabAll = $this->buildPerKab($rawJmlAll, $rawKorbanAll, $rawRumahAll);
-        $perKabAll = $this->calcSeverity($perKabAll);
-
-        // KPI global (semua tahun)
-        $kpi = $this->buildKpi($perKabAll);
-
-        // Daerah korban terbanyak (semua tahun) — untuk KPI card 4
-        $korbanTerbanyak = $perKabAll->sortByDesc('total_korban')->first();
+        // (rawJmlAll tidak dipakai lagi — semua data kini diambil via rawJmlTahun)
 
         // ══════════════════════════════════════════════════════════
         // DATA FILTERED (tahun + kab) — untuk Tren & Analisis Keparahan
@@ -75,17 +61,17 @@ class BencanaController extends Controller
 
         // ── Scatter: frekuensi vs dampak (filtered) ───────────────
         $scatter = $perKabF
-            ->filter(fn($r) => $r['total_kejadian'] > 0)
+            //->filter(fn($r) => $r['total_kejadian'] > 0)
             ->map(fn($r) => [
                 'nama'      => $r['nama'],
                 'frekuensi' => $r['total_kejadian'],
-                'dampak'    => $r['total_korban'] + $r['total_rmh_rusak'],
+                'dampak'    => $r['total_korban'] + $r['total_rmh_rusak'] + $r['total_rmh_terendam'],
                 'severity'  => $r['severity'],
             ])->values();
 
         // ── Top 3 terparah (severity) — filtered ─────────────────
         $top3Parah = $perKabF
-            ->filter(fn($r) => $r['total_kejadian'] > 0)
+            //->filter(fn($r) => $r['total_kejadian'] > 0)
             ->sortByDesc('severity')
             ->take(3)
             ->values();
@@ -102,13 +88,33 @@ class BencanaController extends Controller
         $komposisiTahun = $this->buildKomposisi($rawJmlF);
 
         // ══════════════════════════════════════════════════════════
-        // DATA UNFILTERED — Top 5 stacked bar & Tabel detail
+        // DATA FILTERED TAHUN SAJA (tanpa filter kabupaten)
+        // untuk Karakteristik & Profil Risiko + Skala Prioritas
         // ══════════════════════════════════════════════════════════
-        $komposisiAll = $this->buildKomposisi($rawJmlAll);
+        $rawJmlTahun    = DB::table(self::T_JML)
+            ->when($tahunDipilih, fn($q) => $q->where('tahun', $tahunDipilih))
+            ->get()->keyBy('nama_kabupaten_kota');
 
-        $top5 = $perKabAll->sortByDesc('total_kejadian')->take(5)->values();
+        $rawKorbanTahun = DB::table(self::T_KORBAN)
+            ->when($tahunDipilih, fn($q) => $q->where('tahun', $tahunDipilih))
+            ->get()->keyBy('nama_kabupaten_kota');
 
-        $detail = $perKabAll->sortByDesc('total_kejadian')->map(function ($r) {
+        $rawRumahTahun  = DB::table(self::T_RUMAH)
+            ->when($tahunDipilih, fn($q) => $q->where('tahun', $tahunDipilih))
+            ->get()->keyBy('nama_kabupaten_kota');
+
+        $perKabTahun = $this->buildPerKab($rawJmlTahun, $rawKorbanTahun, $rawRumahTahun);
+        $perKabTahun = $this->calcSeverity($perKabTahun);
+
+        // KPI & korban terbanyak — ikut filter TAHUN (bukan semua tahun)
+        $kpi = $this->buildKpi($perKabTahun);
+        $korbanTerbanyak = $perKabTahun->sortByDesc('total_korban')->first();
+
+        $komposisiAll = $this->buildKomposisi($rawJmlTahun);
+
+        $top5 = $perKabTahun->sortByDesc('total_kejadian')->take(5)->values();
+
+        $detail = $perKabTahun->sortByDesc('total_kejadian')->map(function ($r) {
             // Severity sebagai persen (0-100)
             $r['severity_pct'] = min(100, round($r['severity'] * 10));
             return $r;
@@ -136,16 +142,18 @@ class BencanaController extends Controller
 
             $kejadian = [];
             foreach (array_keys(self::JENIS) as $kode) {
-                $kejadian[$kode] = $j ? (int)($j->{"jml_bencana_{$kode}"} ?? 0) : 0;
+                // Memanggil: jml_bencana_gempa, jml_bencana_banjir, dst.
+                $kejadian[$kode] = $j ? (int)($j->{"jml_bencana_{$kode}"} ?? 0) : 0; 
             }
             $totalKejadian = array_sum($kejadian);
 
-            $totalMdHlg = 0; $totalLuka = 0;
+            $totalMdHlg = 0; $totalLuka = 0; $totalTdkMgs = 0; 
             foreach (array_keys(self::JENIS) as $kode) {
                 $totalMdHlg += $k ? (int)($k->{"korban_{$kode}_md_hlg"} ?? 0) : 0;
                 $totalLuka  += $k ? (int)($k->{"korban_{$kode}_luka"}   ?? 0) : 0;
+                $totalTdkMgs += $k ? (int)($k->{"korban_{$kode}_tdk_mgs"} ?? 0) : 0;
             }
-            $totalKorban = $totalMdHlg + $totalLuka;
+            $totalKorban = $totalMdHlg + $totalLuka + $totalTdkMgs;
 
             $totalRusak = 0; $totalTerendam = 0;
             foreach (array_keys(self::JENIS) as $kode) {
@@ -160,7 +168,7 @@ class BencanaController extends Controller
                 'korban_md_hlg'      => $totalMdHlg,
                 'korban_luka'        => $totalLuka,
                 'total_korban'       => $totalKorban,
-                'total_rmh_rusak'    => $totalRusak,
+                'total_rmh_rusak'    => $totalRusak + $totalTerendam,
                 'total_rmh_terendam' => $totalTerendam,
                 'severity'           => 0.0,
             ];
@@ -186,7 +194,7 @@ class BencanaController extends Controller
         // Hitung raw severity dulu
         $withRaw = $perKab->map(function ($r) {
             $r['sev_raw'] = $r['total_kejadian'] > 0
-                ? ($r['total_rmh_rusak'] + $r['total_korban']) / $r['total_kejadian']
+                ? ($r['total_rmh_rusak'] + $r['total_rmh_terendam'] + $r['total_korban']) / $r['total_kejadian']
                 : 0;
             return $r;
         });
@@ -228,17 +236,19 @@ class BencanaController extends Controller
 
     /** Juga hitung total_korban per tahun untuk line chart kedua */
     private function buildTrendKorban(?string $kabDipilih): \Illuminate\Support\Collection
-    {
-        return DB::table(self::T_KORBAN)
-            ->when($kabDipilih, fn($q) => $q->where('nama_kabupaten_kota', $kabDipilih))
-            ->orderBy('tahun')->get()
-            ->groupBy('tahun')->map(function ($rows, $tahun) {
-                $total = 0;
-                foreach (array_keys(self::JENIS) as $kode) {
-                    $total += $rows->sum("korban_{$kode}_md_hlg") + $rows->sum("korban_{$kode}_luka");
-                }
-                return ['tahun' => $tahun, 'total_korban' => $total];
-            })->values();
+        {
+    return DB::table(self::T_KORBAN)
+        ->when($kabDipilih, fn($q) => $q->where('nama_kabupaten_kota', $kabDipilih))
+        ->orderBy('tahun')->get()
+        ->groupBy('tahun')->map(function ($rows, $tahun) {
+            $total = 0;
+            foreach (array_keys(self::JENIS) as $kode) {
+                $total += $rows->sum("korban_{$kode}_md_hlg") + 
+                          $rows->sum("korban_{$kode}_luka") + 
+                          $rows->sum("korban_{$kode}_tdk_mgs"); // Tambahkan ini
+            }
+            return ['tahun' => $tahun, 'total_korban' => $total];
+        })->values();
     }
 
     private function buildKomposisi($rawJml): array
@@ -261,4 +271,44 @@ class BencanaController extends Controller
     }
 
     public static function getJenis(): array { return self::JENIS; }
+
+    /**
+     * API: KPI agregat per-tahun (tanpa filter kabupaten)
+     * GET /api/bencana/kpi?tahun=2024
+     */
+    public function apiKpi(Request $request)
+    {
+        $tahun = $request->input('tahun', null);
+
+        $qJml    = DB::table(self::T_JML);
+        $qKorban = DB::table(self::T_KORBAN);
+        $qRumah  = DB::table(self::T_RUMAH);
+
+        if ($tahun) {
+            $qJml->where('tahun', $tahun);
+            $qKorban->where('tahun', $tahun);
+            $qRumah->where('tahun', $tahun);
+        }
+
+        $rawJml    = $qJml->get()->keyBy('nama_kabupaten_kota');
+        $rawKorban = $qKorban->get()->keyBy('nama_kabupaten_kota');
+        $rawRumah  = $qRumah->get()->keyBy('nama_kabupaten_kota');
+
+        $perKab = $this->buildPerKab($rawJml, $rawKorban, $rawRumah);
+        $kpi    = $this->buildKpi($perKab);
+
+        // Daerah korban terbanyak
+        $top = $perKab->sortByDesc('total_korban')->first();
+
+        return response()->json([
+            'tahun'           => $tahun ?? 'semua',
+            'total_kejadian'  => $kpi->total_kejadian,
+            'total_rmh_rusak' => $kpi->total_rmh_rusak,
+            'total_korban'    => $kpi->total_korban,
+            'korban_terbanyak' => $top ? [
+                'nama'         => $top['nama'],
+                'total_korban' => $top['total_korban'],
+            ] : null,
+        ]);
+    }
 }

@@ -82,28 +82,73 @@
     border: 1px solid var(--clr-border);
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
+/* ── Popup ── */
+.dm-map-popup {
+    pointer-events: none !important; /* <-- TAMBAHKAN INI */
+}
+
 .dm-map-popup .leaflet-popup-content-wrapper {
-    border-radius: 12px;
-    border: 1px solid var(--clr-border);
-    box-shadow: 0 14px 30px rgba(16, 24, 40, 0.14);
+    border-radius: 16px;
+    border: none;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(16, 24, 40, 0.18), 0 4px 16px rgba(16,24,40,0.08);
+    background: transparent;
 }
-.dm-map-popup .leaflet-popup-content { margin: 10px 12px; }
+.dm-map-popup .leaflet-popup-content { margin: 0; }
+.dm-map-popup .leaflet-popup-tip-container { display: none; }
+
+/* ── Tooltip hover (nama saja) ── */
 .dm-map-tooltip {
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid var(--clr-border);
-    color: var(--clr-text);
+    background: rgba(20, 28, 46, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
     font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.01em;
     border-radius: 8px;
-    padding: 4px 8px;
-    box-shadow: 0 8px 18px rgba(16, 24, 40, 0.12);
+    padding: 5px 11px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    pointer-events: none; /* <-- TAMBAHKAN BARIS INI */
 }
-.dm-map-tooltip::before { border-top-color: var(--clr-border); }
+.dm-map-tooltip::before { display: none; }
+
+/* ── Tooltip Sticky (Persis Peta Bencana) ── */
+.dm-rich-tooltip {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    pointer-events: none !important; /* Mencegah kedap-kedip */
+}
+.dm-rich-tooltip::before { 
+    display: none !important; /* Menghilangkan panah kecil bawaan Leaflet */
+}
+
+/* ── Legend ── */
 .dm-map-legend {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 10px 12px;
-    border: 1px solid var(--clr-border);
-    border-radius: 12px;
-    box-shadow: 0 10px 24px rgba(16, 24, 40, 0.08);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(8px);
+    padding: 12px 14px;
+    border: 1px solid rgba(221,227,236,0.8);
+    border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(16, 24, 40, 0.1);
+}
+
+/* ── Progress bar di dalam popup ── */
+.dm-popup-bar-track {
+    height: 5px;
+    border-radius: 99px;
+    background: #eef1f6;
+    overflow: hidden;
+    margin-top: 3px;
+}
+.dm-popup-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
 }
 .dm-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:6px; }
 .dm-header form { padding-top:4px; }
@@ -652,6 +697,14 @@
     const mapElement = document.getElementById('map');
     if (!mapElement || typeof L === 'undefined') return;
 
+    // Loading overlay — di parent, BUKAN di #map (innerHTML/appendChild ke #map corrupt Leaflet)
+    const mapParent = mapElement.parentElement;
+    mapParent.style.position = 'relative';
+    const loadingInfo = document.createElement('div');
+    loadingInfo.style.cssText = 'position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:1000;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(255,255,255,0.92);color:#1a2535;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.1);pointer-events:none;';
+    loadingInfo.textContent = 'Memuat peta Jawa Timur...';
+    mapParent.appendChild(loadingInfo);
+
     const map = L.map('map', {
         dragging: true,
         touchZoom: true,
@@ -665,10 +718,24 @@
         attributionControl: true
     }).setView([-7.5, 112.5], 8);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    // CartoCDN split: background tanpa label + label tipis terpisah
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap &copy; CARTO',
-        maxZoom: 19
+        subdomains: 'abcd', maxZoom: 19, opacity: 0.85
     }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd', maxZoom: 19, opacity: 0.7, pane: 'shadowPane'
+    }).addTo(map);
+
+    // Inverse mask: abu-abu mengikuti bentuk asli Jatim (sama dengan peta bencana)
+    fetch('/data/jatim_mask.geojson')
+        .then(r => r.json())
+        .then(maskGeo => {
+            L.geoJSON(maskGeo, {
+                style: { fillColor: '#9aa8b2', fillOpacity: 0.55, color: 'transparent', weight: 0 },
+                interactive: false
+            }).addTo(map);
+        });
 
     const year = @json($data['year']);
     let geojsonLayer = null;
@@ -680,12 +747,6 @@
     );
     const JATIM_CENTER = L.latLng(-7.45, 113.35);
     const JATIM_LOCK_ZOOM = 8.25;
-
-    const loadingInfo = document.createElement('div');
-    loadingInfo.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:500;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;background:rgba(255,255,255,0.92);border:1px solid #dde3ec;color:#1a2535;';
-    loadingInfo.textContent = 'Memuat peta Jawa Timur...';
-    mapElement.style.position = 'relative';
-    mapElement.appendChild(loadingInfo);
 
     function escapeHtml(value) {
         return String(value)
@@ -739,32 +800,76 @@
     function buildPopupContent(feature) {
         const row  = getStatistik(feature);
         const nama = escapeHtml(getFeatureName(feature));
-        const kode = escapeHtml(getFeatureKode(feature));
+        const p    = feature?.properties ?? {};
+        const type = escapeHtml(p.TYPE_2 || '');
 
         if (!row) {
-            return `<div style="min-width:220px">
-                <div style="font-size:14px;font-weight:700;color:#1a2535;margin-bottom:4px">${nama}</div>
-                <div style="font-size:11px;color:#6b7a91;margin-bottom:10px">Kode ${kode}</div>
-                <div style="font-size:12px;color:#6b7a91">Data tidak tersedia</div>
+            return `<div style="font-family:'Segoe UI',system-ui,sans-serif;width:240px;background:#fff;border-radius:16px;overflow:hidden">
+                <div style="background:linear-gradient(135deg,#1a2535 0%,#2d3f58 100%);padding:16px 18px 14px">
+                    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px">${type}</div>
+                    <div style="font-size:16px;font-weight:800;color:#fff;line-height:1.2">${nama}</div>
+                </div>
+                <div style="padding:14px 18px;font-size:12px;color:#9aa8b8">Data belum tersedia untuk wilayah ini.</div>
             </div>`;
         }
 
-        const total = getTotal(row);
-        const mandiriPct = getMandiriPercent(row);
+        const total       = getTotal(row);
+        const mandiriPct  = getMandiriPercent(row);
+        const statusColor = getColor(mandiriPct);
 
-        return `<div style="min-width:240px">
-            <div style="font-size:14px;font-weight:700;color:#1a2535;margin-bottom:4px">${nama}</div>
-            <div style="font-size:11px;color:#6b7a91;margin-bottom:10px">Kode ${kode} · Tahun ${year}</div>
-            <div style="display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:12px;color:#1a2535">
-                <span>Sangat Tertinggal</span><strong>${toNumber(row.sangat_tertinggal)}</strong>
-                <span>Tertinggal</span><strong>${toNumber(row.tertinggal)}</strong>
-                <span>Berkembang</span><strong>${toNumber(row.berkembang)}</strong>
-                <span>Maju</span><strong>${toNumber(row.maju)}</strong>
-                <span>Mandiri</span><strong style="color:#1D9E75">${toNumber(row.mandiri)}</strong>
-                <span>Total</span><strong>${total}</strong>
+        // Status label
+        const statusLabel = mandiriPct >= 80 ? 'Sangat Baik'
+                          : mandiriPct >= 60 ? 'Baik'
+                          : mandiriPct >= 40 ? 'Sedang'
+                          : mandiriPct >= 20 ? 'Rendah' : 'Kritis';
+
+        // Status badge bg (muted version of color)
+        const badgeBg = mandiriPct >= 80 ? 'rgba(29,158,117,.12)'
+                      : mandiriPct >= 60 ? 'rgba(55,138,221,.12)'
+                      : mandiriPct >= 40 ? 'rgba(239,159,39,.12)'
+                      : mandiriPct >= 20 ? 'rgba(136,135,128,.12)' : 'rgba(163,45,45,.12)';
+
+        // Row builder helper (name + bar + count)
+        const statMeta = [
+            { key: 'sangat_tertinggal', label: 'Sangat Tertinggal', color: '#A32D2D' },
+            { key: 'tertinggal',        label: 'Tertinggal',        color: '#C0572B' },
+            { key: 'berkembang',        label: 'Berkembang',        color: '#EF9F27' },
+            { key: 'maju',              label: 'Maju',              color: '#378ADD' },
+            { key: 'mandiri',           label: 'Mandiri',           color: '#1D9E75' },
+        ];
+
+        const rows = statMeta.map(m => {
+            const val = toNumber(row[m.key]);
+            const pct = total > 0 ? Math.round(val / total * 100) : 0;
+            return `<div style="margin-bottom:9px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+                    <span style="font-size:11px;color:#4a5568;font-weight:500">${m.label}</span>
+                    <span style="font-size:11px;font-weight:700;color:#1a2535">${val.toLocaleString('id-ID')} <span style="color:#9aa8b8;font-weight:400">(${pct}%)</span></span>
+                </div>
+                <div class="dm-popup-bar-track">
+                    <div class="dm-popup-bar-fill" style="width:${pct}%;background:${m.color}"></div>
+                </div>
+            </div>`;
+        }).join('');
+
+        return `<div style="font-family:'Segoe UI',system-ui,sans-serif;width:268px;background:#fff;border-radius:16px;overflow:hidden">
+            <!-- Header -->
+            <div style="background:linear-gradient(135deg,#1a2535 0%,#2d3f58 100%);padding:16px 18px 14px;position:relative">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px">${type} · ${year}</div>
+                <div style="font-size:16px;font-weight:800;color:#fff;line-height:1.25;margin-bottom:10px">${nama}</div>
+                <!-- Mandiri % badge -->
+                <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:5px 12px 5px 8px">
+                    <div style="width:26px;height:26px;border-radius:50%;background:${statusColor};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff">${mandiriPct}</div>
+                    <div>
+                        <div style="font-size:9px;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase;line-height:1">Desa Mandiri</div>
+                        <div style="font-size:12px;font-weight:700;color:#fff;line-height:1.3">${statusLabel}</div>
+                    </div>
+                </div>
             </div>
-            <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e5e9f0;font-size:12px;color:#0F6E56;font-weight:700">
-                Mandiri: ${mandiriPct}%
+            <!-- Body -->
+            <div style="padding:14px 18px 16px">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9aa8b8;margin-bottom:10px">Distribusi Status Desa · ${total.toLocaleString('id-ID')} desa</div>
+                ${rows}
             </div>
         </div>`;
     }
@@ -787,14 +892,14 @@
         const layer = e.target;
         if (selectedLayer === layer) return;
         highlightFeature(layer);
-        layer.openPopup();
+        //layer.openPopup();
     }
 
     function onMouseOut(e) {
         const layer = e.target;
         if (selectedLayer === layer) return;
         resetFeatureStyle(layer);
-        layer.closePopup();
+        //layer.closePopup();
     }
 
     function onFeatureClick(e) {
@@ -811,14 +916,26 @@
     }
 
     function onEachFeature(feature, layer) {
-        layer.bindPopup(buildPopupContent(feature), {
-            closeButton: false, autoPan: true,
-            offset: L.point(0, -6), className: 'dm-map-popup'
+        // 1. Masukkan desain kotak besarmu ke dalam Tooltip (BUKAN Popup)
+        // 2. Aktifkan sticky: true agar kotak mengikuti kursor dengan mulus
+        layer.bindTooltip(buildPopupContent(feature), {
+            sticky: true,
+            direction: 'top',
+            className: 'dm-rich-tooltip',
+            opacity: 1
         });
-        layer.bindTooltip(getFeatureName(feature), {
-            sticky: true, direction: 'top', opacity: 0.95, className: 'dm-map-tooltip'
+
+        // 3. Cukup jalankan efek highlight saat kursor melintas (hover)
+        layer.on({
+            mouseover: function(e) {
+                const l = e.target;
+                l.setStyle({ weight: 3, color: '#1a2535', dashArray: '', fillOpacity: 0.94 });
+                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) l.bringToFront();
+            },
+            mouseout: function(e) {
+                if (geojsonLayer) geojsonLayer.resetStyle(e.target);
+            }
         });
-        layer.on({ mouseover: onMouseOver, mouseout: onMouseOut, click: onFeatureClick });
     }
 
     function addLegend() {
@@ -884,9 +1001,8 @@
     loadMap(year).catch(error => {
         console.error(error);
         loadingInfo.style.background = 'rgba(255,245,245,0.97)';
-        loadingInfo.style.border     = '1px solid #fecaca';
         loadingInfo.style.color      = '#b91c1c';
-        loadingInfo.textContent      = 'Gagal memuat peta. Cek endpoint /api/geojson dan /api/statistik.';
+        loadingInfo.textContent      = '⚠ Gagal memuat peta. Cek endpoint /api/geojson dan /api/statistik.';
     });
 })();
 </script>

@@ -216,20 +216,25 @@
   width: 100%;
 }
 
-/* ── Regional Row ── */
-.regional-card {
+/* ══════════════════════════════════════════
+   SEMESTER + URBAN ROW (2-col)
+══════════════════════════════════════════ */
+.smt-urban-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* ── Distribusi Semesteran Card ── */
+.semester-card {
   background: #fff;
   border-radius: 16px;
   border: 1px solid #e5e7eb;
-  padding: 22px 20px 18px;
+  padding: 22px 20px 20px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-  margin-bottom: 24px;
-}
-.regional-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 24px;
-  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
 }
 .reg-section-title {
   font-size: 10px;
@@ -237,70 +242,204 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   color: #9ca3af;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
+.semester-donut-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+/* Donut container with center label overlay */
+.semester-donut-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+.semester-donut-container canvas {
+  position: absolute;
+  top: 0; left: 0;
+}
+.semester-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.semester-donut-pct {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #1b5e20;
+  line-height: 1;
+}
+.semester-donut-sub {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-top: 3px;
+}
+.semester-legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.semester-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+.semester-legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.semester-stats {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+.semester-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.semester-stat-label { color: #6b7280; }
+.semester-stat-val   { font-weight: 700; color: #374151; font-variant-numeric: tabular-nums; }
 
-/* Top kabupaten bars */
-.top-kab-item {
+/* ── Urban vs Rural Card ── */
+.urban-rural-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 22px 20px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+.urban-rural-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 6px;
+}
+.ur-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   margin-bottom: 10px;
 }
+.ur-item-label {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: #1a2e1a;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.ur-item-val {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+}
+.ur-bar-track {
+  height: 12px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.ur-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width .7s cubic-bezier(.34,1.56,.64,1);
+}
+.ur-note {
+  margin-top: auto;
+  font-size: 11px;
+  color: #9ca3af;
+  font-style: italic;
+  padding-top: 14px;
+  border-top: 1px solid #f3f4f6;
+  line-height: 1.6;
+  margin-top: 20px;
+}
+
+/* ══════════════════════════════════════════
+   TOP PRODUKSI ROW (2-col)
+══════════════════════════════════════════ */
+.top-prod-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.top-prod-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 22px 20px 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.top-prod-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.top-prod-icon { font-size: 18px; }
+.top-prod-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1a2e1a;
+}
+.top-prod-subtitle {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-left: 2px;
+}
+
+/* Top bars */
+.top-kab-item { margin-bottom: 14px; }
+.top-kab-item:last-child { margin-bottom: 0; }
 .top-kab-name {
   display: flex;
   justify-content: space-between;
   font-size: 12.5px;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
-.top-kab-pct {
-  color: #2e7d32;
-  font-weight: 700;
-}
+.top-kab-val          { font-weight: 700; }
+.top-kab-val.green    { color: #2e7d32; }
+.top-kab-val.red      { color: #dc2626; }
 .bar-track {
-  height: 6px;
+  height: 8px;
   background: #f3f4f6;
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 .bar-fill {
   height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, #43a047, #a5d6a7);
+  border-radius: 4px;
   transition: width .6s cubic-bezier(.34,1.56,.64,1);
 }
-
-/* Donut wrapper */
-.donut-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-.donut-wrap canvas { max-width: 150px; }
-
-/* YoY zones */
-.yoy-zone { margin-bottom: 16px; }
-.yoy-zone-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-.yoy-zone-label.up   { color: #16a34a; }
-.yoy-zone-label.down { color: #dc2626; }
-.yoy-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 4px;
-}
-.yoy-arrow { font-size: 16px; }
-.yoy-arrow.up   { color: #16a34a; }
-.yoy-arrow.down { color: #dc2626; }
+.bar-fill.gold { background: linear-gradient(90deg, #f59e0b, #fde68a); }
+.bar-fill.red  { background: linear-gradient(90deg, #ef4444, #fca5a5); }
 
 /* ── Detail Table ── */
 .detail-card {
@@ -310,15 +449,39 @@
   padding: 22px 20px 10px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.05);
 }
+.detail-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1a2e1a;
+}
+.section-heading svg {
+  width: 18px; height: 18px;
+  stroke: #43a047; fill: none; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.detail-table-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2e7d32;
+  text-decoration: none;
+}
+.detail-table-link:hover { text-decoration: underline; }
 .detail-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
   margin-top: 14px;
 }
-.detail-table thead tr {
-  background: #f9fafb;
-}
+.detail-table thead tr { background: #f9fafb; }
 .detail-table th {
   text-align: left;
   padding: 10px 12px;
@@ -334,9 +497,7 @@
   border-bottom: 1px solid #f3f4f6;
   color: #374151;
 }
-.detail-table tr:last-child td {
-  border-bottom: none;
-}
+.detail-table tr:last-child td { border-bottom: none; }
 .detail-table tr.total-row td {
   background: #1b5e20;
   color: #fff;
@@ -346,30 +507,12 @@
 .detail-table .num { text-align: right; font-variant-numeric: tabular-nums; }
 .prod-val { color: #2e7d32; font-weight: 700; }
 
-/* ── Section heading ── */
-.section-heading {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 0;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .5px;
-  color: #1a2e1a;
-}
-.section-heading svg {
-  width: 18px; height: 18px;
-  stroke: #43a047; fill: none; stroke-width: 2;
-  stroke-linecap: round; stroke-linejoin: round;
-}
-
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .kpi-grid      { grid-template-columns: 1fr; }
   .charts-row    { grid-template-columns: 1fr; }
-  .regional-grid { grid-template-columns: 1fr; }
+  .smt-urban-row { grid-template-columns: 1fr; }
+  .top-prod-row  { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
   .agri-wrap { padding: 16px 12px 40px; }
@@ -414,18 +557,11 @@
       <div class="kpi-label">Luas Panen Aktif</div>
       <div class="kpi-value">{{ number_format($luas, 2) }}<span class="kpi-unit">ribu Ha</span></div>
       <div class="kpi-change {{ $luasPct > 0 ? 'up' : ($luasPct < 0 ? 'down' : 'flat') }}">
-        {{ $luasPct > 0 ? '↑' : ($luasPct < 0 ? '↓' : '—') }}
-        {{ abs($luasPct) }}%
+        {{ $luasPct > 0 ? '↑' : ($luasPct < 0 ? '↓' : '—') }} {{ abs($luasPct) }}%
       </div>
       <div class="kpi-compare">
-        <div class="kpi-compare-row">
-          <span>{{ $tahun - 1 }}</span>
-          <span>{{ number_format($luasPrev, 2) }} rb Ha</span>
-        </div>
-        <div class="kpi-compare-row">
-          <span>{{ $tahun }}</span>
-          <span>{{ number_format($luas, 2) }} rb Ha</span>
-        </div>
+        <div class="kpi-compare-row"><span>{{ $tahun - 1 }}</span><span>{{ number_format($luasPrev, 2) }} rb Ha</span></div>
+        <div class="kpi-compare-row"><span>{{ $tahun }}</span><span>{{ number_format($luas, 2) }} rb Ha</span></div>
       </div>
     </div>
 
@@ -439,18 +575,11 @@
       <div class="kpi-label">Produksi Total</div>
       <div class="kpi-value">{{ number_format($prod, 2) }}<span class="kpi-unit">juta Ton</span></div>
       <div class="kpi-change {{ $prodPct > 0 ? 'up' : ($prodPct < 0 ? 'down' : 'flat') }}">
-        {{ $prodPct > 0 ? '↑' : ($prodPct < 0 ? '↓' : '—') }}
-        {{ abs($prodPct) }}%
+        {{ $prodPct > 0 ? '↑' : ($prodPct < 0 ? '↓' : '—') }} {{ abs($prodPct) }}%
       </div>
       <div class="kpi-compare">
-        <div class="kpi-compare-row">
-          <span>{{ $tahun - 1 }}</span>
-          <span>{{ number_format($prodPrev, 2) }} jt Ton</span>
-        </div>
-        <div class="kpi-compare-row">
-          <span>{{ $tahun }}</span>
-          <span>{{ number_format($prod, 2) }} jt Ton</span>
-        </div>
+        <div class="kpi-compare-row"><span>{{ $tahun - 1 }}</span><span>{{ number_format($prodPrev, 2) }} jt Ton</span></div>
+        <div class="kpi-compare-row"><span>{{ $tahun }}</span><span>{{ number_format($prod, 2) }} jt Ton</span></div>
       </div>
     </div>
 
@@ -464,18 +593,11 @@
       <div class="kpi-label">Produktivitas Lahan</div>
       <div class="kpi-value">{{ number_format($prdv, 2) }}<span class="kpi-unit">Ku/Ha</span></div>
       <div class="kpi-change {{ $prdvPct > 0 ? 'up' : ($prdvPct < 0 ? 'down' : 'flat') }}">
-        {{ $prdvPct > 0 ? '↑' : ($prdvPct < 0 ? '↓' : '—') }}
-        {{ abs($prdvPct) }}%
+        {{ $prdvPct > 0 ? '↑' : ($prdvPct < 0 ? '↓' : '—') }} {{ abs($prdvPct) }}%
       </div>
       <div class="kpi-compare">
-        <div class="kpi-compare-row">
-          <span>{{ $tahun - 1 }}</span>
-          <span>{{ number_format($prdvPrev, 2) }} Ku/Ha</span>
-        </div>
-        <div class="kpi-compare-row">
-          <span>{{ $tahun }}</span>
-          <span>{{ number_format($prdv, 2) }} Ku/Ha</span>
-        </div>
+        <div class="kpi-compare-row"><span>{{ $tahun - 1 }}</span><span>{{ number_format($prdvPrev, 2) }} Ku/Ha</span></div>
+        <div class="kpi-compare-row"><span>{{ $tahun }}</span><span>{{ number_format($prdv, 2) }} Ku/Ha</span></div>
       </div>
     </div>
   </div>
@@ -483,7 +605,6 @@
   {{-- ════ CHARTS ════ --}}
   <div class="charts-row">
 
-    {{-- Grafik 1: Korelasi Luas Panen vs Produksi (Bar horizontal) --}}
     <div class="chart-card">
       <div class="chart-card-title">Grafik 1: Top Produksi per Kabupaten</div>
       <div class="chart-card-sub">Perbandingan Luas Panen & Rekap Produksi Padi — {{ $tahun }}</div>
@@ -499,7 +620,6 @@
       </p>
     </div>
 
-    {{-- Grafik 2: Volatilitas Musiman (Bar bulanan) --}}
     <div class="chart-card">
       <div class="chart-card-title">Grafik 2: Volatilitas Musiman (Bulanan)</div>
       <div class="chart-card-sub">Luas Panen Bulanan — {{ $tahun }} vs {{ $tahun - 1 }}</div>
@@ -516,81 +636,156 @@
     </div>
   </div>
 
-  {{-- ════ REGIONAL ════ --}}
-  <div class="regional-card">
-    <div class="section-heading">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Regional Performance &amp; Risk Concentration
+  {{-- ════ SEMESTER + URBAN VS RURAL (2-col) ════ --}}
+  @php
+    $smt1Total = $semesterData->smt1 ?? 0;
+    $smt2Total = $semesterData->smt2 ?? 0;
+    $smtGrand  = $smt1Total + $smt2Total;
+    $smt1Pct   = $smtGrand > 0 ? round($smt1Total / $smtGrand * 100) : 0;
+    $smt2Pct   = 100 - $smt1Pct;
+
+    $kotaVal = round($urbanRuralData->kota ?? 0, 1);
+    $kabVal  = round($urbanRuralData->kabupaten ?? 0, 1);
+    $urMax   = max($kotaVal, $kabVal, 1);
+  @endphp
+
+  <div class="smt-urban-row">
+
+    {{-- Distribusi Semesteran --}}
+    <div class="semester-card">
+      <div class="reg-section-title">Distribusi Semesteran</div>
+
+      <div class="semester-donut-area">
+        <div class="semester-donut-container">
+          <canvas id="chartSemester" width="160" height="160"></canvas>
+          <div class="semester-donut-center">
+            <div class="semester-donut-pct">{{ $smt1Pct }}%</div>
+            <div class="semester-donut-sub">SMT 1 Focus</div>
+          </div>
+        </div>
+        <div class="semester-legend">
+          <div class="semester-legend-item">
+            <span class="semester-legend-dot" style="background:#1b5e20"></span> SMT 1
+          </div>
+          <div class="semester-legend-item">
+            <span class="semester-legend-dot" style="background:#f9a825"></span> SMT 2
+          </div>
+        </div>
+      </div>
+
+      <div class="semester-stats">
+        <div class="semester-stat-row">
+          <span class="semester-stat-label">SMT 1 (Jan–Jun)</span>
+          <span class="semester-stat-val">{{ number_format($smt1Total, 0, ',', '.') }} Ha</span>
+        </div>
+        <div class="semester-stat-row">
+          <span class="semester-stat-label">SMT 2 (Jul–Des)</span>
+          <span class="semester-stat-val">{{ number_format($smt2Total, 0, ',', '.') }} Ha</span>
+        </div>
+        <div class="semester-stat-row" style="border-top:1px solid #f3f4f6;padding-top:6px;margin-top:2px">
+          <span class="semester-stat-label" style="font-weight:700;color:#374151">Total {{ $tahun }}</span>
+          <span class="semester-stat-val" style="color:#1b5e20">{{ number_format($smtGrand, 0, ',', '.') }} Ha</span>
+        </div>
+      </div>
     </div>
 
-    <div class="regional-grid">
-      {{-- Top Lumbung Padi --}}
-      <div>
-        <div class="reg-section-title">Top Lumbung Padi</div>
-        @foreach($topKab as $i => $kab)
-          @php $pct = $totalProduksi > 0 ? round($kab->produksi / $totalProduksi * 100) : 0; @endphp
-          <div class="top-kab-item">
-            <div class="top-kab-name">
-              <span>{{ Str::limit($kab->nama_kabupaten_kota, 22) }}</span>
-              <span class="top-kab-pct">{{ $pct }}%</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:{{ $pct }}%"></div>
-            </div>
-          </div>
-        @endforeach
-      </div>
+    {{-- Urban vs Rural --}}
+    <div class="urban-rural-card">
+      <div class="reg-section-title">Urban vs Rural Farming</div>
 
-      {{-- Konsentrasi Risiko (Donut) --}}
-      <div class="donut-wrap">
-        <div class="reg-section-title" style="text-align:center">Konsentrasi Risiko</div>
-        <canvas id="chartDonut" width="150" height="150"></canvas>
-        @php
-          $top3Share = $topKab->take(3)->sum('produksi');
-          $top3Pct   = $totalProduksi > 0 ? round($top3Share / $totalProduksi * 100) : 0;
-        @endphp
-        <div style="text-align:center">
-          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:#c62828">{{ $top3Pct }}%</div>
-          <div style="font-size:11px;color:#9ca3af;margin-top:2px">"1/3 ketahanan rentan pada 3 daerah."</div>
-          <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:8px;font-size:11px">
-            <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#c62828;display:inline-block"></span> TOP 3</span>
-            <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#e5e7eb;display:inline-block"></span> Lainnya</span>
+      <div class="urban-rural-body">
+        <div>
+          <div class="ur-item-header">
+            <div class="ur-item-label">Kota</div>
+            <div class="ur-item-val" style="color:#f9a825">{{ number_format($kotaVal, 1) }} Ku/Ha</div>
+          </div>
+          <div class="ur-bar-track">
+            <div class="ur-bar-fill" style="width:{{ round($kotaVal/$urMax*100) }}%;background:#f9a825"></div>
+          </div>
+        </div>
+        <div>
+          <div class="ur-item-header">
+            <div class="ur-item-label">Kabupaten</div>
+            <div class="ur-item-val" style="color:#1565c0">{{ number_format($kabVal, 1) }} Ku/Ha</div>
+          </div>
+          <div class="ur-bar-track">
+            <div class="ur-bar-fill" style="width:{{ round($kabVal/$urMax*100) }}%;background:#1565c0"></div>
           </div>
         </div>
       </div>
 
-      {{-- Zona Kinerja YoY --}}
-      <div>
-        <div class="reg-section-title">Zona Kinerja Lahan (YoY)</div>
-        <div class="yoy-zone">
-          <div class="yoy-zone-label up">↑ Top Gainers</div>
-          @foreach($gainers as $g)
-            <div class="yoy-item">
-              <span class="yoy-arrow up">▲</span>
-              {{ Str::limit($g->nama_kabupaten_kota, 24) }}
-              <span style="font-size:11px;color:#16a34a;margin-left:auto">+{{ round($g->pct_change, 1) }}%</span>
-            </div>
-          @endforeach
-        </div>
-        <div class="yoy-zone">
-          <div class="yoy-zone-label down">↓ Top Losers</div>
-          @foreach($losers as $l)
-            <div class="yoy-item">
-              <span class="yoy-arrow down">▼</span>
-              {{ Str::limit($l->nama_kabupaten_kota, 24) }}
-              <span style="font-size:11px;color:#dc2626;margin-left:auto">{{ round($l->pct_change, 1) }}%</span>
-            </div>
-          @endforeach
+      <div class="ur-note">
+        Note: High efficiency observed in urban buffer zones due to intensive tech adoption.
+      </div>
+    </div>
+  </div>
+
+  {{-- ════ TOP 5 PRODUKSI TERBANYAK & TERDIKIT ════ --}}
+  @php
+    // Filter keluar nama yang mengandung "Jawa Timur" dari top/bottom
+    $topKabFiltered    = ($topKabData ?? collect())->filter(fn($k) => stripos($k->nama_kabupaten_kota, 'Jawa Timur') === false)->values();
+    $bottomKabFiltered = ($bottomKabData ?? collect())->filter(fn($k) => stripos($k->nama_kabupaten_kota, 'Jawa Timur') === false)->values();
+    $topKabMax         = $topKabFiltered->max('produksi') ?: 1;
+    $bottomKabMax      = $bottomKabFiltered->max('produksi') ?: 1;
+  @endphp
+
+  <div class="top-prod-row">
+
+    {{-- Top 5 Terbanyak --}}
+    <div class="top-prod-card">
+      <div class="top-prod-header">
+        <span class="top-prod-icon">🏆</span>
+        <div>
+          <span class="top-prod-title">Top 5 Produksi Terbanyak</span>
+          <span class="top-prod-subtitle">(Lumbung Padi)</span>
         </div>
       </div>
+      @foreach($topKabFiltered->take(5) as $kab)
+        @php $barW = round($kab->produksi / $topKabMax * 100); @endphp
+        <div class="top-kab-item">
+          <div class="top-kab-name">
+            <span>{{ $kab->nama_kabupaten_kota }}</span>
+            <span class="top-kab-val green">{{ number_format($kab->produksi, 0, ',', '.') }} Ton</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill gold" style="width:{{ $barW }}%"></div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+
+    {{-- Top 5 Terdikit --}}
+    <div class="top-prod-card">
+      <div class="top-prod-header">
+        <span class="top-prod-icon">⚠️</span>
+        <div>
+          <span class="top-prod-title">Top 5 Produksi Terdikit</span>
+          <span class="top-prod-subtitle">(Area Defisit)</span>
+        </div>
+      </div>
+      @foreach($bottomKabFiltered->take(5) as $kab)
+        @php $barW = round($kab->produksi / $bottomKabMax * 100); @endphp
+        <div class="top-kab-item">
+          <div class="top-kab-name">
+            <span>{{ $kab->nama_kabupaten_kota }}</span>
+            <span class="top-kab-val red">{{ number_format($kab->produksi, 0, ',', '.') }} Ton</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill red" style="width:{{ $barW }}%"></div>
+          </div>
+        </div>
+      @endforeach
     </div>
   </div>
 
   {{-- ════ DETAIL TABLE ════ --}}
   <div class="detail-card">
-    <div class="section-heading">
-      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
-      Detail Data Bulanan {{ $tahun }}
+    <div class="detail-table-header">
+      <div class="section-heading">
+        <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+        Tabel Rincian Konsolidasi Bulanan {{ $tahun }}
+      </div>
+      <a href="#" class="detail-table-link">Lihat Semua ›</a>
     </div>
 
     <table class="detail-table">
@@ -599,7 +794,7 @@
           <th>Bulan</th>
           <th class="num">Luas Panen (Ha)</th>
           <th class="num">Produksi GKG (Ton)</th>
-          <th class="num">Produktivitas (Ton/Ha)</th>
+          <th class="num">Produktivitas (Ku/Ha)</th>
         </tr>
       </thead>
       <tbody>
@@ -636,15 +831,22 @@
 Chart.defaults.font.family = "'DM Sans', sans-serif";
 
 // ── Data from PHP ──
-const korelasiLabels  = @json($korelasiData->pluck('nama_kabupaten_kota')->map(fn($n)=>Str::limit($n,18)));
-const korelasiLuas    = @json($korelasiData->pluck('luas_panen'));
-const korelasiProd    = @json($korelasiData->pluck('produksi'));
+const dataKorelasi = @json(
+    $korelasiData
+        ->where('nama_kabupaten_kota', '!=', 'Jawa Timur')
+        ->values()
+);
 
-const bulanLabels     = @json($bulanCols);
-const musimanNow      = @json(collect($bulanCols)->map(fn($b)=>$musiman?->$b ?? 0));
-const musimanPrev     = @json(collect($bulanCols)->map(fn($b)=>$musimanPrev?->$b ?? 0));
+const korelasiLabels = dataKorelasi.map(x => x.nama_kabupaten_kota);
+const korelasiLuas   = dataKorelasi.map(x => x.luas_panen);
+const korelasiProd   = dataKorelasi.map(x => x.produksi);
 
-const donutTop3Pct    = {{ $top3Pct }};
+const bulanLabels    = @json($bulanCols);
+const musimanNow     = @json(collect($bulanCols)->map(fn($b)=>$musiman?->$b ?? 0));
+const musimanPrev    = @json(collect($bulanCols)->map(fn($b)=>$musimanPrev?->$b ?? 0));
+
+const smt1Pct = {{ $smt1Pct }};
+const smt2Pct = {{ $smt2Pct }};
 
 // ── Chart 1: Bar Chart Korelasi ──
 new Chart(document.getElementById('chartKorelasi'), {
@@ -652,49 +854,18 @@ new Chart(document.getElementById('chartKorelasi'), {
   data: {
     labels: korelasiLabels,
     datasets: [
-      {
-        label: 'Luas Panen (Ha)',
-        data: korelasiLuas,
-        backgroundColor: 'rgba(67,160,71,0.75)',
-        borderRadius: 5,
-        yAxisID: 'yLuas',
-      },
-      {
-        label: 'Produksi (Ton)',
-        data: korelasiProd,
-        backgroundColor: 'rgba(239,154,154,0.80)',
-        borderRadius: 5,
-        yAxisID: 'yProd',
-      }
+      { label:'Luas Panen (Ha)', data:korelasiLuas, backgroundColor:'rgba(67,160,71,0.75)', borderRadius:5, yAxisID:'yLuas' },
+      { label:'Produksi (Ton)',  data:korelasiProd, backgroundColor:'rgba(239,154,154,0.80)', borderRadius:5, yAxisID:'yProd' }
     ]
   },
   options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('id-ID')}`
-        }
-      }
-    },
-    scales: {
-      x: {
-        ticks: { font: { size: 10 }, maxRotation: 35 },
-        grid: { display: false }
-      },
-      yLuas: {
-        type: 'linear', position: 'left',
-        ticks: { font: { size: 10 }, callback: v => (v/1000).toFixed(0)+'rb' },
-        grid: { color: '#f3f4f6' }
-      },
-      yProd: {
-        type: 'linear', position: 'right',
-        ticks: { font: { size: 10 }, callback: v => (v/1000000).toFixed(1)+'jt' },
-        grid: { display: false }
-      }
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('id-ID')}` } } },
+    scales:{
+      x:{ ticks:{font:{size:10},maxRotation:35}, grid:{display:false} },
+      yLuas:{ type:'linear', position:'left',  ticks:{font:{size:10}, callback:v=>(v/1000).toFixed(0)+'rb'}, grid:{color:'#f3f4f6'} },
+      yProd:{ type:'linear', position:'right', ticks:{font:{size:10}, callback:v=>(v/1000000).toFixed(1)+'jt'}, grid:{display:false} }
     }
   }
 });
@@ -703,67 +874,41 @@ new Chart(document.getElementById('chartKorelasi'), {
 new Chart(document.getElementById('chartMusiman'), {
   type: 'bar',
   data: {
-    labels: bulanLabels.map(b => b.substring(0,3)),
+    labels: bulanLabels.map(b=>b.substring(0,3)),
     datasets: [
-      {
-        label: '{{ $tahun }}',
-        data: musimanNow,
-        backgroundColor: 'rgba(21,101,192,0.78)',
-        borderRadius: 4,
-      },
-      {
-        label: '{{ $tahun - 1 }}',
-        data: musimanPrev,
-        backgroundColor: 'rgba(249,168,37,0.72)',
-        borderRadius: 4,
-      }
+      { label:'{{ $tahun }}',     data:musimanNow,  backgroundColor:'rgba(21,101,192,0.78)', borderRadius:4 },
+      { label:'{{ $tahun - 1 }}', data:musimanPrev, backgroundColor:'rgba(249,168,37,0.72)', borderRadius:4 }
     ]
   },
   options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('id-ID')} Ha`
-        }
-      }
-    },
-    scales: {
-      x: {
-        ticks: { font: { size: 11 } },
-        grid: { display: false }
-      },
-      y: {
-        ticks: { font: { size: 10 }, callback: v => (v/1000).toFixed(0)+'rb' },
-        grid: { color: '#f3f4f6' }
-      }
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('id-ID')} Ha` } } },
+    scales:{
+      x:{ ticks:{font:{size:11}}, grid:{display:false} },
+      y:{ ticks:{font:{size:10}, callback:v=>(v/1000).toFixed(0)+'rb'}, grid:{color:'#f3f4f6'} }
     }
   }
 });
 
-// ── Donut Chart ──
-new Chart(document.getElementById('chartDonut'), {
+// ── Donut Chart: Distribusi Semesteran ──
+new Chart(document.getElementById('chartSemester'), {
   type: 'doughnut',
   data: {
-    labels: ['TOP 3', 'Lainnya'],
+    labels: ['SMT 1 (Jan–Jun)', 'SMT 2 (Jul–Des)'],
     datasets: [{
-      data: [donutTop3Pct, 100 - donutTop3Pct],
-      backgroundColor: ['#c62828', '#e5e7eb'],
+      data: [smt1Pct, smt2Pct],
+      backgroundColor: ['#1b5e20', '#f9a825'],
       borderWidth: 0,
       hoverOffset: 4,
     }]
   },
   options: {
     responsive: false,
-    cutout: '68%',
+    cutout: '70%',
     plugins: {
       legend: { display: false },
-      tooltip: {
-        callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed}%` }
-      }
+      tooltip: { callbacks:{ label:ctx=>`${ctx.label}: ${ctx.parsed}%` } }
     }
   }
 });

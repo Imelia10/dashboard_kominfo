@@ -24,9 +24,5 @@ class DashboardController extends Controller
         return view('pages.environment');
     }
 
-    public function education()
-    {
-        return view('pages.education');
-    }
 }
 

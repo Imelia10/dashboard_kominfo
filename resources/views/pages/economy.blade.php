@@ -196,7 +196,7 @@
       <div class="pg-breadcrumb-bar"></div>
       <span class="pg-breadcrumb-label">Dashboard</span>
     </div>
-    <h1 class="pg-title">Analisis Penyaluran <span style="color:#0284c7">BANSOS</span> Jawa Timur</h1>
+    <h1 class="pg-title">Analisis Penyaluran <span style="color:#0284c7">BANSOS Pangan</span> Jawa Timur</h1>
     <p class="pg-subtitle">Analisis Rencana vs Realisasi Kabupaten/Kota</p>
   </div>
   <form method="GET" action="{{ route('economy') }}">
@@ -243,7 +243,7 @@
     </div>
     <div class="kpi-group-cards">
 
-      {{-- Card: Total Rencana KPM --}}
+{{-- Card: Total Rencana KPM --}}
       <div class="kpi-card2 kpm">
         <div class="kpi2-icon-row">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -254,8 +254,9 @@
           </svg>
           <div class="kpi2-label">TOTAL RENCANA<br>KPM</div>
         </div>
-        <div class="kpi2-value">{{ number_format($totalRencanaKpm) }}</div>
-        <div class="kpi2-sub blue">Jiwa Terdata</div>
+        <div class="kpi2-value" style="font-size:24px;">{{ number_format($totalRencanaKpm) }}</div>
+        <div class="kpi2-sub blue">Jiwa</div>
+        <div style="font-size:11px;font-weight:700;color:transparent;user-select:none;">-</div>
       </div>
 
       {{-- Card: Total Realisasi KPM --}}
@@ -267,10 +268,11 @@
           </svg>
           <div class="kpi2-label">TOTAL REALISASI<br>KPM</div>
         </div>
-        <div class="kpi2-value">{{ number_format($totalRealisasiKpm) }}</div>
         @php $gapKpmProv = $totalRencanaKpm - $totalRealisasiKpm; @endphp
+        <div class="kpi2-value" style="font-size:24px;">{{ number_format($totalRealisasiKpm) }}</div>
+        <div class="kpi2-sub blue">Jiwa</div>
         <div class="kpi2-sub {{ $gapKpmProv>0?'red':'blue' }}">
-          Gap : {{ number_format(abs($gapKpmProv)) }}
+          Gap : {{ number_format(abs($gapKpmProv)) }} Jiwa
         </div>
       </div>
 
@@ -309,7 +311,7 @@
     </div>
     <div class="kpi-group-cards">
 
-      {{-- Card: Total Rencana Anggaran --}}
+     {{-- Card: Total Rencana Anggaran --}}
       <div class="kpi-card2 ang">
         <div class="kpi2-icon-row">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -318,8 +320,18 @@
           </svg>
           <div class="kpi2-label">TOTAL RENCANA<br>ANGGARAN</div>
         </div>
-        <div class="kpi2-value">{{ number_format($totalRencanaAng/1e12,2) }}T</div>
-        <div class="kpi2-sub brown">Rupiah</div>
+        @php
+          $rencanaRaw  = floor(($totalRencanaAng / 1e12) * 100) / 100;
+          $rencanaT    = number_format($rencanaRaw, 2);
+          $partsRen    = explode('.', $rencanaT);
+        @endphp
+        <div class="kpi2-value" style="display:flex;align-items:baseline;gap:1px;">
+          <span>{{ $partsRen[0] }}.</span>
+          <span style="font-size:24px;font-weight:900;color:#0f172a;">{{ $partsRen[1] }}T</span>
+        </div>
+        <div style="font-size:10px;font-weight:500;color:#94a3b8;margin-top:2px;">
+          Rp {{ number_format($totalRencanaAng) }}
+        </div>
       </div>
 
       {{-- Card: Total Realisasi Anggaran --}}
@@ -331,10 +343,21 @@
           </svg>
           <div class="kpi2-label">TOTAL REALISASI<br>ANGGARAN</div>
         </div>
-        <div class="kpi2-value">{{ number_format($totalRealisasiAng/1e12,2) }}T</div>
-        @php $gapAngProv = $totalRencanaAng - $totalRealisasiAng; @endphp
+        @php
+          $realisasiRaw = floor(($totalRealisasiAng / 1e12) * 100) / 100;
+          $realisasiT   = number_format($realisasiRaw, 2);
+          $partsReal    = explode('.', $realisasiT);
+          $gapAngProv   = $totalRencanaAng - $totalRealisasiAng;
+        @endphp
+        <div class="kpi2-value" style="display:flex;align-items:baseline;gap:1px;">
+          <span>{{ $partsReal[0] }}.</span>
+          <span style="font-size:24px;font-weight:900;color:#0f172a;">{{ $partsReal[1] }}T</span>
+        </div>
+        <div style="font-size:10px;font-weight:500;color:#94a3b8;margin-top:2px;">
+          Rp {{ number_format($totalRealisasiAng) }}
+        </div>
         <div class="kpi2-sub {{ $gapAngProv>0?'red':'brown' }}">
-          Gap : {{ number_format(abs($gapAngProv)/1e12,2) }}T
+          Gap : Rp {{ number_format(abs($gapAngProv)) }}
         </div>
       </div>
 
@@ -542,6 +565,20 @@
   </div>
 
 </div>{{-- /tbl-card --}}
+
+{{-- ── SUMBER DATA ─────────────────────────────────────────────── --}}
+<div style="margin-top:14px;display:flex;align-items:center;gap:8px;padding:12px 18px;background:#fff;border:1px solid rgba(203,213,225,.7);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="12" y1="8" x2="12" y2="12"/>
+    <line x1="12" y1="16" x2="12.01" y2="16"/>
+  </svg>
+  <span style="font-size:11.5px;color:#94a3b8;font-weight:500;">Sumber Data :</span>
+  <a href="https://jatim.bps.go.id/id/statistics-table/3/TWt0MVNGZFdiV2RaYTFoS1oyRnRSVTFOYUhSc1VUMDkjMyMzNTAw/jumlah-keluarga-penerima-manfaat--kpm--dan-anggaran-bantuan-sosial-pangan-menurut-kabupaten-kota-di-provinsi-jawa-timur.html?year=2024" target="_blank"
+     style="font-size:11.5px;color:#0284c7;font-weight:600;text-decoration:none;">
+    Badan Pusat Statistika Provinsi Jawa Timur
+  </a>
+</div>
 
 </div>{{-- /page-wrapper --}}
 </div>{{-- /page-inner --}}

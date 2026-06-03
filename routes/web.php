@@ -28,7 +28,6 @@ Route::get('/demographics', [DesaController::class, 'demographics'])->name('demo
 
 // ── Sektoral ───────────────────────────────────────────────────
 Route::get('/environment', [EnvironmentController::class, 'index'])->name('environment');
-Route::get('/education',   [DashboardController::class,   'education'])->name('education');
 Route::get('/perikanan',   [PerikananController::class,   'index'])->name('perikanan');
 Route::get('/agri',        [AgriController::class,        'index'])->name('agri');
 Route::get('/bencana',   [BencanaController::class, 'index'])->name('bencana');  // ← DIG

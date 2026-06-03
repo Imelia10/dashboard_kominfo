@@ -7,7 +7,7 @@
 <style>
 /* ── RESET ─────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
+body,html{font-family:'DM Sans',sans-serif;background:#F0EEE8;color:#1C1917;}
 
 /* ── DESIGN TOKENS ─────────────────────── */
 :root{
@@ -17,63 +17,60 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
   --ink-3:     #78716C;
   --ink-4:     #A8A29E;
   --surface:   #FFFFFF;
-  --bg:        #FAFAF8;
-  --bg-2:      #F5F4F0;
-  --line:      rgba(28,25,23,.08);
-  --line-2:    rgba(28,25,23,.14);
+  --bg:        #fefaf2;
+  --bg-2:      #E8E5DD;
+  --line:      rgba(28,25,23,.10);
+  --line-2:    rgba(28,25,23,.18);
 
-  /* Accent – vermilion (punchy, not basic red) */
-  --acc:       #D63B1F;
-  --acc-lt:    #FDF1EE;
-  --acc-md:    #F9C9BF;
-  --acc-dk:    #A02D16;
+  /* Accent – deep coral-vermilion */
+  --acc:       #C8391A;
+  --acc-lt:    #FEF0EB;
+  --acc-md:    #F5B8A6;
+  --acc-dk:    #8B2610;
+  --acc-bg:    #FDE8E2;
 
-  /* Positive – sage green */
-  --pos:       #2D7D53;
-  --pos-lt:    #EEF7F2;
-  --pos-md:    #B5DFC9;
-  --pos-dk:    #1F5C3A;
+  /* Positive – rich emerald */
+  --pos:       #1A7A4A;
+  --pos-lt:    #E8F7EF;
+  --pos-md:    #8ED8B4;
+  --pos-dk:    #0F5433;
+  --pos-bg:    #D4F0E3;
 
-  /* Caution – warm amber */
-  --cau:       #C47B0A;
-  --cau-lt:    #FDF6E8;
-  --cau-md:    #F8DFA0;
+  /* Caution – deep amber */
+  --cau:       #B86A00;
+  --cau-lt:    #FEF5E4;
+  --cau-md:    #F5CD78;
+  --cau-dk:    #7A4600;
 
-  /* Info – slate blue */
-  --inf:       #3456A8;
-  --inf-lt:    #EEF2FB;
-  --inf-md:    #BCC9F0;
+  /* Info – rich indigo */
+  --inf:       #3D52B8;
+  --inf-lt:    #EDF0FC;
+  --inf-md:    #B4BFEF;
+  --inf-dk:    #243080;
+  --inf-bg:    #DDE2F8;
 
   /* Geometry */
   --r:  10px;
   --r2: 6px;
-  --r3: 16px;
+  --r3: 14px;
 
-  /* Shadow – very subtle, warm-tinted */
-  --sh: 0 1px 2px rgba(28,25,23,.04), 0 4px 12px rgba(28,25,23,.06);
-  --sh2:0 8px 24px rgba(28,25,23,.1);
+  /* Shadow – warm-tinted, more visible */
+  --sh: 0 1px 3px rgba(28,25,23,.06), 0 6px 16px rgba(28,25,23,.09);
+  --sh2:0 12px 32px rgba(28,25,23,.14);
 }
 
 /* ── TYPE SYSTEM ───────────────────────── */
 .f-display{font-family:'Sora',sans-serif;}
 .f-mono   {font-family:'DM Mono',monospace;}
 
-/* ── TOPBAR ────────────────────────────── */
-
-
-.yr-sel:focus{
-  border-color:var(--acc);
-  box-shadow:0 0 0 3px rgba(214,59,31,.12);
-}
-
 /* ── PAGE BODY ─────────────────────────── */
 .page{padding:32px 36px 96px;max-width:1440px;margin:0 auto;}
 
 /* ── SECTION DIVIDER ───────────────────── */
 .sec{margin:40px 0 20px;display:flex;align-items:center;gap:16px;}
-.sec-rule{flex:1;height:1px;background:var(--line);}
+.sec-rule{flex:1;height:1px;background:var(--line-2);}
 .sec-q{
-  font-family:'Sora',sans-serif;font-size:16px;font-weight:600;
+  font-family:'Sora',sans-serif;font-size:15px;font-weight:700;
   color:var(--ink);white-space:nowrap;
 }
 .sec-tag{
@@ -82,67 +79,79 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 }
 .sec-tag.acc  {background:var(--acc-lt);color:var(--acc-dk);}
 .sec-tag.pos  {background:var(--pos-lt);color:var(--pos-dk);}
-.sec-tag.inf  {background:var(--inf-lt);color:var(--inf);}
+.sec-tag.inf  {background:var(--inf-lt);color:var(--inf-dk);}
 
 /* ── KPI STRIP ─────────────────────────── */
-.kpi-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.kpi-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 @media(max-width:768px){.kpi-strip{grid-template-columns:1fr;}}
 
 .kpi{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r3);
-  padding:24px;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s;
+  padding:26px;position:relative;overflow:hidden;
+  transition:box-shadow .2s,transform .2s;
+  box-shadow:var(--sh);
 }
-.kpi:hover{box-shadow:var(--sh2);transform:translateY(-2px);}
+.kpi:hover{box-shadow:var(--sh2);transform:translateY(-3px);}
 
-/* Left border accent instead of top stripe */
-.kpi.v-acc {border-left:3px solid var(--acc);}
-.kpi.v-pos {border-left:3px solid var(--pos);}
-.kpi.v-cau {border-left:3px solid var(--cau);}
+/* Colored bottom border accent */
+.kpi.v-acc {border-bottom:4px solid var(--acc);}
+.kpi.v-pos {border-bottom:4px solid var(--pos);}
+.kpi.v-cau {border-bottom:4px solid var(--cau);}
 
-.kpi-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
+/* Large colored bg patch top-right */
+.kpi::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:110px;height:110px;border-radius:50%;opacity:.07;
+}
+.kpi.v-acc::before{background:var(--acc);}
+.kpi.v-pos::before{background:var(--pos);}
+.kpi.v-cau::before{background:var(--cau);}
+
+.kpi-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
 .kpi-icon{
-  width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-  font-size:17px;
+  width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;
 }
-.kpi.v-acc .kpi-icon{background:var(--acc-lt);}
-.kpi.v-pos .kpi-icon{background:var(--pos-lt);}
+.kpi.v-acc .kpi-icon{background:var(--acc-bg);}
+.kpi.v-pos .kpi-icon{background:var(--pos-bg);}
 .kpi.v-cau .kpi-icon{background:var(--cau-lt);}
 
 .kpi-num-label{
-  font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-  padding:3px 8px;border-radius:4px;
+  font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;
+  padding:4px 10px;border-radius:99px;
 }
-.kpi.v-acc .kpi-num-label{background:var(--acc-lt);color:var(--acc-dk);}
-.kpi.v-pos .kpi-num-label{background:var(--pos-lt);color:var(--pos-dk);}
-.kpi.v-cau .kpi-num-label{background:var(--cau-lt);color:var(--cau);}
+.kpi.v-acc .kpi-num-label{background:var(--acc-bg);color:var(--acc-dk);}
+.kpi.v-pos .kpi-num-label{background:var(--pos-bg);color:var(--pos-dk);}
+.kpi.v-cau .kpi-num-label{background:var(--cau-lt);color:var(--cau-dk);}
 
-.kpi-lbl{font-size:16px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px;}
+.kpi-lbl{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-4);margin-bottom:7px;}
 .kpi-val{
-  font-family:'Sora',sans-serif;font-size:40px;font-weight:700;
-  color:var(--ink);line-height:1;margin-bottom:5px;
+  font-family:'Sora',sans-serif;font-size:44px;font-weight:800;
+  color:var(--ink);line-height:1;margin-bottom:6px;
 }
 .kpi.v-acc .kpi-val{color:var(--acc);}
 .kpi.v-pos .kpi-val{color:var(--pos);}
 .kpi.v-cau .kpi-val{color:var(--cau);}
-.kpi-sub{font-size:14px;color:var(--ink-4);}
+.kpi-sub{font-size:13px;color:var(--ink-4);}
 
 /* ── CARD ──────────────────────────────── */
 .card{
   background:var(--surface);border:1px solid var(--line);
   border-radius:var(--r3);padding:24px;
+  box-shadow:var(--sh);
 }
 .card-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px;}
-.card-meta{font-size:10px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-4);margin-bottom:4px;}
-.card-title{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px;}
+.card-meta{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-4);margin-bottom:5px;}
+.card-title{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;}
 .card-desc{font-size:11px;color:var(--ink-3);line-height:1.6;}
 .card-badge{
-  flex-shrink:0;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;
+  flex-shrink:0;font-size:10px;font-weight:700;padding:5px 11px;border-radius:8px;
   font-family:'DM Mono',monospace;white-space:nowrap;
 }
-.card-badge.acc  {background:var(--acc-lt);color:var(--acc-dk);}
-.card-badge.pos  {background:var(--pos-lt);color:var(--pos-dk);}
-.card-badge.cau  {background:var(--cau-lt);color:var(--cau);}
-.card-badge.inf  {background:var(--inf-lt);color:var(--inf);}
+.card-badge.acc  {background:var(--acc-bg);color:var(--acc-dk);}
+.card-badge.pos  {background:var(--pos-bg);color:var(--pos-dk);}
+.card-badge.cau  {background:var(--cau-lt);color:var(--cau-dk);}
+.card-badge.inf  {background:var(--inf-bg);color:var(--inf-dk);}
 
 /* ── GRID LAYOUTS ──────────────────────── */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -155,44 +164,44 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 .h-map{height:480px;border-radius:12px;overflow:hidden;position:relative;}
 
 /* ── LEGEND ────────────────────────────── */
-.lgd{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--ink-2);}
-.ldot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.lgd{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ink-2);}
+.ldot{width:9px;height:9px;border-radius:3px;flex-shrink:0;}
 
 /* ── TAB BUTTONS ───────────────────────── */
 .tab-btn{
-  padding:6px 14px;font-size:11px;font-weight:600;border-radius:7px;cursor:pointer;
-  border:1px solid var(--line-2);background:var(--bg-2);color:var(--ink-3);
+  padding:7px 16px;font-size:11px;font-weight:700;border-radius:8px;cursor:pointer;
+  border:1.5px solid var(--line-2);background:var(--bg-2);color:var(--ink-3);
   transition:all .14s;font-family:'DM Sans',sans-serif;
 }
-.tab-btn.is-acc{background:var(--acc-lt);color:var(--acc-dk);border-color:var(--acc-md);}
-.tab-btn.is-pos{background:var(--pos-lt);color:var(--pos-dk);border-color:var(--pos-md);}
+.tab-btn.is-acc{background:var(--acc-bg);color:var(--acc-dk);border-color:var(--acc-md);}
+.tab-btn.is-pos{background:var(--pos-bg);color:var(--pos-dk);border-color:var(--pos-md);}
 
 /* ── RANK TABLE ────────────────────────── */
 .rk-no{
-  width:24px;height:24px;border-radius:50%;display:inline-flex;
-  align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;
+  width:26px;height:26px;border-radius:50%;display:inline-flex;
+  align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;
 }
 .rk-1{background:#FEF0C7;color:#92400E;}
 .rk-2{background:#F1F5F9;color:#334155;}
-.rk-3{background:var(--acc-lt);color:var(--acc-dk);}
+.rk-3{background:var(--acc-bg);color:var(--acc-dk);}
 .rk-n{background:var(--bg-2);color:var(--ink-4);}
-.arr-up{color:var(--acc);font-weight:700;font-size:11px;}
-.arr-dn{color:var(--pos);font-weight:700;font-size:11px;}
+.arr-up{color:var(--acc);font-weight:800;font-size:11px;}
+.arr-dn{color:var(--pos);font-weight:800;font-size:11px;}
 .arr-eq{color:var(--ink-4);font-size:11px;}
 
 /* ── DATA TABLE ────────────────────────── */
 .dtbl{width:100%;border-collapse:collapse;font-size:12px;}
 .dtbl thead tr{background:var(--bg-2);}
 .dtbl thead th{
-  padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.8px;color:var(--ink-4);text-align:right;white-space:nowrap;
+  padding:10px 14px;font-size:9px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.9px;color:var(--ink-4);text-align:right;white-space:nowrap;
 }
 .dtbl thead th:first-child,.dtbl thead th:nth-child(2){text-align:left;}
 .dtbl tbody tr{border-bottom:1px solid var(--bg-2);transition:background .1s;}
 .dtbl tbody tr:hover{background:var(--acc-lt);}
 .dtbl td{padding:10px 14px;vertical-align:middle;}
 .td-no  {color:var(--ink-4);font-family:'DM Mono',monospace;font-size:10px;}
-.td-nm  {font-weight:600;color:var(--ink);}
+.td-nm  {font-weight:700;color:var(--ink);}
 .td-v25 {text-align:right;font-weight:700;color:var(--acc);font-family:'DM Mono',monospace;}
 .td-v23 {text-align:right;color:var(--ink-4);font-family:'DM Mono',monospace;}
 .td-dff {text-align:right;font-weight:700;font-family:'DM Mono',monospace;}
@@ -201,21 +210,21 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 .td-sts {text-align:center;}
 
 /* ── STATUS BADGE ──────────────────────── */
-.sts-badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:10px;font-weight:600;}
-.sts-badge.atas  {background:var(--acc-lt);color:var(--acc-dk);}
-.sts-badge.bawah {background:var(--pos-lt);color:var(--pos-dk);}
-.sts-badge.th25  {background:var(--inf-lt);color:var(--inf);}
-.sts-badge.th23  {background:var(--cau-lt);color:var(--cau);}
+.sts-badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;}
+.sts-badge.atas  {background:var(--acc-bg);color:var(--acc-dk);}
+.sts-badge.bawah {background:var(--pos-bg);color:var(--pos-dk);}
+.sts-badge.th25  {background:var(--inf-bg);color:var(--inf-dk);}
+.sts-badge.th23  {background:var(--cau-lt);color:var(--cau-dk);}
 
 /* ── SEARCH ────────────────────────────── */
 .srch-wrap{position:relative;}
 .srch-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;}
 .srch-inp{
-  padding:8px 12px 8px 32px;border:1px solid var(--line-2);border-radius:8px;
-  font-size:12px;font-family:'DM Sans',sans-serif;color:var(--ink);width:200px;
+  padding:8px 12px 8px 32px;border:1.5px solid var(--line-2);border-radius:9px;
+  font-size:12px;font-family:'DM Sans',sans-serif;color:var(--ink);width:210px;
   outline:none;transition:border-color .15s;background:var(--surface);
 }
-.srch-inp:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(214,59,31,.07);}
+.srch-inp:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(200,57,26,.09);}
 
 /* ── PAGINATION ────────────────────────── */
 .pagi-wrap{
@@ -225,8 +234,8 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 .pagi-info{font-size:11px;color:var(--ink-4);}
 .pagi-btns{display:flex;gap:4px;}
 .pagi-btn{
-  width:30px;height:30px;border-radius:7px;border:1px solid var(--line-2);
-  background:var(--surface);color:var(--ink-2);font-size:11px;font-weight:600;
+  width:30px;height:30px;border-radius:7px;border:1.5px solid var(--line-2);
+  background:var(--surface);color:var(--ink-2);font-size:11px;font-weight:700;
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   transition:all .14s;font-family:'DM Sans',sans-serif;
 }
@@ -237,7 +246,7 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 /* ── MODAL OVERLAY ─────────────────────── */
 .drill-ov{
   display:none;position:fixed;inset:0;z-index:9000;
-  background:rgba(28,25,23,.5);backdrop-filter:blur(6px);
+  background:rgba(28,25,23,.55);backdrop-filter:blur(8px);
   align-items:center;justify-content:center;
 }
 .drill-ov.show{display:flex;animation:ov-in .18s ease;}
@@ -245,8 +254,8 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 
 .drill-card{
   background:var(--surface);border:1px solid var(--line);border-radius:20px;
-  width:400px;max-width:calc(100vw - 32px);overflow:hidden;
-  box-shadow:0 40px 100px rgba(28,25,23,.25),0 4px 16px rgba(28,25,23,.1);
+  width:420px;max-width:calc(100vw - 32px);overflow:hidden;
+  box-shadow:0 40px 100px rgba(28,25,23,.28),0 4px 16px rgba(28,25,23,.1);
   animation:card-in .22s cubic-bezier(.22,1,.36,1);
 }
 @keyframes card-in{
@@ -255,19 +264,19 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 }
 
 .drill-top{
-  padding:20px 22px 18px;border-bottom:1px solid var(--line);
+  padding:22px 24px 20px;border-bottom:1px solid var(--line);
   display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
 }
-.drill-top.t-acc{background:var(--acc-lt);border-bottom-color:var(--acc-md);}
-.drill-top.t-inf{background:var(--inf-lt);border-bottom-color:var(--inf-md);}
-.drill-top.t-pos{background:var(--pos-lt);border-bottom-color:var(--pos-md);}
+.drill-top.t-acc{background:linear-gradient(135deg,var(--acc-bg) 0%,var(--acc-lt) 100%);border-bottom-color:var(--acc-md);}
+.drill-top.t-inf{background:linear-gradient(135deg,var(--inf-bg) 0%,var(--inf-lt) 100%);border-bottom-color:var(--inf-md);}
+.drill-top.t-pos{background:linear-gradient(135deg,var(--pos-bg) 0%,var(--pos-lt) 100%);border-bottom-color:var(--pos-md);}
 
 .drill-eyebrow{
-  font-size:9px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;
-  display:flex;align-items:center;gap:5px;margin-bottom:5px;
+  font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  display:flex;align-items:center;gap:5px;margin-bottom:6px;
 }
 .t-acc .drill-eyebrow{color:var(--acc-dk);}
-.t-inf .drill-eyebrow{color:var(--inf);}
+.t-inf .drill-eyebrow{color:var(--inf-dk);}
 .t-pos .drill-eyebrow{color:var(--pos-dk);}
 
 .drill-eyebrow-dot{width:6px;height:6px;border-radius:50%;}
@@ -275,12 +284,12 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 .t-inf .drill-eyebrow-dot{background:var(--inf);}
 .t-pos .drill-eyebrow-dot{background:var(--pos);}
 
-.drill-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;color:var(--ink);}
-.drill-sub  {font-size:11px;color:var(--ink-3);margin-top:2px;}
+.drill-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--ink);}
+.drill-sub  {font-size:11px;color:var(--ink-3);margin-top:3px;}
 
 .drill-close{
-  width:28px;height:28px;border-radius:7px;border:1px solid var(--line-2);
-  background:rgba(255,255,255,.6);color:var(--ink-3);font-size:13px;cursor:pointer;
+  width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line-2);
+  background:rgba(255,255,255,.7);color:var(--ink-3);font-size:14px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;
 }
 .drill-close:hover{background:var(--surface);color:var(--ink);}
@@ -288,9 +297,9 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 .drill-body{padding:18px 22px;display:flex;flex-direction:column;gap:12px;}
 .drill-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 
-.drill-stat{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:14px;}
-.drill-stat-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-4);margin-bottom:6px;}
-.drill-stat-val{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;line-height:1;margin-bottom:3px;}
+.drill-stat{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:15px;}
+.drill-stat-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--ink-4);margin-bottom:7px;}
+.drill-stat-val{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;line-height:1;margin-bottom:4px;}
 .drill-stat-sub{font-size:10px;color:var(--ink-4);}
 .c-acc .drill-stat-val{color:var(--acc);}
 .c-pos .drill-stat-val{color:var(--pos);}
@@ -298,26 +307,33 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 .c-dk  .drill-stat-val{color:var(--ink);}
 
 .drill-hl{border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.drill-hl.hl-acc{background:var(--acc-lt);border:1px solid var(--acc-md);}
-.drill-hl.hl-pos{background:var(--pos-lt);border:1px solid var(--pos-md);}
-.drill-hl.hl-inf{background:var(--inf-lt);border:1px solid var(--inf-md);}
-.drill-hl.hl-cau{background:var(--cau-lt);border:1px solid var(--cau-md);}
+.drill-hl.hl-acc{background:var(--acc-bg);border:1.5px solid var(--acc-md);}
+.drill-hl.hl-pos{background:var(--pos-bg);border:1.5px solid var(--pos-md);}
+.drill-hl.hl-inf{background:var(--inf-bg);border:1.5px solid var(--inf-md);}
+.drill-hl.hl-cau{background:var(--cau-lt);border:1.5px solid var(--cau-md);}
 .drill-hl-txt{font-size:12px;font-weight:500;color:var(--ink-2);line-height:1.6;}
-.drill-hl-num{font-family:'Sora',sans-serif;font-size:34px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.drill-hl-num{font-family:'Sora',sans-serif;font-size:36px;font-weight:800;white-space:nowrap;flex-shrink:0;}
 .hl-acc .drill-hl-num{color:var(--acc);}
 .hl-pos .drill-hl-num{color:var(--pos);}
 .hl-inf .drill-hl-num{color:var(--inf);}
 .hl-cau .drill-hl-num{color:var(--cau);}
+
+/* ── TOPBAR ────────────────────────────── */
+.topbar{
+  background:var(--surface);
+  border-bottom:1px solid rgba(28,25,23,.1);
+  position:sticky;top:0;z-index:20;
+}
 
 /* ── LEAFLET OVERRIDES ─────────────────── */
 .leaflet-popup-content-wrapper{border-radius:14px!important;padding:0!important;border:none!important;overflow:hidden;box-shadow:0 20px 60px rgba(28,25,23,.22)!important;font-family:'DM Sans',sans-serif!important;}
 .leaflet-popup-tip-container{display:none!important;}
 .leaflet-popup-content{margin:0!important;}
 .leaflet-popup-close-button{top:12px!important;right:12px!important;color:rgba(255,255,255,.8)!important;font-size:16px!important;z-index:10;font-weight:400!important;}
-.leaflet-tooltip{background:var(--ink)!important;border:none!important;color:#F5F4F0!important;font-family:'DM Sans',sans-serif!important;font-size:11px!important;font-weight:600!important;border-radius:7px!important;padding:5px 10px!important;box-shadow:0 4px 16px rgba(28,25,23,.2)!important;}
+.leaflet-tooltip{background:var(--ink)!important;border:none!important;color:#F5F4F0!important;font-family:'DM Sans',sans-serif!important;font-size:11px!important;font-weight:700!important;border-radius:8px!important;padding:5px 10px!important;box-shadow:0 4px 16px rgba(28,25,23,.2)!important;}
 .leaflet-tooltip::before{display:none!important;}
-.leaflet-control-zoom{border:none!important;box-shadow:var(--sh)!important;border-radius:9px!important;overflow:hidden;}
-.leaflet-control-zoom-in,.leaflet-control-zoom-out{font-family:'DM Sans',sans-serif!important;font-weight:600!important;color:var(--ink-2)!important;border:none!important;width:30px!important;height:30px!important;line-height:30px!important;}
+.leaflet-control-zoom{border:none!important;box-shadow:var(--sh)!important;border-radius:10px!important;overflow:hidden;}
+.leaflet-control-zoom-in,.leaflet-control-zoom-out{font-family:'DM Sans',sans-serif!important;font-weight:700!important;color:var(--ink-2)!important;border:none!important;width:32px!important;height:32px!important;line-height:32px!important;}
 </style>
 @endpush
 
@@ -330,110 +346,57 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 <div style="background:var(--bg);min-height:100vh;">
 
   {{-- ══ TOPBAR ══ --}}
-{{-- ══ TOPBAR ══ --}}
-<div class="flex items-center justify-between flex-wrap gap-4 px-10 py-4 bg-white border-b sticky top-0 z-20"
-     style="border-color: rgba(28,25,23,.08);">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:14px 36px;">
 
-  {{-- LEFT --}}
-  <div class="flex items-start gap-4">
-    {{-- TEXT --}}
-    <div class="flex flex-col">
+      {{-- LEFT --}}
+      <div style="display:flex;align-items:center;gap:14px;">
+        {{-- Icon badge --}}
+        <div style="width:40px;height:40px;border-radius:11px;background:var(--acc-bg);border:1.5px solid var(--acc-md);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📊</div>
 
-      <div class="flex items-center gap-2 text-[11.5px] font-semibold mb-1">
-        <span style="color:#D63B1F;">Dashboard</span>
+        <div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;margin-bottom:2px;">
+            <span style="color:var(--acc);">Dashboard</span>
+            <span style="color:var(--line-2);">/</span>
+            <span style="color:var(--ink-4);">Kemiskinan & Ketenagakerjaan</span>
+          </div>
+          <div style="font-family:'Sora',sans-serif;font-size:19px;font-weight:800;color:var(--ink);line-height:1.1;">
+            Analisis Kemiskinan — Jawa Timur
+          </div>
+          <div style="font-size:11px;color:var(--ink-4);margin-top:2px;">
+            Data kemiskinan regional · Tahun {{ $labelTahun }}
+          </div>
+        </div>
+      </div>
 
-        <span style="color:#D6D3D1;">/</span>
-
-        <span style="color:#78716C;">
-          Kemiskinan & Ketenagakerjaan
+      {{-- RIGHT --}}
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:11px;font-weight:800;padding:6px 14px;border-radius:99px;background:var(--acc-bg);color:var(--acc-dk);border:1.5px solid var(--acc-md);">
+          {{ $labelTahun }}
         </span>
-      </div>
+        <span style="font-size:11px;font-weight:800;padding:6px 14px;border-radius:99px;background:var(--inf-bg);color:var(--inf-dk);border:1.5px solid var(--inf-md);">
+          38 Kab/Kota
+        </span>
 
-      <div
-        class="font-extrabold tracking-tight leading-none"
-        style="
-          font-family:'Sora',sans-serif;
-          font-size:18px;
-          color:#1C1917;
-        "
-      >
-        Analisis Kemiskinan — Jawa Timur
+        <form method="GET" action="{{ url()->current() }}">
+          <div style="position:relative;">
+            <select name="tahun" onchange="this.form.submit()"
+              style="border-radius:10px;padding:8px 36px 8px 14px;font-size:13px;font-weight:800;outline:none;
+                     background:var(--acc-bg);border:1.5px solid var(--acc-md);color:var(--acc-dk);
+                     font-family:'Sora',sans-serif;cursor:pointer;appearance:none;">
+              <option value="2025" {{ $selectedYear=='2025'?'selected':'' }}>2025</option>
+              <option value="2023" {{ $selectedYear=='2023'?'selected':'' }}>2023</option>
+              <option value="semua" {{ $selectedYear=='semua'?'selected':'' }}>Semua</option>
+            </select>
+            <svg style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;"
+              width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </form>
       </div>
-
-      <div
-        class="text-[11.5px] mt-1"
-        style="color:#A8A29E;"
-      >
-        Data kemiskinan regional · Tahun {{ $labelTahun }}
-      </div>
-
     </div>
-
   </div>
-
-  {{-- RIGHT --}}
-  <div class="flex items-center gap-2 flex-wrap">
-
-    {{-- CHIP --}}
-    <span
-      class="text-[11px] font-bold px-3 py-[7px] rounded-full"
-      style="
-        background:#FDF1EE;
-        color:#A02D16;
-        border:1px solid #F9C9BF;
-      "
-    >
-      {{ $labelTahun }}
-    </span>
-
-    <span
-      class="text-[11px] font-bold px-3 py-[7px] rounded-full"
-      style="
-        background:#EEF2FB;
-        color:#3456A8;
-        border:1px solid #BCC9F0;
-      "
-    >
-      38 Kab/Kota
-    </span>
-
-    {{-- SELECT --}}
-    <form method="GET" action="{{ url()->current() }}">
-      <div class="relative">
-
-        <select
-          name="tahun"
-          onchange="this.form.submit()"
-          class="rounded-[10px] py-2 pl-4 pr-10 text-[13px] font-bold outline-none transition-all"
-          style="
-            background:#FDF1EE;
-            border:1.5px solid #F9C9BF;
-            color:#A02D16;
-            font-family:'Sora',sans-serif;
-          "
-        >
-          <option value="2025" {{ $selectedYear=='2025'?'selected':'' }}>2025</option>
-          <option value="2023" {{ $selectedYear=='2023'?'selected':'' }}>2023</option>
-          <option value="semua" {{ $selectedYear=='semua'?'selected':'' }}>Semua</option>
-        </select>
-
-        <svg
-          class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#D63B1F"
-          stroke-width="2.5"
-        >
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-
-      </div>
-    </form>
-
-  </div>
-</div>
 
   <div class="page">
 
@@ -452,7 +415,7 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
         </div>
         <div class="kpi-lbl">Rata-rata Kemiskinan</div>
         <div class="kpi-val f-display">{{ number_format($rataRata2025/1000,2,',','.') }}</div>
-        <div class="kpi-sub">ribu jiwa </div>
+        <div class="kpi-sub">ribu jiwa</div>
       </div>
       <div class="kpi v-pos">
         <div class="kpi-header">
@@ -461,7 +424,7 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
         </div>
         <div class="kpi-lbl">Di Bawah Rata-rata</div>
         <div class="kpi-val f-display">{{ $diBawahRataRata }}</div>
-        <div class="kpi-sub">dari {{ $totalKab }}</div>
+        <div class="kpi-sub">dari {{ $totalKab }} data</div>
       </div>
       <div class="kpi v-cau">
         <div class="kpi-header">
@@ -470,7 +433,7 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
         </div>
         <div class="kpi-lbl">Di Atas Rata-rata</div>
         <div class="kpi-val f-display">{{ $diAtasRataRata }}</div>
-        <div class="kpi-sub">dari {{ $totalKab }}</div>
+        <div class="kpi-sub">dari {{ $totalKab }} data</div>
       </div>
     </div>
 
@@ -506,7 +469,7 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
           <div>
             <div class="card-meta">Grafik 6 · Ranking</div>
             <div class="card-title">Top 5 Tertinggi & Terendah</div>
-            <div class="card-desc">Klik untuk melihat perbandingan detail antar wilayah.</div>
+            <div class="card-desc">Klik untuk melihat perbandingan detail antar wilayah.@if($isSemua) <strong style="color:var(--inf);">Label menampilkan tahun.</strong>@endif</div>
           </div>
           <span class="card-badge inf">ranking</span>
         </div>
@@ -525,8 +488,8 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
             <div class="card-meta">Grafik 7 · Deviasi</div>
             <div class="card-title">Jarak dari Rata-rata Jatim</div>
             <div class="card-desc">
-              <span style="color:var(--acc);font-weight:600;">Merah</span> = di atas rata-rata ·
-              <span style="color:var(--pos);font-weight:600;">Hijau</span> = di bawah rata-rata
+              <span style="color:var(--acc);font-weight:700;">Merah</span> = di atas rata-rata ·
+              <span style="color:var(--pos);font-weight:700;">Hijau</span> = di bawah rata-rata
             </div>
           </div>
           <span class="card-badge cau">nilai − rata</span>
@@ -548,7 +511,7 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
               <th style="text-align:left;">Kab/Kota</th>
               <th>2025 (rb)</th>
               <th>2023 (rb)</th>
-              <th style="text-align:center;">Δ</th>
+            
             </tr></thead>
             <tbody>
               @foreach($rankingGabung as $r)
@@ -559,19 +522,11 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
                 <td class="td-nm">{{ $r->kab }}</td>
                 <td class="td-v25">{{ number_format($r->nilai2025/1000,2,',','.') }}</td>
                 <td class="td-v23">{{ $r->nilai2023 ? number_format($r->nilai2023/1000,2,',','.') : '–' }}</td>
-                <td style="text-align:center;">
-                  @if($r->perubahan===null)<span class="arr-eq">–</span>
-                  @elseif($r->perubahan>0)<span class="arr-up">↑ +{{ $r->perubahan }}</span>
-                  @elseif($r->perubahan<0)<span class="arr-dn">↓ {{ $r->perubahan }}</span>
-                  @else<span class="arr-eq">→</span>@endif
-                </td>
+               
               </tr>
               @endforeach
             </tbody>
           </table>
-        </div>
-        <div style="margin-top:10px;font-size:10px;color:var(--ink-4);font-style:italic;">
-          ↑ naik rank = posisi kemiskinan makin tinggi · ↓ turun = membaik relatif
         </div>
       </div>
     </div>
@@ -584,8 +539,8 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
           <div class="card-title">Sebaran Kemiskinan — Jawa Timur {{ $labelTahun }}</div>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
-          @foreach([['#7F1D1D','Sangat Tinggi'],['#D63B1F','Tinggi'],['#F87171','Sedang'],['#86EFAC','Rendah'],['#2D7D53','Sangat Rendah']] as [$c,$l])
-          <div style="display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:500;color:var(--ink-2);">
+          @foreach([['#7F1D1D','Sangat Tinggi'],['#C8391A','Tinggi'],['#F87171','Sedang'],['#6EE7B7','Rendah'],['#1A7A4A','Sangat Rendah']] as [$c,$l])
+          <div style="display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--ink-2);">
             <span style="width:9px;height:9px;border-radius:50%;background:{{ $c }};display:inline-block;"></span>{{ $l }}
           </div>
           @endforeach
@@ -621,7 +576,7 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
             <div class="card-title">% Bekerja per Kelompok Usia</div>
             <div class="card-desc">Batang biru lebih tinggi = ada perbaikan. Klik untuk perbandingan detail.</div>
           </div>
-          <span class="card-badge inf">T3 & T4 · BPS</span>
+         
         </div>
         <div style="display:flex;gap:16px;margin-bottom:14px;">
           <div class="lgd"><span class="ldot" style="background:var(--inf);"></span>2025</div>
@@ -641,14 +596,14 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);">
         <div>
-          <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:var(--ink);">
+          <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--ink);">
             Tabel Kemiskinan Per Kabupaten / Kota — {{ $labelTahun }}
           </div>
           <div style="font-size:11px;color:var(--ink-4);margin-top:3px;">
             Satuan: jiwa · Rata-rata Jatim:
-            <strong style="color:var(--ink-2);font-weight:600;">{{ number_format($rataRata2025,0,',','.') }} jiwa</strong>
+            <strong style="color:var(--ink-2);font-weight:700;">{{ number_format($rataRata2025,0,',','.') }} jiwa</strong>
             @if($isSemua)
-              <span style="margin-left:8px;font-size:9px;background:var(--inf-lt);color:var(--inf);padding:2px 8px;border-radius:99px;font-weight:700;">2023 & 2025</span>
+              <span style="margin-left:8px;font-size:9px;background:var(--inf-bg);color:var(--inf-dk);padding:2px 8px;border-radius:99px;font-weight:800;">2023 & 2025</span>
             @endif
           </div>
         </div>
@@ -798,25 +753,26 @@ body,html{font-family:'DM Sans',sans-serif;background:#FAFAF8;color:#1C1917;}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 /* ── CONSTANTS ──────────────────────────── */
-const RATA  = {{ $rataRata2025 }};
-const TAHUN = '{{ $labelTahun }}';
-const dKab  = @json($semuaKab);
-const dTop5T= @json($top5Tertinggi);
-const dTop5R= @json($top5Terendah);
-const dDev  = @json($deviasi);
-const dPU   = @json($tingkatPengangguranPerUsia);
-const dB25  = @json($pctBekerjaPerUsia2025);
-const dB23  = @json($pctBekerjaPerUsia2023);
+const RATA   = {{ $rataRata2025 }};
+const TAHUN  = '{{ $labelTahun }}';
+const IS_SEMUA = {{ $isSemua ? 'true' : 'false' }};
+const dKab   = @json($semuaKab);
+const dTop5T = @json($top5Tertinggi);
+const dTop5R = @json($top5Terendah);
+const dDev   = @json($deviasi);
+const dPU    = @json($tingkatPengangguranPerUsia);
+const dB25   = @json($pctBekerjaPerUsia2025);
+const dB23   = @json($pctBekerjaPerUsia2023);
 
 /* ── HELPERS ────────────────────────────── */
 const F  = v => Number(v).toLocaleString('id-ID');
 const FD = v => Number(v).toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
 
 const FONT = "'DM Sans', sans-serif";
-const ACC  = '#D63B1F', ACCA = 'rgba(214,59,31,.14)';
-const POS  = '#2D7D53', POSA = 'rgba(45,125,83,.14)';
-const INF  = '#3456A8', INFA = 'rgba(52,86,168,.14)';
-const CAU  = '#C47B0A';
+const ACC  = '#C8391A', ACCA = 'rgba(200,57,26,.18)';
+const POS  = '#1A7A4A', POSA = 'rgba(26,122,74,.18)';
+const INF  = '#3D52B8', INFA = 'rgba(61,82,184,.18)';
+const CAU  = '#B86A00';
 const GRAY = 'rgba(28,25,23,.06)';
 
 const axX = () => ({ grid:{display:false}, ticks:{font:{size:10,family:FONT},color:'#A8A29E'} });
@@ -824,7 +780,7 @@ const axY = cb => ({ grid:{color:GRAY,drawBorder:false}, ticks:{font:{size:10,fa
 const TT  = {
   backgroundColor:'#1C1917',titleColor:'#F5F4F0',bodyColor:'#A8A29E',
   padding:12,cornerRadius:10,boxPadding:4,
-  titleFont:{size:12,family:FONT,weight:'600'},
+  titleFont:{size:12,family:FONT,weight:'700'},
   bodyFont:{size:11,family:FONT}
 };
 const BASE = {responsive:true,maintainAspectRatio:false};
@@ -852,18 +808,27 @@ document.addEventListener('keydown',e=>{
   }
 });
 
+/* ── LABEL HELPER untuk Top5 (saat semua, tampilkan tahun) ── */
+function top5Label(r){
+  // r bisa punya property .tahun jika mode semua
+  if(IS_SEMUA && r.tahun){
+    return r.kabupatenKota + ' (' + r.tahun + ')';
+  }
+  return r.kabupatenKota;
+}
+
 /* ── CHART 5 : All Kab vs Rata ─────────── */
 new Chart(document.getElementById('cSemuaKab'),{
   type:'bar',
   data:{
-    labels:dKab.map(r=>r.kabupatenKota),
+    labels:dKab.map(r=>IS_SEMUA&&r.tahun ? r.kabupatenKota+' ('+r.tahun+')' : r.kabupatenKota),
     datasets:[
       {
         label:'Penduduk Miskin',
         data:dKab.map(r=>r.jumlahPnddk),
         backgroundColor:dKab.map(r=>r.statusRata==='atas'?ACCA:POSA),
         borderColor:    dKab.map(r=>r.statusRata==='atas'?ACC:POS),
-        borderWidth:1.5,borderRadius:3,barPercentage:.8,order:2
+        borderWidth:1.5,borderRadius:4,barPercentage:.8,order:2
       },
       {
         label:'Rata-rata Jatim',data:dKab.map(()=>RATA),
@@ -890,9 +855,27 @@ function buildTop(mode){
   const colA=mode==='tertinggi'?ACCA:POSA;
   return{
     type:'bar',
-    data:{labels:d.map(r=>r.kabupatenKota),datasets:[{label:'Penduduk Miskin',data:d.map(r=>r.jumlahPnddk),backgroundColor:colA,borderColor:col,borderWidth:2,borderRadius:8,barPercentage:.6}]},
+    data:{
+      // Saat semua: tampilkan "Nama Kab (2025)" agar tidak rancu jika ada 2 entri
+      labels:d.map(r=>top5Label(r)),
+      datasets:[{
+        label:'Penduduk Miskin',
+        data:d.map(r=>r.jumlahPnddk),
+        backgroundColor:colA,borderColor:col,
+        borderWidth:2,borderRadius:8,barPercentage:.6
+      }]
+    },
     options:{...BASE,indexAxis:'y',
-      plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:ctx=>F(ctx.raw)+' jiwa'}}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{...TT,callbacks:{
+          title:ctx=>{
+            const r=d[ctx[0].dataIndex];
+            return r.kabupatenKota+(IS_SEMUA&&r.tahun?' — '+r.tahun:'');
+          },
+          label:ctx=>F(ctx.raw)+' jiwa'
+        }}
+      },
       scales:{x:axY(),y:{grid:{display:false},ticks:{font:{size:11,family:FONT,weight:'600'},color:'#3D4352'}}}
     }
   };
@@ -909,7 +892,7 @@ showTop('tertinggi');
 new Chart(document.getElementById('cDeviasi'),{
   type:'bar',
   data:{
-    labels:dDev.map(r=>r.kabupatenKota),
+    labels:dDev.map(r=>IS_SEMUA&&r.tahun ? r.kabupatenKota+' ('+r.tahun+')' : r.kabupatenKota),
     datasets:[{label:'Deviasi',data:dDev.map(r=>r.deviasi),
       backgroundColor:dDev.map(r=>r.deviasi>0?ACCA:POSA),
       borderColor:    dDev.map(r=>r.deviasi>0?ACC:POS),
@@ -931,7 +914,7 @@ new Chart(document.getElementById('cPengUsia'),{
   data:{
     labels:dPU.map(r=>r.usia+' thn'),
     datasets:[{label:'% Belum Dapat Kerja',data:dPU.map(r=>r.pct),
-      backgroundColor:dPU.map(r=>r.pct>5?'rgba(214,59,31,.75)':INFA),
+      backgroundColor:dPU.map(r=>r.pct>5?'rgba(200,57,26,.75)':INFA),
       borderColor:    dPU.map(r=>r.pct>5?ACC:INF),
       borderWidth:1.5,borderRadius:8,barPercentage:.65
     }]
@@ -1034,9 +1017,16 @@ const KOORD=[
 ];
 
 const normN=s=>(s||'').toLowerCase().replace(/kabupaten\s+/g,'').replace(/kota\s+/g,'').replace(/\s+/g,' ').trim();
+
+// Saat mode semua, peta tampilkan rata-rata 2025 saja (dari dKab yang sudah difilter di controller)
+// Untuk peta, cukup ambil satu data per kab/kota (hindari duplikat: prioritaskan 2025)
+const dKabForMap = IS_SEMUA
+  ? dKab.filter(r=>r.tahun===2025 || !dKab.some(x=>x.kabupatenKota===r.kabupatenKota&&x.tahun===2025))
+  : dKab;
+
 const dMap=KOORD.map(k=>{
   let f=null,b=0;
-  dKab.forEach(r=>{
+  dKabForMap.forEach(r=>{
     const a=normN(k.n),m=normN(r.kabupatenKota);
     if(a===m){f=r;b=100;}else if(b<80&&(a.includes(m)||m.includes(a))){f=r;b=80;}
   });
@@ -1048,9 +1038,9 @@ const MN=Math.min(...vv),MX=Math.max(...vv);
 const mc=v=>{
   if(!v)return '#CBD5E1';
   const t=(v-MN)/(MX-MN);
-  if(t>.85)return '#7F1D1D';if(t>.68)return '#D63B1F';
-  if(t>.50)return '#F87171';if(t>.33)return '#86EFAC';
-  if(t>.16)return '#4ADE80';return '#2D7D53';
+  if(t>.85)return '#7F1D1D';if(t>.68)return '#C8391A';
+  if(t>.50)return '#F87171';if(t>.33)return '#6EE7B7';
+  if(t>.16)return '#34D399';return '#1A7A4A';
 };
 const mr=v=>v?8+((v-MN)/(MX-MN))*26:7;
 
@@ -1062,11 +1052,10 @@ dMap.forEach(r=>{
   if(!r.lt||!r.ln)return;
   const warna=mc(r.jp),rad=mr(r.jp),isAtas=r.sr==='atas';
   const rb=r.jp?(r.jp/1000).toFixed(2):'–';
-  const hcDark=isAtas?'#1C1917':'#1C1917';
-  const accentColor=isAtas?'#D63B1F':'#2D7D53';
+  const accentColor=isAtas?'#C8391A':'#1A7A4A';
   const devVal=r.jp?(r.jp-RATA)/1000:0,devSign=devVal>0?'+':'';
 
-  const ci=L.circleMarker([r.lt,r.ln],{radius:rad,fillColor:warna,color:'#fff',weight:2,opacity:1,fillOpacity:.85}).addTo(map);
+  const ci=L.circleMarker([r.lt,r.ln],{radius:rad,fillColor:warna,color:'#fff',weight:2,opacity:1,fillOpacity:.88}).addTo(map);
   ci.bindTooltip('<strong>'+r.kk+'</strong>',{permanent:false,direction:'top',offset:[0,-rad-2],opacity:1,className:'leaflet-tooltip'});
   ci.bindPopup(`
     <div style="font-family:'DM Sans',sans-serif;min-width:240px;">
@@ -1082,7 +1071,7 @@ dMap.forEach(r=>{
           <span style="font-size:11px;color:#A8A29E;">Penduduk miskin ${TAHUN}</span>
           <span style="font-size:16px;font-weight:700;color:#1C1917;font-family:'Sora',sans-serif;">${rb} <span style="font-size:10px;color:#A8A29E;font-family:'DM Sans',sans-serif;font-weight:400;">rb jiwa</span></span>
         </div>
-        <div style="background:#FAFAF8;border-radius:8px;padding:10px 12px;border:1px solid rgba(28,25,23,.08);">
+        <div style="background:#F0EEE8;border-radius:8px;padding:10px 12px;border:1px solid rgba(28,25,23,.08);">
           <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
             <span style="font-size:9px;color:#A8A29E;font-weight:700;text-transform:uppercase;letter-spacing:.6px;">Rata-rata Jatim</span>
             <span style="font-size:11px;font-weight:600;color:#44403C;font-family:'DM Mono',monospace;">${(RATA/1000).toFixed(2)} rb</span>
@@ -1095,7 +1084,7 @@ dMap.forEach(r=>{
       </div>
     </div>`,{maxWidth:270,className:'',closeButton:true});
   ci.on('mouseover',function(){this.setStyle({weight:3,color:'rgba(255,255,255,1)',fillOpacity:1,radius:rad+2});this.openTooltip();});
-  ci.on('mouseout', function(){this.setStyle({weight:2,color:'#fff',fillOpacity:.85,radius:rad});});
+  ci.on('mouseout', function(){this.setStyle({weight:2,color:'#fff',fillOpacity:.88,radius:rad});});
   ci.on('click',    function(){this.closeTooltip();});
 });
 
@@ -1103,9 +1092,9 @@ dMap.forEach(r=>{
 const leg=L.control({position:'bottomright'});
 leg.onAdd=function(){
   const d=L.DomUtil.create('div','');
-  d.style.cssText='background:#fff;padding:13px 16px;border-radius:12px;box-shadow:0 4px 20px rgba(28,25,23,.1);font-family:"DM Sans",sans-serif;font-size:11px;color:#44403C;min-width:170px;border:1px solid rgba(28,25,23,.08);';
-  d.innerHTML=`<div style="font-family:'Sora',sans-serif;font-weight:600;margin-bottom:8px;color:#1C1917;font-size:12px;">Jumlah Penduduk Miskin</div>`+
-    [['#7F1D1D','Sangat Tinggi','> 85%'],['#D63B1F','Tinggi','68–85%'],['#F87171','Sedang','50–68%'],['#86EFAC','Rendah','33–50%'],['#4ADE80','Cukup Rendah','16–33%'],['#2D7D53','Sangat Rendah','< 16%']].map(([c,l,s])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:10px;height:10px;border-radius:50%;background:${c};flex-shrink:0;"></span><div><span style="font-weight:600;">${l}</span><span style="color:#A8A29E;margin-left:4px;font-size:10px;">${s}</span></div></div>`).join('')+
+  d.style.cssText='background:#fff;padding:13px 16px;border-radius:12px;box-shadow:0 4px 20px rgba(28,25,23,.12);font-family:"DM Sans",sans-serif;font-size:11px;color:#44403C;min-width:175px;border:1px solid rgba(28,25,23,.1);';
+  d.innerHTML=`<div style="font-family:'Sora',sans-serif;font-weight:700;margin-bottom:9px;color:#1C1917;font-size:12px;">Jumlah Penduduk Miskin</div>`+
+    [['#7F1D1D','Sangat Tinggi','> 85%'],['#C8391A','Tinggi','68–85%'],['#F87171','Sedang','50–68%'],['#6EE7B7','Rendah','33–50%'],['#34D399','Cukup Rendah','16–33%'],['#1A7A4A','Sangat Rendah','< 16%']].map(([c,l,s])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:10px;height:10px;border-radius:50%;background:${c};flex-shrink:0;"></span><div><span style="font-weight:700;">${l}</span><span style="color:#A8A29E;margin-left:4px;font-size:10px;">${s}</span></div></div>`).join('')+
     `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(28,25,23,.08);font-size:10px;color:#A8A29E;">Ukuran ∝ jumlah penduduk miskin</div>`;
   return d;
 };
@@ -1115,10 +1104,10 @@ leg.addTo(map);
 const info=L.control({position:'topleft'});
 info.onAdd=function(){
   const d=L.DomUtil.create('div','');
-  d.style.cssText='background:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 4px 20px rgba(28,25,23,.1);font-family:"DM Sans",sans-serif;border:1px solid rgba(28,25,23,.08);border-left:3px solid #D63B1F;min-width:160px;';
+  d.style.cssText='background:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 4px 20px rgba(28,25,23,.1);font-family:"DM Sans",sans-serif;border:1px solid rgba(28,25,23,.08);border-left:3px solid #C8391A;min-width:165px;';
   d.innerHTML=`<div style="font-size:9px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px;">Rata-rata Jatim ${TAHUN}</div>`+
-    `<div style="font-family:'Sora',sans-serif;font-weight:700;color:#D63B1F;font-size:18px;line-height:1.2;">${(RATA/1000).toFixed(2)} <span style="font-size:10px;color:#A8A29E;font-family:'DM Sans',sans-serif;font-weight:400;">ribu jiwa</span></div>`+
-    `<div style="font-size:10px;color:#A8A29E;border-top:1px solid rgba(28,25,23,.08);padding-top:5px;margin-top:4px;"><span style="color:#D63B1F;font-weight:600;">{{ $diAtasRataRata }} kab</span> di atas &nbsp;·&nbsp; <span style="color:#2D7D53;font-weight:600;">{{ $diBawahRataRata }} kab</span> di bawah</div>`;
+    `<div style="font-family:'Sora',sans-serif;font-weight:800;color:#C8391A;font-size:18px;line-height:1.2;">${(RATA/1000).toFixed(2)} <span style="font-size:10px;color:#A8A29E;font-family:'DM Sans',sans-serif;font-weight:400;">ribu jiwa</span></div>`+
+    `<div style="font-size:10px;color:#A8A29E;border-top:1px solid rgba(28,25,23,.08);padding-top:5px;margin-top:4px;"><span style="color:#C8391A;font-weight:700;">{{ $diAtasRataRata }} kab</span> di atas &nbsp;·&nbsp; <span style="color:#1A7A4A;font-weight:700;">{{ $diBawahRataRata }} kab</span> di bawah</div>`;
   return d;
 };
 info.addTo(map);

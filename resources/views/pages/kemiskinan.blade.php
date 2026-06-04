@@ -926,12 +926,10 @@ new Chart(document.getElementById('cPengUsia'),{
       const pctBulat=Math.round(r.pct);
       const hlCls=r.pct>15?'hl-acc':r.pct>7?'hl-cau':'hl-pos';
       document.getElementById('dPengTitle').textContent='Usia '+r.usia+' tahun';
-      document.getElementById('dPengSub').textContent='Data '+TAHUN+' · % belum dapat pekerjaan';
-      document.getElementById('dPengAK').textContent=F(r.akJml);
+document.getElementById('dPengSub').innerHTML = 'Data ' + TAHUN + ' · % belum dapat pekerjaan';      document.getElementById('dPengAK').textContent=F(r.akJml);
       document.getElementById('dPengJml').textContent=F(r.pengangguranJml);
       document.getElementById('dPengPct').textContent=FD(r.pct)+'%';
-      document.getElementById('dPengKalimat').innerHTML='Dari 100 pencari kerja usia ini,<br><strong>'+pctBulat+' orang</strong> belum mendapat pekerjaan.';
-      document.getElementById('dPengHL').className='drill-hl '+hlCls;
+      document.getElementById('dPengKalimat').innerHTML = 'Dari <strong>' + F(r.akJml) + '</strong> angkatan kerja usia ini,<br><strong>' + F(r.pengangguranJml) + ' orang</strong> belum mendapat pekerjaan.';      document.getElementById('dPengHL').className='drill-hl '+hlCls;
       openDrill('drillPengOv');
     },
     plugins:{legend:{display:false},tooltip:{...TT,callbacks:{

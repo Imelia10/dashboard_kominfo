@@ -88,11 +88,12 @@ class KemiskinanController extends Controller
 
         // Deviasi dari rata-rata per kab/kota
         $deviasi = $dataAktif->map(fn($r) => (object)[
-            'kabupatenKota' => $r->kabupatenKota,
-            'jumlahPnddk'   => $r->jumlahPnddk,
-            'deviasi'       => round($r->jumlahPnddk - $rataRata2025, 2),
-            'statusRata'    => $r->jumlahPnddk > $rataRata2025 ? 'atas' : 'bawah',
-        ])->sortByDesc('deviasi')->values();
+    'kabupatenKota' => $r->kabupatenKota,
+    'jumlahPnddk'   => $r->jumlahPnddk,
+    'deviasi'       => round($r->jumlahPnddk - $rataRata2025, 2),
+    'statusRata'    => $r->jumlahPnddk > $rataRata2025 ? 'atas' : 'bawah',
+    'tahun'         => $r->tahun ?? null,   // ← tambah ini
+])->sortByDesc('deviasi')->values();
 
         // Semua kab/kota untuk chart bar + peta
         $semuaKab = $dataAktif->map(fn($r) => (object)[

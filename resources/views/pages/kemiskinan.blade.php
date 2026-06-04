@@ -889,6 +889,7 @@ function showTop(mode){
 showTop('tertinggi');
 
 /* ── CHART 7 : Deviasi ─────────────────── */
+/* ── CHART 7 : Deviasi ─────────────────── */
 new Chart(document.getElementById('cDeviasi'),{
   type:'bar',
   data:{
@@ -904,7 +905,10 @@ new Chart(document.getElementById('cDeviasi'),{
       label:ctx=>(ctx.raw>0?'+':'')+F(ctx.raw)+' jiwa dari rata-rata',
       afterLabel:ctx=>dDev[ctx.dataIndex].deviasi>0?'⚠ Di atas rata-rata':'✓ Di bawah rata-rata'
     }}},
-    scales:{x:axX(),y:{grid:{color:GRAY},ticks:{font:{size:10,family:FONT},color:'#A8A29E',callback:v=>(v>0?'+':'')+F(v)}}}
+    scales:{
+      x:{grid:{display:false},ticks:{display:false}},
+      y:{grid:{color:GRAY},ticks:{font:{size:10,family:FONT},color:'#A8A29E',callback:v=>(v>0?'+':'')+F(v)}}
+    }
   }
 });
 

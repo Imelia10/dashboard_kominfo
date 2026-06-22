@@ -91,7 +91,7 @@ class AgriController extends Controller
             ->first();
 
         // ── Ketangguhan Musim Kemarau: YoY change pada bulan kemarau (Jul-Sep) ──
-        // Ambil 3 kabupaten dengan penurunan terbesar di bulan kemarau (agri2)
+        // Ambil 5 kabupaten dengan penurunan terbesar di bulan kemarau (agri2)
         $kemaraData = DB::table('agri2 as a')
             ->join('agri2 as b', function($j) use ($tahun) {
                 $j->on('a.nama_kabupaten_kota', '=', 'b.nama_kabupaten_kota')
@@ -129,7 +129,7 @@ class AgriController extends Controller
             ->limit(5)
             ->get();
 
-        // ── Regional: Top Lumbung Padi (agri3) — masih dipakai untuk donut lama jika ada ──
+        // ── Regional: Top Lumbung Padi (agri3)
         $topKab = $topKabData;
         $totalProduksi = $topKab->sum('produksi');
 

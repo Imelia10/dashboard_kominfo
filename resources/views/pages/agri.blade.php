@@ -329,15 +329,17 @@
   box-shadow: 0 2px 12px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 .map-card { padding: 16px 16px 14px; }
 #mapAgriWrap {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 260px;
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid #e5e7eb;
   position: relative;
+  margin-bottom: 14px;
 }
 #mapAgri { width: 100%; height: 100%; min-height: 260px; }
 
@@ -345,11 +347,13 @@
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
-  margin-top: 12px;
-  padding-top: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px solid #f3f4f6;
+  position: relative;
+  z-index: 1;
 }
-.ml-item { display:flex; align-items:center; gap:6px; font-size:11px; color:#6b7280; font-weight:600; }
+.ml-item { display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#374151; font-weight:700; white-space: nowrap; }
 .ml-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
 #mapAgriLoading {
@@ -744,8 +748,8 @@
 
     {{-- Peta Produktivitas Padi (pengganti Urban vs Rural Farming) --}}
     <div class="urban-rural-card map-card">
-      <div class="reg-section-title" style="margin-bottom:12px">
-        Peta Produktivitas Padi
+    <div class="reg-section-title" style="margin-bottom:12px">
+      Peta Produktivitas Padi
         <span style="font-weight:600;color:#9ca3af;font-size:10px;text-transform:none;letter-spacing:0">— {{ $tahun }}</span>
       </div>
 

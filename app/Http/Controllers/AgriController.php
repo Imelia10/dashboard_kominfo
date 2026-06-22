@@ -283,21 +283,32 @@ class AgriController extends Controller
         $agri1ByNorm = $agri1->keyBy(fn($r) => $this->normalizeNamaWilayah($r->nama_kabupaten_kota));
 
         // ── Geometri batas wilayah Jatim ──
-        // NOTE: sesuaikan path ini dengan file GeoJSON kab/kota Jatim yang sudah
-        // dipakai pada peta Bencana (biasanya disimpan di public/data/...).
-        $geoPath = public_path('data/jatim_kabkota.geojson');
-        if (!file_exists($geoPath)) {
-            // File GeoJSON tidak ditemukan di server — ini sebab paling umum
-            // peta tampil kosong tanpa warna sama sekali (base map tampil,
-            // tapi tidak ada satu pun poligon). Cek path di atas.
+        // NOTE: gunakan public/data/jatim_kabkota.geojson bila tersedia, namun
+        // fallback ke sumber resmi di resources apabila belum disebarkan ke public.
+        $publicGeoPath   = public_path('data/jatim_kabkota.geojson');
+        $resourceGeoPath = resource_path('Kabupaten-Kota (Provinsi Jawa Timur).geojson');
+
+        if (file_exists($publicGeoPath)) {
+            $geoPath = $publicGeoPath;
+        } elseif (file_exists($resourceGeoPath)) {
+            $geoPath = $resourceGeoPath;
+        } else {
             return response()->json([
                 'type' => 'FeatureCollection',
                 'features' => [],
-                '_debug_error' => "GeoJSON file not found at: {$geoPath}",
+                '_debug_error' => "GeoJSON file not found at: {$publicGeoPath} or {$resourceGeoPath}",
             ]);
         }
 
-        $geo = json_decode(file_get_contents($geoPath), true);
+        $geoJson = file_get_contents($geoPath);
+        $geo = json_decode($geoJson, true);
+        if (!$geo || !isset($geo['features']) || !is_array($geo['features'])) {
+            return response()->json([
+                'type' => 'FeatureCollection',
+                'features' => [],
+                '_debug_error' => "GeoJSON file invalid or unreadable: {$geoPath}",
+            ]);
+        }
 
         $matchedCount   = 0;
         $unmatchedNames = [];

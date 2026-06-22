@@ -32,12 +32,14 @@ Route::get('/perikanan',   [PerikananController::class,   'index'])->name('perik
 Route::get('/agri',        [AgriController::class,        'index'])->name('agri');
 Route::get('/bencana',   [BencanaController::class, 'index'])->name('bencana');  // ← DIG
 
+
 // ── API ────────────────────────────────────────────────────────
 Route::prefix('api')->group(function () {
     Route::get('/geojson',       [MapController::class,     'geojson']);
     Route::get('/statistik',     [MapController::class,     'statistik']);
     Route::get('/bencana/map',   [MapController::class,     'bencanaGeojson']);
     Route::get('/bencana/kpi',   [BencanaController::class, 'apiKpi']);
+    Route::get('/agri/map',      [AgriController::class, 'mapData']);
 });
 
 

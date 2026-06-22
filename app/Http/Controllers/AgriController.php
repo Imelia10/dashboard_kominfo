@@ -38,7 +38,9 @@ class AgriController extends Controller
             ->orderByDesc('tahun')
             ->pluck('tahun');
 
-        // ── Grafik 1: Korelasi Luas Panen vs Produksi per Kabupaten (agri3) ──
+        // ── Grafik 1: Korelasi Luas Panen vs Produksi per Kabupaten/Kota (agri3) ──
+        // Tidak dibatasi limit agar Kota juga tetap muncul (Kota umumnya berproduksi
+        // lebih kecil dibanding Kabupaten sehingga akan tersingkir jika dibatasi top-N)
         $korelasiData = DB::table('agri3')
             ->selectRaw('
                 nama_kabupaten_kota,
@@ -48,7 +50,6 @@ class AgriController extends Controller
             ->where('tahun', $tahun)
             ->groupBy('nama_kabupaten_kota')
             ->orderByDesc('produksi')
-            ->limit(15)
             ->get();
 
         // ── Grafik 2: Volatilitas Musiman – Luas Panen Bulanan (agri2) ──
@@ -81,7 +82,10 @@ class AgriController extends Controller
         $semesterData = $semesterRaw;
 
         // ── Urban vs Rural: rata-rata produktivitas Kota vs Kabupaten ──
-        // Menggunakan agri3, bedakan berdasarkan prefix nama_kabupaten_kota
+        // CATATAN: card "Urban vs Rural Farming" di halaman sudah diganti
+        // menjadi Peta Produktivitas Padi (lihat method mapData() di bawah
+        // & view pages.agri). Variabel ini tetap dihitung & dikirim ke view
+        // agar tidak mematahkan kompatibilitas bila masih dipakai di tempat lain.
         $urbanRuralData = DB::table('agri3')
             ->selectRaw('
                 AVG(CASE WHEN nama_kabupaten_kota LIKE "Kota %" THEN `Produktivitas Tanaman Padi (ku/ha) (Ku/ha)` END) AS kota,
@@ -182,5 +186,192 @@ class AgriController extends Controller
             'gainers', 'losers',
             'detailBulanan'
         ));
+    }
+
+    /**
+     * Normalisasi nama wilayah agar pencocokan antara nama di database
+     * ("Kabupaten Pacitan", "Kota Surabaya", dst.) dengan properti nama
+     * pada file GeoJSON (yang formatnya bisa berbeda-beda — kadang tanpa
+     * prefix "Kabupaten"/"Kota", kadang huruf besar semua, kadang ada
+     * spasi ganda) tetap berhasil walau penulisannya tidak 100% identik.
+     *
+     * Contoh hasil normalisasi:
+     *  "Kabupaten Pacitan"  -> "pacitan"
+     *  "KAB. PACITAN"       -> "pacitan"
+     *  "Kota Surabaya"      -> "surabaya"
+     *  "KOTA SURABAYA"      -> "surabaya"
+     */
+    private function normalizeNamaWilayah(?string $nama): string
+    {
+        if (!$nama) {
+            return '';
+        }
+        $n = mb_strtolower(trim($nama));
+        // Hilangkan prefix administratif: "kabupaten", "kab.", "kab", "kota"
+        $n = preg_replace('/^(kabupaten|kab\.?|kota)\s+/u', '', $n);
+        // Rapikan tanda baca & spasi ganda sisa
+        $n = preg_replace('/[.,]/u', '', $n);
+        $n = preg_replace('/\s+/u', ' ', $n);
+        return trim($n);
+    }
+
+    /**
+     * API: GeoJSON peta produktivitas per Kabupaten/Kota (untuk peta di halaman Agri).
+     * GET /api/agri/map?tahun=2025
+     *
+     * Menggabungkan geometri batas wilayah Jatim (file GeoJSON yang sama dipakai
+     * oleh peta Bencana) dengan data produktivitas, luas panen, produksi, dan
+     * distribusi semesteran per kabupaten/kota dari tabel agri3 & agri1.
+     *
+     * Pencocokan nama wilayah dilakukan dua tahap:
+     *  1. Exact match terhadap nama_kabupaten_kota dari database.
+     *  2. Jika gagal, fallback ke normalized match (lihat normalizeNamaWilayah())
+     *     supaya tetap cocok walau format penulisan di GeoJSON sedikit berbeda
+     *     (tanpa prefix, huruf besar semua, dll).
+     *
+     * Properti yang dikembalikan per feature (dipakai oleh popup
+     * "Peta Produktivitas Padi" di pages.agri — pengganti card
+     * "Urban vs Rural Farming"):
+     *  - nama           : nama kabupaten/kota (dari database, bukan dari GeoJSON,
+     *                     supaya penulisan konsisten di seluruh popup)
+     *  - luas_panen     : total luas panen (Ha)              → "Luas Panen Aktif"
+     *  - produksi       : total produksi GKG (Ton)            → "Total Produksi GKG"
+     *  - produktivitas  : rata-rata produktivitas (Ku/Ha)     → dasar warna & badge popup
+     *                       (>57 Tinggi / 55-57 Normal / <55 Rendah)
+     *  - smt1, smt2     : total produksi semester 1 & 2 (Ton) → "Fokus Semester 1/2"
+     *  - smt1_pct, smt2_pct : persentase distribusi semesteran
+     *  - _matched       : flag debug (true/false) — apakah feature ini berhasil
+     *                     dicocokkan dengan data agri3/agri1. Bisa dicek lewat
+     *                     console di browser bila peta masih tampak kosong.
+     */
+    public function mapData(Request $request)
+    {
+        $tahun = $request->input('tahun', 2025);
+
+        // ── Agregat Luas Panen, Produksi, Produktivitas per kab/kota (agri3) ──
+        $agri3 = DB::table('agri3')
+            ->selectRaw('
+                nama_kabupaten_kota,
+                SUM(`Luas Panen Tanaman Padi (ha) (Ha)`) AS luas_panen,
+                SUM(`Rekap Produksi Padi (ton) (Ton)`)   AS produksi,
+                AVG(`Produktivitas Tanaman Padi (ku/ha) (Ku/ha)`) AS produktivitas
+            ')
+            ->where('tahun', $tahun)
+            ->where('nama_kabupaten_kota', '!=', 'Jawa Timur')
+            ->groupBy('nama_kabupaten_kota')
+            ->get()
+            ->keyBy('nama_kabupaten_kota');
+
+        // ── Distribusi Semesteran per kab/kota (agri1) ──
+        $smt1Cols = ['Januari','Februari','Maret','April','Mei','Juni'];
+        $smt2Cols = ['Juli','Agustus','September','Oktober','November','Desember'];
+
+        $agri1 = DB::table('agri1')
+            ->selectRaw(
+                'nama_kabupaten_kota, ' .
+                implode('+', array_map(fn($b) => "COALESCE(SUM(`$b`),0)", $smt1Cols)) . ' AS smt1, ' .
+                implode('+', array_map(fn($b) => "COALESCE(SUM(`$b`),0)", $smt2Cols)) . ' AS smt2'
+            )
+            ->where('tahun', $tahun)
+            ->where('nama_kabupaten_kota', '!=', 'Jawa Timur')
+            ->groupBy('nama_kabupaten_kota')
+            ->get()
+            ->keyBy('nama_kabupaten_kota');
+
+        // ── Lookup tambahan berdasarkan nama yang dinormalisasi (fallback) ──
+        $agri3ByNorm = $agri3->keyBy(fn($r) => $this->normalizeNamaWilayah($r->nama_kabupaten_kota));
+        $agri1ByNorm = $agri1->keyBy(fn($r) => $this->normalizeNamaWilayah($r->nama_kabupaten_kota));
+
+        // ── Geometri batas wilayah Jatim ──
+        // NOTE: sesuaikan path ini dengan file GeoJSON kab/kota Jatim yang sudah
+        // dipakai pada peta Bencana (biasanya disimpan di public/data/...).
+        $geoPath = public_path('data/jatim_kabkota.geojson');
+        if (!file_exists($geoPath)) {
+            // File GeoJSON tidak ditemukan di server — ini sebab paling umum
+            // peta tampil kosong tanpa warna sama sekali (base map tampil,
+            // tapi tidak ada satu pun poligon). Cek path di atas.
+            return response()->json([
+                'type' => 'FeatureCollection',
+                'features' => [],
+                '_debug_error' => "GeoJSON file not found at: {$geoPath}",
+            ]);
+        }
+
+        $geo = json_decode(file_get_contents($geoPath), true);
+
+        $matchedCount   = 0;
+        $unmatchedNames = [];
+
+        foreach ($geo['features'] as &$feature) {
+            // NOTE: sesuaikan/lengkapi daftar key ini jika field nama wilayah
+            // di GeoJSON kamu memakai nama property lain (mis. 'NAMOBJ',
+            // 'WADMKK', 'KABKOT', dst — umum dipakai pada GeoJSON batas
+            // administrasi BIG/Kemendagri Indonesia).
+            $namaGeo = $feature['properties']['nama']
+                ?? $feature['properties']['NAME_2']
+                ?? $feature['properties']['name']
+                ?? $feature['properties']['NAMOBJ']
+                ?? $feature['properties']['WADMKK']
+                ?? $feature['properties']['KABKOT']
+                ?? null;
+
+            if (!$namaGeo) {
+                continue;
+            }
+
+            // 1) Coba exact match dulu (paling cepat, paling akurat)
+            $a3 = $agri3[$namaGeo] ?? null;
+            $a1 = $agri1[$namaGeo] ?? null;
+
+            // 2) Fallback ke normalized match jika exact match gagal
+            $namaResolved = $namaGeo;
+            if (!$a3 && !$a1) {
+                $normGeo = $this->normalizeNamaWilayah($namaGeo);
+                $a3 = $agri3ByNorm[$normGeo] ?? null;
+                $a1 = $agri1ByNorm[$normGeo] ?? null;
+                if ($a3) {
+                    $namaResolved = $a3->nama_kabupaten_kota;
+                } elseif ($a1) {
+                    $namaResolved = $a1->nama_kabupaten_kota;
+                }
+            }
+
+            $isMatched = (bool) ($a3 || $a1);
+            if ($isMatched) {
+                $matchedCount++;
+            } else {
+                $unmatchedNames[] = $namaGeo;
+            }
+
+            $smt1     = $a1->smt1 ?? 0;
+            $smt2     = $a1->smt2 ?? 0;
+            $smtTotal = $smt1 + $smt2;
+
+            // Gunakan nama dari database (jika match) agar penulisan di popup
+            // konsisten dengan tabel/chart lain di halaman. Jika tidak match,
+            // tetap tampilkan nama asli dari GeoJSON.
+            $feature['properties']['nama']         = $isMatched ? $namaResolved : $namaGeo;
+            $feature['properties']['luas_panen']   = round($a3->luas_panen ?? 0);
+            $feature['properties']['produksi']     = round($a3->produksi ?? 0);
+            $feature['properties']['produktivitas']= round($a3->produktivitas ?? 0, 1);
+            $feature['properties']['smt1']         = round($smt1);
+            $feature['properties']['smt2']         = round($smt2);
+            $feature['properties']['smt1_pct']     = $smtTotal > 0 ? round($smt1 / $smtTotal * 100) : 0;
+            $feature['properties']['smt2_pct']     = $smtTotal > 0 ? round($smt2 / $smtTotal * 100) : 0;
+            $feature['properties']['_matched']     = $isMatched;
+        }
+        unset($feature);
+
+        // Info debug ringkas (tidak mempengaruhi rendering peta, hanya
+        // membantu menelusuri masalah dari Network tab / console browser).
+        $geo['_debug'] = [
+            'tahun'            => $tahun,
+            'total_features'   => count($geo['features']),
+            'matched'          => $matchedCount,
+            'unmatched_count'  => count($unmatchedNames),
+            'unmatched_names'  => array_values(array_unique($unmatchedNames)),
+        ];
+
+        return response()->json($geo);
     }
 }

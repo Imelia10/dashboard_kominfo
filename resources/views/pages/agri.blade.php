@@ -217,7 +217,7 @@
 }
 
 /* ══════════════════════════════════════════
-   SEMESTER + URBAN ROW (2-col)
+   SEMESTER + MAP ROW (2-col)
 ══════════════════════════════════════════ */
 .smt-urban-row {
   display: grid;
@@ -320,7 +320,7 @@
 .semester-stat-label { color: #6b7280; }
 .semester-stat-val   { font-weight: 700; color: #374151; font-variant-numeric: tabular-nums; }
 
-/* ── Urban vs Rural Card ── */
+/* ── Peta Produktivitas Padi Card (pengganti Urban vs Rural) ── */
 .urban-rural-card {
   background: #fff;
   border-radius: 16px;
@@ -330,53 +330,89 @@
   display: flex;
   flex-direction: column;
 }
-.urban-rural-body {
+.map-card { padding: 16px 16px 14px; }
+#mapAgriWrap {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  margin-top: 6px;
-}
-.ur-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 10px;
-}
-.ur-item-label {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-  color: #1a2e1a;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-.ur-item-val {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-}
-.ur-bar-track {
-  height: 12px;
-  background: #f3f4f6;
-  border-radius: 6px;
+  min-height: 260px;
+  border-radius: 10px;
   overflow: hidden;
+  border: 1px solid #e5e7eb;
+  position: relative;
 }
-.ur-bar-fill {
-  height: 100%;
-  border-radius: 6px;
-  transition: width .7s cubic-bezier(.34,1.56,.64,1);
-}
-.ur-note {
-  margin-top: auto;
-  font-size: 11px;
-  color: #9ca3af;
-  font-style: italic;
-  padding-top: 14px;
+#mapAgri { width: 100%; height: 100%; min-height: 260px; }
+
+.map-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px solid #f3f4f6;
-  line-height: 1.6;
-  margin-top: 20px;
 }
+.ml-item { display:flex; align-items:center; gap:6px; font-size:11px; color:#6b7280; font-weight:600; }
+.ml-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+#mapAgriLoading {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(255,255,255,.92);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #2e7d32;
+  font-weight: 600;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+#mapAgriErr {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(255,255,255,.95);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #dc2626;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+/* ── Leaflet tooltip popup produktivitas padi ── */
+.leaflet-tooltip.padi-tooltip-wrap {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  padding: 12px 14px;
+}
+.padi-tooltip { font-family: 'DM Sans', sans-serif; min-width: 210px; }
+.ptt-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: .6px;
+  text-transform: uppercase; color: #9ca3af; margin-bottom: 2px;
+}
+.ptt-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px; font-weight: 800; color: #1a2e1a; margin-bottom: 10px;
+}
+.ptt-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 20px; margin-bottom: 12px;
+}
+.ptt-badge-val   { font-weight: 800; font-size: 14px; }
+.ptt-badge-label { font-size: 11px; font-weight: 700; }
+.ptt-divider { border-top: 1px solid #f3f4f6; margin-bottom: 8px; }
+.ptt-row {
+  display: flex; justify-content: space-between; gap: 14px;
+  font-size: 12px; color: #6b7280; margin-bottom: 5px;
+}
+.ptt-row strong { color: #374151; font-weight: 700; }
 
 /* ══════════════════════════════════════════
    TOP PRODUKSI ROW (2-col)
@@ -603,50 +639,67 @@
   </div>
 
   {{-- ════ CHARTS ════ --}}
+  @php
+    // Palet warna permanen per tahun, supaya tiap tahun selalu konsisten
+    // warnanya di seluruh halaman (tidak berubah saat ganti filter tahun).
+    $yearPalette = [
+        '#1565C0', // biru
+        '#2e7d32', // hijau
+        '#f9a825', // kuning/oranye
+        '#6a1b9a', // ungu
+        '#c62828', // merah
+        '#00838f', // teal
+    ];
+    $yearBase = 2023;
+    $yearColor = function ($y) use ($yearPalette, $yearBase) {
+        $idx = (($y - $yearBase) % count($yearPalette) + count($yearPalette)) % count($yearPalette);
+        return $yearPalette[$idx];
+    };
+    $colorNow  = $yearColor($tahun);
+    $colorPrev = $yearColor($tahun - 1);
+  @endphp
   <div class="charts-row">
 
     <div class="chart-card">
-      <div class="chart-card-title">Grafik 1: Top Produksi per Kabupaten</div>
+      <div class="chart-card-title">Grafik 1: Top Produksi per Kabupaten dan Kota</div>
       <div class="chart-card-sub">Perbandingan Luas Panen & Rekap Produksi Padi — {{ $tahun }}</div>
       <div class="chart-legend">
-        <div class="legend-dot"><span style="background:#43a047"></span> Luas Panen (Ha)</div>
-        <div class="legend-dot"><span style="background:#ef9a9a"></span> Produksi (Ton)</div>
+        <div class="legend-dot"><span style="background:#43a047"></span> Luas Panen — Kabupaten</div>
+        <div class="legend-dot"><span style="background:#00897b"></span> Luas Panen — Kota</div>
+        <div class="legend-dot"><span style="background:#ef9a9a"></span> Produksi — Kabupaten</div>
+        <div class="legend-dot"><span style="background:#ff8a65"></span> Produksi — Kota</div>
       </div>
       <div class="chart-container">
         <canvas id="chartKorelasi"></canvas>
       </div>
       <p style="font-size:11px;color:#9ca3af;margin-top:10px">
-        Menunjukkan korelasi luas panen dengan total produksi per kabupaten/kota.
+        Menunjukkan korelasi luas panen dengan total produksi per kabupaten/kota (semua Kabupaten dan Kota ditampilkan).
       </p>
     </div>
 
     <div class="chart-card">
       <div class="chart-card-title">Grafik 2: Volatilitas Musiman (Bulanan)</div>
-      <div class="chart-card-sub">Luas Panen Bulanan — {{ $tahun }} vs {{ $tahun - 1 }}</div>
+      <div class="chart-card-sub">Luas Panen Bulanan — {{ $tahun - 1 }} vs {{ $tahun }}</div>
       <div class="chart-legend">
-        <div class="legend-dot"><span style="background:#1565C0"></span> {{ $tahun }}</div>
-        <div class="legend-dot"><span style="background:#f9a825"></span> {{ $tahun - 1 }}</div>
+        <div class="legend-dot"><span style="background:{{ $colorPrev }}"></span> {{ $tahun - 1 }}</div>
+        <div class="legend-dot"><span style="background:{{ $colorNow }}"></span> {{ $tahun }}</div>
       </div>
       <div class="chart-container">
         <canvas id="chartMusiman"></canvas>
       </div>
       <p style="font-size:11px;color:#9ca3af;margin-top:10px">
-        Highlight: Pergeseran puncak panen antar bulan dalam dua tahun terakhir.
+        Highlight: Pergeseran puncak panen antar bulan dalam dua tahun terakhir. Warna setiap tahun bersifat permanen (mis. 2023 = biru, 2024 = hijau, dst) dan urutan batang disusun dari tahun terlama (kiri) ke tahun terbaru (kanan).
       </p>
     </div>
   </div>
 
-  {{-- ════ SEMESTER + URBAN VS RURAL (2-col) ════ --}}
+  {{-- ════ SEMESTER + PETA PRODUKTIVITAS PADI (2-col) ════ --}}
   @php
     $smt1Total = $semesterData->smt1 ?? 0;
     $smt2Total = $semesterData->smt2 ?? 0;
     $smtGrand  = $smt1Total + $smt2Total;
     $smt1Pct   = $smtGrand > 0 ? round($smt1Total / $smtGrand * 100) : 0;
     $smt2Pct   = 100 - $smt1Pct;
-
-    $kotaVal = round($urbanRuralData->kota ?? 0, 1);
-    $kabVal  = round($urbanRuralData->kabupaten ?? 0, 1);
-    $urMax   = max($kotaVal, $kabVal, 1);
   @endphp
 
   <div class="smt-urban-row">
@@ -689,33 +742,21 @@
       </div>
     </div>
 
-    {{-- Urban vs Rural --}}
-    <div class="urban-rural-card">
-      <div class="reg-section-title">Urban vs Rural Farming</div>
-
-      <div class="urban-rural-body">
-        <div>
-          <div class="ur-item-header">
-            <div class="ur-item-label">Kota</div>
-            <div class="ur-item-val" style="color:#f9a825">{{ number_format($kotaVal, 1) }} Ku/Ha</div>
-          </div>
-          <div class="ur-bar-track">
-            <div class="ur-bar-fill" style="width:{{ round($kotaVal/$urMax*100) }}%;background:#f9a825"></div>
-          </div>
-        </div>
-        <div>
-          <div class="ur-item-header">
-            <div class="ur-item-label">Kabupaten</div>
-            <div class="ur-item-val" style="color:#1565c0">{{ number_format($kabVal, 1) }} Ku/Ha</div>
-          </div>
-          <div class="ur-bar-track">
-            <div class="ur-bar-fill" style="width:{{ round($kabVal/$urMax*100) }}%;background:#1565c0"></div>
-          </div>
-        </div>
+    {{-- Peta Produktivitas Padi (pengganti Urban vs Rural Farming) --}}
+    <div class="urban-rural-card map-card">
+      <div class="reg-section-title" style="margin-bottom:12px">
+        Peta Produktivitas Padi
+        <span style="font-weight:600;color:#9ca3af;font-size:10px;text-transform:none;letter-spacing:0">— {{ $tahun }}</span>
       </div>
 
-      <div class="ur-note">
-        Note: High efficiency observed in urban buffer zones due to intensive tech adoption.
+      <div id="mapAgriWrap">
+        <div id="mapAgri"></div>
+      </div>
+
+      <div class="map-legend">
+        <span class="ml-item"><span class="ml-dot" style="background:#16a34a"></span>Tinggi (&gt;57 Ku/Ha)</span>
+        <span class="ml-item"><span class="ml-dot" style="background:#0284c7"></span>Normal (55–57 Ku/Ha)</span>
+        <span class="ml-item"><span class="ml-dot" style="background:#dc2626"></span>Rendah (&lt;55 Ku/Ha)</span>
       </div>
     </div>
   </div>
@@ -841,6 +882,11 @@ const korelasiLabels = dataKorelasi.map(x => x.nama_kabupaten_kota);
 const korelasiLuas   = dataKorelasi.map(x => x.luas_panen);
 const korelasiProd   = dataKorelasi.map(x => x.produksi);
 
+// Beda warna untuk Kota vs Kabupaten agar tetap kebaca walau digabung dalam 1 chart
+const isKota = korelasiLabels.map(l => /^Kota\s/i.test(l));
+const korelasiLuasColors = isKota.map(k => k ? 'rgba(0,137,123,0.85)'  : 'rgba(67,160,71,0.75)');
+const korelasiProdColors = isKota.map(k => k ? 'rgba(255,138,101,0.85)' : 'rgba(239,154,154,0.80)');
+
 const bulanLabels    = @json($bulanCols);
 const musimanNow     = @json(collect($bulanCols)->map(fn($b)=>$musiman?->$b ?? 0));
 const musimanPrev    = @json(collect($bulanCols)->map(fn($b)=>$musimanPrev?->$b ?? 0));
@@ -848,14 +894,18 @@ const musimanPrev    = @json(collect($bulanCols)->map(fn($b)=>$musimanPrev?->$b 
 const smt1Pct = {{ $smt1Pct }};
 const smt2Pct = {{ $smt2Pct }};
 
-// ── Chart 1: Bar Chart Korelasi ──
+// Warna permanen per tahun (konsisten di seluruh halaman, lihat $yearPalette di Blade)
+const colorPrevYear = '{{ $colorPrev }}';
+const colorNowYear  = '{{ $colorNow }}';
+
+// ── Chart 1: Bar Chart Korelasi (Kabupaten & Kota) ──
 new Chart(document.getElementById('chartKorelasi'), {
   type: 'bar',
   data: {
     labels: korelasiLabels,
     datasets: [
-      { label:'Luas Panen (Ha)', data:korelasiLuas, backgroundColor:'rgba(67,160,71,0.75)', borderRadius:5, yAxisID:'yLuas' },
-      { label:'Produksi (Ton)',  data:korelasiProd, backgroundColor:'rgba(239,154,154,0.80)', borderRadius:5, yAxisID:'yProd' }
+      { label:'Luas Panen (Ha)', data:korelasiLuas, backgroundColor:korelasiLuasColors, borderRadius:5, yAxisID:'yLuas' },
+      { label:'Produksi (Ton)',  data:korelasiProd, backgroundColor:korelasiProdColors, borderRadius:5, yAxisID:'yProd' }
     ]
   },
   options: {
@@ -871,13 +921,14 @@ new Chart(document.getElementById('chartKorelasi'), {
 });
 
 // ── Chart 2: Bar Chart Musiman ──
+// Urutan dataset: tahun terlama dulu (tampil di kiri tiap grup), tahun terbaru terakhir (di kanan)
 new Chart(document.getElementById('chartMusiman'), {
   type: 'bar',
   data: {
     labels: bulanLabels.map(b=>b.substring(0,3)),
     datasets: [
-      { label:'{{ $tahun }}',     data:musimanNow,  backgroundColor:'rgba(21,101,192,0.78)', borderRadius:4 },
-      { label:'{{ $tahun - 1 }}', data:musimanPrev, backgroundColor:'rgba(249,168,37,0.72)', borderRadius:4 }
+      { label:'{{ $tahun - 1 }}', data:musimanPrev, backgroundColor:colorPrevYear, borderRadius:4 },
+      { label:'{{ $tahun }}',     data:musimanNow,  backgroundColor:colorNowYear,  borderRadius:4 }
     ]
   },
   options: {
@@ -912,5 +963,106 @@ new Chart(document.getElementById('chartSemester'), {
     }
   }
 });
+
+// ── PETA PRODUKTIVITAS PADI (pengganti Urban vs Rural Farming) ──────────
+(function(){
+  const mapEl = document.getElementById('mapAgri');
+  if(!mapEl || typeof L === 'undefined') return;
+
+  const TAHUN_AGRI = {{ $tahun }};
+
+  // Loading overlay — taruh di parent (.map-card), bukan di #mapAgri,
+  // agar innerHTML mapEl tidak merusak DOM internal Leaflet.
+  const mapParent = mapEl.parentElement; // #mapAgriWrap
+  mapParent.style.position = 'relative';
+  const loadingEl = document.createElement('div');
+  loadingEl.id = 'mapAgriLoading';
+  loadingEl.textContent = 'Memuat data peta…';
+  mapParent.appendChild(loadingEl);
+
+  function tierInfo(v){
+    if(v > 57)  return { label:'Efisiensi Tinggi', color:'#16a34a', bg:'#dcfce7' };
+    if(v >= 55) return { label:'Efisiensi Normal', color:'#0284c7', bg:'#e0f2fe' };
+    return        { label:'Efisiensi Rendah', color:'#dc2626', bg:'#fee2e2' };
+  }
+
+  const map = L.map('mapAgri', { scrollWheelZoom:false }).setView([-7.5,112.5], 8);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:18, opacity:0.85
+  }).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+    subdomains:'abcd', maxZoom:18, opacity:0.7, pane:'shadowPane'
+  }).addTo(map);
+
+  // Mask abu-abu mengikuti bentuk asli Jatim (file sama dengan peta Bencana)
+  fetch('/data/jatim_mask.geojson')
+    .then(r => r.json())
+    .then(maskGeo => {
+      L.geoJSON(maskGeo, {
+        style:{ fillColor:'#9aa8b2', fillOpacity:0.45, color:'transparent', weight:0 },
+        interactive:false
+      }).addTo(map);
+    })
+    .catch(()=>{ /* mask opsional, lewati jika gagal */ });
+
+  let geoLayer = null;
+
+  function renderAgriLayer(geo){
+    if(geoLayer) map.removeLayer(geoLayer);
+
+    geoLayer = L.geoJSON(geo, {
+      style: function(feature){
+        const v = feature.properties.produktivitas || 0;
+        const tier = tierInfo(v);
+        return { fillColor: v > 0 ? tier.color : '#e5e7eb', fillOpacity:0.78, color:'#ffffff', weight:1.2 };
+      },
+      onEachFeature: function(feature, layer){
+        const p    = feature.properties;
+        const nama = p.nama || p.NAME_2 || '—';
+        const tier = tierInfo(p.produktivitas || 0);
+
+        layer.bindTooltip(
+          `<div class="padi-tooltip">
+             <div class="ptt-eyebrow">KABUPATEN / KOTA — ${TAHUN_AGRI}</div>
+             <div class="ptt-title">${nama}</div>
+             <div class="ptt-badge" style="background:${tier.bg};color:${tier.color}">
+               <span class="ptt-badge-val">${(p.produktivitas||0).toFixed(1)} Ku/Ha</span>
+               <span class="ptt-badge-label">${tier.label}</span>
+             </div>
+             <div class="ptt-divider"></div>
+             <div class="ptt-row"><span>Luas Panen Aktif</span><strong>${(p.luas_panen||0).toLocaleString('id-ID')} Ha</strong></div>
+             <div class="ptt-row"><span>Total Produksi GKG</span><strong>${(p.produksi||0).toLocaleString('id-ID')} Ton</strong></div>
+             <div class="ptt-row"><span>Fokus Semester 1 (Jan–Jun)</span><strong>${(p.smt1||0).toLocaleString('id-ID')} Ton (${p.smt1_pct||0}%)</strong></div>
+             <div class="ptt-row"><span>Fokus Semester 2 (Jul–Des)</span><strong>${(p.smt2||0).toLocaleString('id-ID')} Ton (${p.smt2_pct||0}%)</strong></div>
+           </div>`,
+          { sticky:true, className:'padi-tooltip-wrap', direction:'top' }
+        );
+
+        layer.on('mouseover', function(){ this.setStyle({ weight:2.5, fillOpacity:0.95 }); });
+        layer.on('mouseout',  function(){ geoLayer.resetStyle(this); });
+      }
+    }).addTo(map);
+  }
+
+  fetch(`/api/agri/map?tahun=${TAHUN_AGRI}`)
+    .then(r => { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(geo => {
+      const loader = document.getElementById('mapAgriLoading');
+      if(loader) loader.remove();
+      renderAgriLayer(geo);
+    })
+    .catch(err => {
+      const loader = document.getElementById('mapAgriLoading');
+      if(loader) loader.remove();
+      console.error('Agri map error:', err);
+      if(!document.getElementById('mapAgriErr')){
+        const errEl = document.createElement('div');
+        errEl.id = 'mapAgriErr';
+        errEl.textContent = '⚠ Gagal memuat data — cek endpoint /api/agri/map';
+        mapParent.appendChild(errEl);
+      }
+    });
+})();
 </script>
 @endpush
